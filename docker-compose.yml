@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  extract_text:
+    build:
+      context: .
+    volumes:
+      - ./work_dir:/work_dir
+    ports:
+      - '8000:8000'
+    command: sh -c './manage.py runserver 0.0.0.0:8000'
+    env_file:
+      - .env
+    depends_on:
+      - db_postgres
+
+  db_postgres:
+    image: postgres:14.6-alpine
+    volumes:
+      - db_postgres_data:/tmx/db_postgres_data
+    env_file:
+      - .env
+
+volumes:
+  db_postgres_data:
+
