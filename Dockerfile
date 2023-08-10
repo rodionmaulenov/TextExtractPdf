@@ -1,17 +1,18 @@
-FROM python:3.11.4-slim
+FROM python:3.11.4-slim-buster
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
-
-RUN apt-get update && \
-    pip install --upgrade pip && \
-    apt-get install -y libpq-dev gcc netcat-openbsd
 
 WORKDIR /work_dir
 
 COPY ./requirements.txt /tmx/requirements.txt
 
 RUN pip install -r /tmx/requirements.txt
+
+RUN apt-get update && \
+    pip install --upgrade pip && \
+    apt-get install -y openjdk-11-jre-headless && \
+    apt-get install -y libpq-dev gcc netcat-openbsd
 
 COPY ./entrypoint.sh /tmx/entrypoint.sh
 

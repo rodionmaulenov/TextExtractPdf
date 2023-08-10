@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+<style>
+    /* Style for the button container */
+    .button-container {
+        margin-top: 10px; /* Adjust the distance between buttons as needed */
+    }
+
+    /* Style for the horizontal rule */
+    .form-hr {
+        margin-top: 15px; /* Adjust the distance between the field and hr */
+        margin-bottom: 15px; /* Adjust the distance between the hr and the next field */
+    }
+
+    /* Increase distance between form rows */
+    .form-row {
+        margin-bottom: 15px; /* Adjust the distance between form rows */
+    }
+</style>
+
+</head>
+<body>
+
+<form id="child-form" action="." method="post" enctype="multipart/form-data"
+      hx-post="{{ request.path }}"
+      hx-encoding="multipart/form-data">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <div id="formset-container">
+        <!-- Existing fields -->
+        {% for form in formset %}
+            <div class="form-row">
+                {{ form }}
+                <style>
+                    /* Center-align the values within the 'data' field */
+                    .form-row input[name$="data"] {
+                        text-align: center;
+                    }
+                </style>
+                <button type="button" class="delete-button">Delete</button>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="button-container">
+        <button id="add-field-button" type="button" class="default">Add Field</button>
+        <button type="submit" name="formset_submit" class="default">Push text</button>
+    </div>
+</form>
+
+
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const formsetContainer = document.getElementById("formset-container");
+        const addFieldButton = document.getElementById("add-field-button");
+
+        addFieldButton.addEventListener("click", function () {
+            const formCount = formsetContainer.querySelectorAll(".form-row").length;
+            const newFormHtml = `
+                <div class="form-row">
+                    {{ formset.empty_form.as_table }}
+                    <button type="button" class="delete-button">Delete</button>
+                </div>
+            `;
+            formsetContainer.insertAdjacentHTML("beforeend", newFormHtml);
+        });
+
+        formsetContainer.addEventListener("click", function (event) {
+            if (event.target.classList.contains("delete-button")) {
+                const formRow = event.target.closest(".form-row");
+                formRow.remove();
+            }
+        });
+    });
+</script>
+
+
+</body>
+</html>

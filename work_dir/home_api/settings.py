@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -27,10 +26,14 @@ DEBUG = os.getenv('DEBUG')
 
 ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS')]
 
-
 # Application definition
 
 INSTALLED_APPS = [
+
+    # third party packages
+    "admin_interface",
+    "colorfield",
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -69,9 +72,15 @@ TEMPLATES = [
         },
     },
 ]
+#
+# TEMPLATE_LOADERS = (
+#     'django.template.loaders.filesystem.Loader',
+#     'django.template.loaders.app_directories.Loader',
+#     'apptemplates.Loader',
+# )
+
 
 WSGI_APPLICATION = 'home_api.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -86,7 +95,6 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -106,7 +114,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -118,18 +125,19 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'staticfiles/'
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
-
-MEDIA_URL = "/mediafiles/"
+MEDIA_URL = "mediafiles/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "mediafiles")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+X_FRAME_OPTIONS = "SAMEORIGIN"
+SILENCED_SYSTEM_CHECKS = ["security.W019"]

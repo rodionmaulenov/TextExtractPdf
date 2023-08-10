@@ -1,4 +1,11 @@
-{% extends "admin/base.html" %}
+{% extends "admin/base_site.html" %}
+
+{% load static %}
+
+
+<link rel="stylesheet" href="{% static 'css/custom_admin.css' %}">
+
+
 
 {% block title %}Biotexcom{% endblock %}
 
@@ -6,7 +13,10 @@
 
 
 {% block content %}
-
-{% include 'admin/pdf_upload_htmx.html' %}
-
+  <div style="margin-bottom: 100px;">
+        {% include 'admin/pdf_upload_htmx.html' %}
+    </div>
+    <div>
+        {% include 'admin/child_form_htmx.html' %}
+    </div>
 {% endblock %}

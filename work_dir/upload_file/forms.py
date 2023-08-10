@@ -1,9 +1,9 @@
 from django import forms
 
-from upload_file.models import ClientExtractLocus
+from upload_file.models import Client
 
 
 class FileUploadForm(forms.ModelForm):
     class Meta:
-        model = ClientExtractLocus
+        model = Client
         fields = ('file_upload',)
