@@ -25,16 +25,28 @@ class Child(models.Model):
 
 
 class DNK(models.Model):
-    LOCUS = [
-        ('D3S1358', 'D3S1358'), ('vWa', 'vWa'), ('D16S539', 'D16S539'),
-        ('CSF1P0', 'CSF1P0'), ('TPOX', 'TPOX'), ('D8S1179', 'D8S1179'),
-        ('D21S11', 'D21S11'), ('D18S51', 'D18S51'), ('Penta E', 'Penta E'),
-        ('D2S441', 'D2S441'), ('D19S433', 'D19S433'), ('THO1 E', 'THO1 E'),
-        ('FGA', 'FGA'), ('D22S1045', 'D22S1045'), ('D5S818', 'D5S818'),
-        ('D13S317', 'D13S317'), ('D7S820', 'D7S820'), ('D6S1043', 'D6S1043'),
-        ('D10S1248', 'D10S1248'), ('D1S1656', 'D1S1656'), ('D12S391', 'D12S391'),
-        ('D2S1338', 'D2S1338'), ('Penta', 'Penta')
-    ]
-    child = models.ForeignKey(Child, on_delete=models.PROTECT, null=True, blank=True)
-    locus = models.CharField(max_length=10, choices=LOCUS, blank=True)
-    data = models.CharField(max_length=10, blank=True)
+    child = models.OneToOneField(Child, on_delete=models.PROTECT, null=True, blank=True)
+
+    D3S1358 = models.CharField(max_length=10, null=True, blank=True)
+    vWA = models.CharField(max_length=10, null=True, blank=True)
+    D16S539 = models.CharField(max_length=10, null=True, blank=True)
+    CSF1P0 = models.CharField(max_length=10, null=True, blank=True)
+    TPOX = models.CharField(max_length=10, null=True, blank=True)
+    D8S1179 = models.CharField(max_length=10, null=True, blank=True)
+    D21S11 = models.CharField(max_length=10, null=True, blank=True)
+    D18S51 = models.CharField(max_length=10, null=True, blank=True)
+    Penta_E = models.CharField(max_length=10, verbose_name='Penta E', null=True, blank=True)
+    D2S441 = models.CharField(max_length=10, null=True, blank=True)
+    D19S433 = models.CharField(max_length=10, null=True, blank=True)
+    THO1 = models.CharField(max_length=10, null=True, blank=True)
+    FGA = models.CharField(max_length=10, null=True, blank=True)
+    D22S1045 = models.CharField(max_length=10, null=True, blank=True)
+    D5S818 = models.CharField(max_length=10, null=True, blank=True)
+    D13S317 = models.CharField(max_length=10, null=True, blank=True)
+    D7S820 = models.CharField(max_length=10, null=True, blank=True)
+    D6S1043 = models.CharField(max_length=10, null=True, blank=True)
+    D10S1248 = models.CharField(max_length=10, null=True, blank=True, )
+    D1S1656 = models.CharField(max_length=10, null=True, blank=True)
+    D12S391 = models.CharField(max_length=10, null=True, blank=True)
+    D2S1338 = models.CharField(max_length=10, null=True, blank=True)
+    Penta_D = models.CharField(max_length=10, verbose_name='Penta D', null=True, blank=True)
