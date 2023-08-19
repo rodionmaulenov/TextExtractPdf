@@ -1,0 +1,18 @@
+{% extends 'admin/base_site.html' %}
+
+{% block content %}
+<style>
+    /* Add spacing between forms */
+    .form-container {
+        margin-bottom: 100px; /* Adjust this value to increase/decrease the space */
+    }
+</style>
+
+<div class="form-container">
+    {% include 'admin/pdf_upload.html' %}
+</div>
+
+<div class="form-container">
+    {% include 'admin/child_form.html' %}
+</div>
+{% endblock %}

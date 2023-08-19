@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  extract_text:
+    build:
+      context: ./work_dir
+      dockerfile: Dockerfileprod
+    expose:
+      - 8000
+    command: gunicorn home_api.wsgi:application --bind 0.0.0.0:8000
+    env_file:
+      - .env.prod
+    depends_on:
+      - db_postgres
+
+  db_postgres:
+    image: postgres:14.6-alpine
+    volumes:
+      - db_postgres_data:/tmx/db_postgres_data
+    env_file:
+      - .env.prod.db
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 1337:80
+    depends_on:
+      - extract_text
+
+volumes:
+  db_postgres_data:

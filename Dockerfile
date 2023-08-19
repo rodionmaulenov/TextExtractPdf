@@ -5,7 +5,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /work_dir
 
-COPY ./requirements.txt /tmx/requirements.txt
+COPY work_dir/requirements.txt /tmx/requirements.txt
 
 RUN pip install -r /tmx/requirements.txt
 
