@@ -1,31 +1,56 @@
-version: '3'
+version: '3.8'
 
 services:
+  test_db_postgres:
+    container_name: postgresql_test_db
+    image: postgres:latest
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_PASSWORD: testpassword
+      POSTGRES_USER: testuser
+      POSTGRES_DB: testdb
+
+  db_postgres:
+    container_name: postgresql_db
+    image: postgres:latest
+    volumes:
+      - ./data/db:/var/lib/postgresql/data/
+    env_file:
+      - .env.prod.db
+
   extract_text:
+    container_name: extract_text
+    volumes:
+      - ./data/static:/var/www/static
+      - ./data/media:/var/www/media
     build:
       context: ./work_dir
       dockerfile: Dockerfileprod
     expose:
       - 8000
-    command: gunicorn home_api.wsgi:application --bind 0.0.0.0:8000
     env_file:
       - .env.prod
     depends_on:
       - db_postgres
-
-  db_postgres:
-    image: postgres:14.6-alpine
-    volumes:
-      - db_postgres_data:/tmx/db_postgres_data
-    env_file:
-      - .env.prod.db
-
+    command: >
+      bash -c "
+              ./manage.py collectstatic --noinput &&
+              ./manage.py migrate &&
+              gunicorn -b 0.0.0.0:8000 home_api.wsgi:application
+            "
   nginx:
-    build: ./nginx
+    container_name: nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    volumes:
+      - ./data/static:/var/www/static
+      - ./data/media:/var/www/media
     ports:
       - 1337:80
     depends_on:
-      - extract_text
+    - extract_text
 
-volumes:
-  db_postgres_data:
+
+

@@ -1,5 +1,5 @@
 django==4.2.4
-psycopg2==2.9.6
+psycopg2-binary==2.9.7
 tabula-py==2.7.0
 django-admin-interface==0.26.0
 gunicorn==21.2.0

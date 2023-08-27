@@ -96,21 +96,17 @@ class MyAdminViewPostRequestDnkFormTestCase(TestCase):
                                       "D22S1045": "15,15"})
 
     def test_pdf_extract_text(self):
-
-        pdf_path = 'mediafiles/TasuVasile.pdf'
+        pdf_path = 'test_pdf/TasuVasile.pdf'
         csv_file_path = pdf_extract_text(pdf_path)
-        expected_csv_content = ""
+        self.assertEqual(csv_file_path, '/home/app/web/upload_file/csv_files/Tasu_Vasile.csv')
 
-        with open(csv_file_path, 'r') as csv_file:
-            generated_csv_content = csv_file.read()
-
-        for text in generated_csv_content:
-            expected_csv_content += text
-
-        self.assertEqual(generated_csv_content, expected_csv_content)
+    def test_pdf_not_extract_text(self):
+        pdf_path = 'test_pdf/RRodion.pdf'
+        csv_file_path = pdf_extract_text(pdf_path)
+        self.assertEqual(csv_file_path, None)
 
     def test_retrieve_values(self):
-        csv_path = '/work_dir/upload_file/csv_files/Tasu_Vasile.csv'
+        csv_path = '/home/app/web/upload_file/csv_files/Tasu_Vasile.csv'
 
         name, locus_dict = retrieve_values(csv_path)
 

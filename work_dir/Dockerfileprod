@@ -1,54 +1,36 @@
 FROM python:3.11.4-slim-buster as builder
 
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+WORKDIR /usr/src/app
 
-WORKDIR /work_dir
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update && \
-    pip install --upgrade pip && \
-    apt-get install -y openjdk-11-jre-headless && \
-    apt-get install -y libpq-dev gcc netcat-openbsd
+    apt-get install -y --no-install-recommends gcc
 
-COPY . /work_dir
+RUN pip install --upgrade pip
+COPY . /usr/src/app/
 
-COPY requirements.txt /tmx/requirements.txt
-
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /tmx/wheels -r /tmx/requirements.txt
-
+COPY ./requirements.txt .
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
 
 
 FROM python:3.11.4-slim-buster
 
-RUN apt-get update && \
-    pip install --upgrade pip && \
-    apt-get install -y openjdk-11-jre-headless && \
-    apt-get install -y libpq-dev gcc netcat-openbsd
-# create directory for the app user
 RUN mkdir -p /home/app
 
-# create the app user
-RUN groupadd -r app && useradd -r -g app app
-
-# create the appropriate directories
 ENV HOME=/home/app
 ENV APP_HOME=/home/app/web
 RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
 
-# install dependencies
-COPY --from=builder /tmx/wheels /wheels
-COPY --from=builder /tmx/requirements.txt .
+RUN apt-get update && apt-get install -y --no-install-recommends netcat default-jre
+COPY --from=builder /usr/src/app/wheels /wheels
+COPY --from=builder /usr/src/app/requirements.txt .
+RUN pip install --upgrade pip
 RUN pip install --no-cache /wheels/*
 
-# copy entrypoint-prod.sh
-COPY entrypoint.prod.sh $APP_HOME
-
-# copy project
 COPY . $APP_HOME
 
-## change to the app user
-USER app
 
-# run entrypoint.prod.sh
-ENTRYPOINT ["/home/app/web/entrypoint.prod.sh"]
+

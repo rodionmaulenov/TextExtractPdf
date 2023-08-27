@@ -89,6 +89,9 @@ class ClientAdmin(admin.ModelAdmin):
                         return redirect_to(request)
 
                     path_to_record = pdf_extract_text(pdf_file)  # extract locus data from upload pdf to csv_file
+                    if path_to_record is None:
+                        messages.warning(request, 'Must be a pdf file with locus table')
+                        return redirect_to(request)
                     name, locus_dict = retrieve_values(
                         path_to_record)  # get client name and dnk locus client in format dict
                     obj, created = Client.objects.get_or_create(name=name, locus=locus_dict)

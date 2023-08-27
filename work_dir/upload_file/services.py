@@ -1,6 +1,7 @@
 import csv
 import os
 import re
+
 import tabula
 from django.forms import model_to_dict
 from django.contrib import messages
@@ -14,7 +15,11 @@ def pdf_extract_text(pdf_file=None):
     """First get pdf file
      second create new directory
       and return path to writing file"""
-    table = tabula.read_pdf(pdf_file, pages='3')  # get 3 page from pdf
+    try:
+        table = tabula.read_pdf(pdf_file, pages='3')  # get 3 page from pdf
+    except:
+        return None
+
     csv_data = table[0].to_csv(index=False)  # get table without indexing rows
     file_name = '_'.join(table[0].columns[1].split())  # forms name file by name client
 

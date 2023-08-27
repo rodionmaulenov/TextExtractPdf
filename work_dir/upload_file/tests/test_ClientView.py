@@ -54,8 +54,9 @@ class MyAdminViewPostRequestUploadFormTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.client_admin = ClientAdmin(Client, admin.site)
         cls.url = '/admin/upload_file/client/form/'
-        cls.pdf_path = 'mediafiles/TasuVasile.pdf'
+        cls.pdf_path = 'test_pdf/TasuVasile.pdf'
 
     def setUp(self) -> None:
         self.user = User.objects.create_user(username='staff', password='password', is_staff=True)
@@ -77,8 +78,7 @@ class MyAdminViewPostRequestUploadFormTestCase(TestCase):
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
 
-        client_admin = ClientAdmin(Client, admin.site)
-        response = client_admin.my_view(request)
+        response = self.client_admin.my_view(request)
 
         self.assertEqual(response.status_code, 302)
 
@@ -121,8 +121,7 @@ class MyAdminViewPostRequestUploadFormTestCase(TestCase):
             os.remove(client.file_upload.path)
 
     def test_my_view_upload_form_invalid_post_request_created_client_instance_view_level(self):
-        pdf_path = 'mediafiles/TasuVasile.pdf'
-        with open(pdf_path, 'rb') as pdf_file:
+        with open(self.pdf_path, 'rb') as pdf_file:
             pdf_content = pdf_file.read()
 
         uploaded_file = SimpleUploadedFile('real_file.pdf', pdf_content, content_type='application/pdf')
@@ -136,8 +135,7 @@ class MyAdminViewPostRequestUploadFormTestCase(TestCase):
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
 
-        client_admin = ClientAdmin(Client, admin.site)
-        response = client_admin.my_view(request)
+        response = self.client_admin.my_view(request)
 
         self.assertEqual(response.status_code, 302)
 
@@ -162,6 +160,31 @@ class MyAdminViewPostRequestUploadFormTestCase(TestCase):
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
 
+        response = self.client_admin.my_view(request)
+
+        self.assertEqual(response.status_code, 302)
+
+        messages = list(get_messages(request))
+        message = ''
+        for m in messages:
+            message += str(m)
+
+        self.assertEqual(message, 'Wrong type file was uploaded. Must be in PDF format')
+
+    def test_my_view_upload_form_post_request_pdf_format_without_locus_table(self):
+        fake_pdf_content = b'This is a fake TXT content.'
+        uploaded_fake_pdf_file = SimpleUploadedFile('fake_file.pdf', fake_pdf_content, content_type='application/pdf')
+
+        data = {
+            'upload_form_submit': '',
+            'file_upload': uploaded_fake_pdf_file
+        }
+
+        request = RequestFactory().post(self.url, data)
+        setattr(request, 'session', 'session')
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+
         client_admin = ClientAdmin(Client, admin.site)
         response = client_admin.my_view(request)
 
@@ -172,7 +195,7 @@ class MyAdminViewPostRequestUploadFormTestCase(TestCase):
         for m in messages:
             message += str(m)
 
-        self.assertEqual(message, 'Wrong type file was uploaded. Must be in PDF format')
+        self.assertEqual(message, 'Must be a pdf file with locus table')
 
     def test_existing_client_upload_form_post_request(self):
         self.assertEqual(0, Client.objects.count())
