@@ -102,7 +102,7 @@ DATABASES = {
         'NAME': 'popanegra2',
         'USER': 'popanegra3',
         'PASSWORD': 'popanegra4',
-        'HOST': '127.0.0.1',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }
