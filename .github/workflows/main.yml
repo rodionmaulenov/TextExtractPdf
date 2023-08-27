@@ -26,5 +26,5 @@ jobs:
       - name: Run tests
         run: |
           cd ./work_dir
-          python3 maange.py test
+          python3 manage.py test
           
