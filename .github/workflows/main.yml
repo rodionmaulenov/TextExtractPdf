@@ -1,42 +1,83 @@
-name: CI/CD
+#name: CI/CD
+#
+#run-name: ${{github.actor}} is testing out Github Actions
+#
+#on: [push, pull_request]
+#
+#jobs:
+#  run_unittest:
+#    runs-on: ubuntu-latest
+#    strategy:
+#      max-parallel: 2
+#      matrix:
+#        python_version: ['3.11']
+#    steps:
+#      - name: Checkout repository code
+#        uses: actions/checkout@v3
+#      - name: Set up Python ${{matrix.python-version}}
+#        uses: actions/setup-python@v2
+#        with:
+#          python_version: ${{matrix.python-version}}
+#      - name: Install dependencies
+#        run: |
+#          cd ./work_dir
+#          python3 -m pip install --upgrade pip
+#          pip install -r requirements.txt
+#      - name: Set up environment variables
+#        run: |
+#            cd ./work_dir
+#            echo DB_ENGINE=${DB_ENGINE} >> .env
+#            echo DB_NAME=${DB_NAME} >> .env
+#            echo DB_USER=${DB_USER} >> .env
+#            echo DB_PASSWORD=${DB_PASSWORD} >> .env
+#            echo DB_HOST=${DB_HOST} >> .env
+#            echo DB_PORT=${DB_PORT} >> .env
+#            echo SECRET_KEY=${SECRET_KEY} >> .env
+#            echo DEBUG=${DEBUG} >> .env
+#            echo ALLOWED_HOSTS=${ALLOWED_HOSTS} >> .env
+#      - name: Run tests
+#        run: |
+#          cd ./work_dir
+#          python3 manage.py test
+name: CI/CD with Docker
 
-run-name: ${{github.actor}} is testing out Github Actions
-
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  run_unittest:
+  build_and_test:
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 2
-      matrix:
-        python_version: ['3.11']
+
     steps:
       - name: Checkout repository code
-        uses: actions/checkout@v3
-      - name: Set up Python ${{matrix.python-version}}
-        uses: actions/setup-python@v2
-        with:
-          python_version: ${{matrix.python-version}}
-      - name: Install dependencies
-        run: |
-          cd ./work_dir
-          python3 -m pip install --upgrade pip
-          pip install -r requirements.txt
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Compose
+        run: docker-compose -f docker-compose.yml build
+
+      - name: Start services with Docker Compose
+        run: docker-compose -f docker-compose.yml up -d
+
+      - name: Wait for services to be ready
+        run: docker-compose -f docker-compose.yml run --rm develop_extract_text bash -c "while ! nc -z db_postgres 5432; do sleep 1; done"
+
       - name: Set up environment variables
         run: |
-            cd ./work_dir
-            echo DB_ENGINE=${DB_ENGINE} >> .env
-            echo DB_NAME=${DB_NAME} >> .env
-            echo DB_USER=${DB_USER} >> .env
-            echo DB_PASSWORD=${DB_PASSWORD} >> .env
-            echo DB_HOST=${DB_HOST} >> .env
-            echo DB_PORT=${DB_PORT} >> .env
-            echo SECRET_KEY=${SECRET_KEY} >> .env
-            echo DEBUG=${DEBUG} >> .env
-            echo ALLOWED_HOSTS=${ALLOWED_HOSTS} >> .env
-      - name: Run tests
-        run: |
           cd ./work_dir
-          python3 manage.py test
-          
+          echo DB_ENGINE=${DB_ENGINE} >> .env
+          echo DB_NAME=${DB_NAME} >> .env
+          echo DB_USER=${DB_USER} >> .env
+          echo DB_PASSWORD=${DB_PASSWORD} >> .env
+          echo DB_HOST=${DB_HOST} >> .env
+          echo DB_PORT=${DB_PORT} >> .env
+          echo SECRET_KEY=${SECRET_KEY} >> .env
+          echo DEBUG=${DEBUG} >> .env
+          echo ALLOWED_HOSTS=${ALLOWED_HOSTS} >> .env
+
+      - name: Run tests using Docker Compose
+        run: docker-compose -f docker-compose.yml run --rm develop_extract_text python manage.py test
+
+      - name: Stop services
+        run: docker-compose -f docker-compose.yml down
