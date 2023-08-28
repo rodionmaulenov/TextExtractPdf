@@ -57,18 +57,18 @@ jobs:
 
       - name: Set up environment variables
         run: |
-          echo DB_ENGINE=${TEST_DB_ENGINE} >> .env.dev
-          echo DB_NAME=${TEST_DB_NAME} >> .env.dev
-          echo DB_USER=${TEST_DB_USER} >> .env.dev
-          echo DB_PASSWORD=${TEST_DB_PASSWORD} >> .env.dev
-          echo DB_HOST=${TEST_DB_HOST} >> .env.dev
-          echo DB_PORT=${TEST_DB_PORT} >> .env.dev
-          echo SECRET_KEY=${SECRET_KEY} >> .env.dev
-          echo DEBUG=${TEST_DEBUG} >> .env.dev
-          echo ALLOWED_HOSTS=${TEST_ALLOWED_HOSTS} >> .env.dev
-          echo POSTGRES_PASSWORD=${TEST_POSTGRES_PASSWORD} >> .env.dev
-          echo POSTGRES_USER=${TEST_POSTGRES_USER} >> .env.dev
-          echo POSTGRES_DB=${TEST_POSTGRES_DB} >> .env.dev
+          echo "DB_ENGINE=${secrets.TEST_DB_ENGINE}" >> .env.dev
+          echo "DB_NAME=${secrets.TEST_DB_NAME}" >> .env.dev
+          echo "DB_USER=${secrets.TEST_DB_USER}" >> .env.dev
+          echo "DB_PASSWORD=${secrets.TEST_DB_PASSWORD}" >> .env.dev
+          echo "DB_HOST=${secrets.TEST_DB_HOST}" >> .env.dev
+          echo "DB_PORT=${secrets.TEST_DB_PORT}" >> .env.dev
+          echo "SECRET_KEY=${secrets.SECRET_KEY}" >> .env.dev
+          echo "DEBUG=${secrets.TEST_DEBUG}" >> .env.dev
+          echo "ALLOWED_HOSTS=${secrets.TEST_ALLOWED_HOSTS}" >> .env.dev
+          echo "POSTGRES_PASSWORD=${secrets.TEST_POSTGRES_PASSWORD}" >> .env.dev
+          echo "POSTGRES_USER=${secrets.TEST_POSTGRES_USER}" >> .env.dev
+          echo "POSTGRES_DB=${secrets.TEST_POSTGRES_DB}" >> .env.dev
 
       - name: Set up Docker Compose
         run: docker-compose -f docker-compose.yml up -d --build
