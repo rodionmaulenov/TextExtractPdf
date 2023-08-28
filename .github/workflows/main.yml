@@ -79,11 +79,11 @@ jobs:
 
       - name: Set up PostgreSQL
         env:
-          DB_NAME: ${{ secrets.TEST_DB_NAME }}
-          DB_USER: ${{ secrets.TEST_DB_USER }}
-          DB_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
-          DB_HOST: ${{ secrets.TEST_DB_HOST }}
-          DB_PORT: ${{ secrets.TEST_DB_PORT }}
+          DB_NAME: 'popanegra2'
+          DB_USER: 'popanegra3'
+          DB_PASSWORD: 'popanegra4'
+          DB_HOST: 'localhost'
+          DB_PORT: '5432'
         run: |
           cd ./work_dir
           python manage.py migrate
