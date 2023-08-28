@@ -84,11 +84,11 @@ jobs:
           echo "POSTGRES_USER=${TEST_POSTGRES_USER}" >> .env.dev
           echo "POSTGRES_DB=${TEST_POSTGRES_DB}" >> .env.dev
 
-      - name: Set up Docker Compose
-        run: docker-compose -f docker-compose.yml build
+      - name: Build Docker Compose
+        run: docker-compose -f docker-compose.yml up -d --build
 
-      - name: Set up Docker Compose
-        run: docker-compose -f docker-compose.yml up
+      - name: Migrate Docker Compose
+        run: docker-compose -f docker-compose.yml run --rm develop_extract_text python migrate
 
       - name: Run tests using Docker Compose
         run: docker-compose -f docker-compose.yml run --rm develop_extract_text python manage.py test
