@@ -9,21 +9,13 @@ jobs:
     name: Run Tests
     runs-on: ubuntu-latest
 
-    env:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_HOST: localhost
-      POSTGRES_DB: djtesting
-      POSTGRES_PORT: 5432
-      DJANGO_SECRET_KEY: test-key-not-good
-
     services:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+          POSTGRES_USER: yourdbuser
+          POSTGRES_PASSWORD: yourdbpassword
+          POSTGRES_DB: yourdbname
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
@@ -53,12 +45,7 @@ jobs:
       - name: Run Tests
         env:
           DEBUG: "1"
-          DJANGO_SECRET_KEY: ${{ env.DJANGO_SECRET_KEY }}
-          DB_USER: ${{ env.POSTGRES_USER }}
-          DB_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-          DB_HOST: ${{ env.POSTGRES_HOST }}
-          DB_NAME: ${{ env.POSTGRES_DB }}
-          DB_PORT: ${{ env.POSTGRES_PORT }}
+          DJANGO_SECRET_KEY: 'django-insecure-fy!otfu*^lbwn_%vav4rw+d$8%4afj4j5rme&$(&eh$8jh4nea'
         run: |
           cd ./work_dir
           python manage.py test
