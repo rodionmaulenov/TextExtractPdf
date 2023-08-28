@@ -32,18 +32,18 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          cd /work_dir
+          cd ./work_dir
           python -m pip install --upgrade pip
           pip install -r requirements.txt  # Replace with your requirements file
 
       - name: Set up PostgreSQL
         run: |
           # Perform migrations and create the database schema
-          cd /work_dir
+          cd ./work_dir
           python manage.py makemigrations
           python manage.py migrate
 
       - name: Run Tests
         run: |
-          cd /work_dir
+          cd ./work_dir
           python manage.py test
