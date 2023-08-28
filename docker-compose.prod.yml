@@ -12,8 +12,8 @@ services:
   extract_text:
     container_name: extract_text
     volumes:
-      - ./data/static:/var/www/static
-      - ./data/media:/var/www/media
+      - ./data/static:/home/app/web/static
+      - ./data/media:/home/app/web/media
     build:
       context: ./work_dir
       dockerfile: Dockerfileprod
@@ -35,8 +35,8 @@ services:
       context: ./nginx
       dockerfile: Dockerfile
     volumes:
-      - ./data/static:/var/www/static
-      - ./data/media:/var/www/media
+      - ./data/static:/home/app/web/static
+      - ./data/media:/home/app/web/media
     ports:
       - 1337:80
     depends_on:
