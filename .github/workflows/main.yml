@@ -82,7 +82,7 @@ jobs:
           DB_NAME: 'popanegra2'
           DB_USER: 'popanegra3'
           DB_PASSWORD: 'popanegra4'
-          DB_HOST: '0.0.0.0'
+          DB_HOST: 'localhost'
           DB_PORT: '5432'
         run: |
           cd ./work_dir
