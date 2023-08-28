@@ -30,6 +30,10 @@ jobs:
         with:
           python-version: 3.11  # Use the appropriate Python version
 
+      - name: Set up environment
+        run: |
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
+
       - name: Install Dependencies
         run: |
           cd ./work_dir
