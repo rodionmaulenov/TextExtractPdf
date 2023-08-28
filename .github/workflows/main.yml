@@ -87,7 +87,6 @@ jobs:
         run: |
           # Perform migrations and create the database schema
           cd ./work_dir
-          python manage.py makemigrations
           python manage.py migrate
 
       - name: Run Tests
