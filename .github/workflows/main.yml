@@ -1,24 +1,66 @@
+#name: Django Tests
+#
+#on:
+#  push:
+#    branches:
+#      - main
+#jobs:
+#  test:
+#    name: Run Tests
+#    runs-on: ubuntu-latest
+#
+#    services:
+#      postgres:
+#        image: postgres:latest
+#        env:
+#          POSTGRES_USER: yourdbuser
+#          POSTGRES_PASSWORD: yourdbpassword
+#          POSTGRES_DB: yourdbname
+#        ports:
+#          - 5432:5432
+#        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+#
+#    steps:
+#      - name: Checkout Repository
+#        uses: actions/checkout@v2
+#
+#      - name: Set up Python
+#        uses: actions/setup-python@v2
+#        with:
+#          python-version: 3.11
+#
+#      - name: Install Dependencies
+#        run: |
+#          cd ./work_dir
+#          python -m pip install --upgrade pip
+#          pip install -r requirements.txt  # Replace with your requirements file
+#
+#      - name: Set up PostgreSQL
+#        run: |
+#          # Perform migrations and create the database schema
+#          cd ./work_dir
+#          python manage.py makemigrations
+#          python manage.py migrate
+#
+#      - name: Run Tests
+#        env:
+#          DEBUG: "1"
+#          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+#        run: |
+#          cd ./work_dir
+#          python manage.py test
+
 name: Django Tests
 
 on:
   push:
     branches:
       - main
+
 jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:latest
-        env:
-          POSTGRES_USER: yourdbuser
-          POSTGRES_PASSWORD: yourdbpassword
-          POSTGRES_DB: yourdbname
-        ports:
-          - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
       - name: Checkout Repository
@@ -49,50 +91,3 @@ jobs:
         run: |
           cd ./work_dir
           python manage.py test
-
-#name: Django Tests
-#
-#on:
-#  push:
-#    branches:
-#      - main
-#jobs:
-#  test:
-#    name: Run Tests
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Set up PostgreSQL environment variables
-#        run: |
-#          echo "POSTGRES_USER=${{ secrets.TEST_DB_USER }}" >> $GITHUB_ENV
-#          echo "POSTGRES_PASSWORD=${{ secrets.TEST_DB_PASSWORD }}" >> $GITHUB_ENV
-#          echo "POSTGRES_DB=${{ secrets.TEST_DB_NAME }}" >> $GITHUB_ENV
-#
-#      - name: Checkout Repository
-#        uses: actions/checkout@v2
-#
-#      - name: Set up Python
-#        uses: actions/setup-python@v2
-#        with:
-#          python-version: 3.11  # Use the appropriate Python version
-#
-#      - name: Install Dependencies
-#        run: |
-#          cd ./work_dir
-#          python -m pip install --upgrade pip
-#          pip install -r requirements.txt  # Replace with your requirements file
-#
-#      - name: Set up PostgreSQL
-#        run: |
-#          # Perform migrations and create the database schema
-#          cd ./work_dir
-#          python manage.py makemigrations
-#          python manage.py migrate
-#
-#      - name: Run Tests
-#        env:
-#          DEBUG: ${{ secrets.TEST_DEBUG }}
-#          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-#        run: |
-#          cd ./work_dir
-#          python manage.py test
