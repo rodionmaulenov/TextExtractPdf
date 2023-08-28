@@ -54,15 +54,6 @@ jobs:
       - name: Checkout repository code
         uses: actions/checkout@v2
 
-      - name: Set up Docker Compose
-        run: docker-compose -f docker-compose.yml build
-
-      - name: Start services with Docker Compose
-        run: docker-compose -f docker-compose.yml up -d
-
-      - name: Wait for services to be ready
-        run: docker-compose -f docker-compose.yml run --rm develop_extract_text bash -c "while ! nc -z db_postgres 5432; do sleep 1; done"
-
       - name: Set up environment variables
         run: |
           echo DB_ENGINE=${DB_ENGINE} >> .env.dev
@@ -77,7 +68,15 @@ jobs:
           echo POSTGRES_PASSWORD=${POSTGRES_PASSWORD} >> .env.dev
           echo POSTGRES_USER=${POSTGRES_USER} >> .env.dev
           echo POSTGRES_DB=${POSTGRES_DB} >> .env.dev
-          
+
+      - name: Set up Docker Compose
+        run: docker-compose -f docker-compose.yml build
+
+      - name: Start services with Docker Compose
+        run: docker-compose -f docker-compose.yml up -d
+
+      - name: Wait for services to be ready
+        run: docker-compose -f docker-compose.yml run --rm develop_extract_text bash -c "while ! nc -z db_postgres 5432; do sleep 1; done"
 
       - name: Run tests using Docker Compose
         run: docker-compose -f docker-compose.yml run --rm develop_extract_text python manage.py test
