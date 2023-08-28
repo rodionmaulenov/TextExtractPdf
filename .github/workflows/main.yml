@@ -71,13 +71,10 @@ jobs:
           echo POSTGRES_DB=${TEST_POSTGRES_DB} >> .env.dev
 
       - name: Set up Docker Compose
-        run: docker-compose -f docker-compose.yml build
-
-      - name: Start services with Docker Compose
-        run: docker-compose -f docker-compose.yml up -d
+        run: docker-compose -f docker-compose.yml up -d --build
 
       - name: Run tests using Docker Compose
         run: docker-compose -f docker-compose.yml run --rm develop_extract_text python manage.py test
 
       - name: Stop services
-        run: docker-compose -f docker-compose.yml down
+        run: docker-compose -f docker-compose.yml down -v
