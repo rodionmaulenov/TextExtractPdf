@@ -1,0 +1,103 @@
+name: Django Tests
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./work_dir
+
+    env:
+      SECRET_KEY: 'not-good-idea'
+      DB_NAME: 'popanegra2'
+      DB_USER: 'popanegra3'
+      DB_PASSWORD: 'popanegra4'
+      DB_HOST: 'localhost'
+      DB_PORT: '5432'
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: ${{ env.DB_USER }}
+          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
+          POSTGRES_DB: ${{ env.DB_NAME }}
+        ports:
+          - 5432:5432
+        options:
+          --health-cmd pg_isready
+          --health-interval 10s 
+          --health-timeout 5s 
+          --health-retries 5
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt  # Replace with your requirements file
+
+      - name: Run Tests
+        run: |
+          python manage.py test
+
+#name: Django Tests
+#
+#on:
+#  push:
+#    branches:
+#      - main
+#
+#jobs:
+#  test:
+#    name: Run Tests
+#    runs-on: ubuntu-latest
+#    defaults:
+#      run:
+#        working-directory: ./work_dir
+#
+#    steps:
+#      - name: Checkout Repository
+#        uses: actions/checkout@v2
+#
+#      - name: Set up Python
+#        uses: actions/setup-python@v2
+#        with:
+#          python-version: 3.11
+#
+#      - name: Install Dependencies
+#        run: |
+#          cd ./work_dir
+#          python -m pip install --upgrade pip
+#          pip install -r requirements.txt  # Replace with your requirements file
+#
+#      - name: Set up PostgreSQL
+#        env:
+#          DB_NAME: 'popanegra2'
+#          DB_USER: 'popanegra3'
+#          DB_PASSWORD: 'popanegra4'
+#          DB_HOST: 'localhost'
+#          DB_PORT: '5432'
+#        run: |
+#          cd ./work_dir
+#          python manage.py migrate
+#
+#      - name: Run Tests
+#        env:
+#          DEBUG: "1"
+#          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+#        run: |
+#          cd ./work_dir
+#          python manage.py test
