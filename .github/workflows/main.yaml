@@ -13,12 +13,12 @@ jobs:
         working-directory: ./work_dir
 
     env:
-      SECRET_KEY: 'not-good-idea'
-      DB_NAME: 'popanegra2'
-      DB_USER: 'popanegra3'
-      DB_PASSWORD: 'popanegra4'
-      DB_HOST: 'localhost'
-      DB_PORT: '5432'
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DB_NAME: ${{ secrets.TEST_DB_NAME }}
+      DB_USER: ${{ secrets.TEST_DB_USER }}
+      DB_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
+      DB_HOST: ${{ secrets.TEST_DB_HOST }}
+      DB_PORT: ${{ secrets.TEST_DB_PORT }}
 
     services:
       postgres:
