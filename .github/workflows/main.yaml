@@ -38,8 +38,8 @@ jobs:
           - 5432:5432
         options:
           --health-cmd pg_isready
-          --health-interval 10s 
-          --health-timeout 5s 
+          --health-interval 10s
+          --health-timeout 5s
           --health-retries 5
 
     steps:
@@ -72,22 +72,22 @@ jobs:
       - name: Create .env file
         uses: ozaytsev86/create-env-file@v1
         with:
-            INPUT_ENV_DEBUG: ${{ secrets.DEBUG }}
-            INPUT_ENV_SECRET_KEY: ${{ secrets.SECRET_KEY }}
-            INPUT_ENV_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
-            INPUT_ENV_CSRF_TRUSTED_ORIGINS: ${{ secrets.CSRF_TRUSTED_ORIGINS }}
-            INPUT_ENV_VIRTUAL_HOST: ${{ secrets.VIRTUAL_HOST }}
-            INPUT_ENV_LETSENCRYPT_HOST: ${{ secrets.LETSENCRYPT_HOST }}
-            INPUT_ENV_SQL_DATABASE: ${{ secrets.SQL_DATABASE }}
-            INPUT_ENV_SQL_USER: ${{ secrets.SQL_USER }}
-            INPUT_ENV_SQL_HOST: ${{ secrets.SQL_HOST }}
-            INPUT_ENV_SQL_PORT: ${{ secrets.SQL_PORT }}
-            INPUT_ENV_SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
-            INPUT_ENV_POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-            INPUT_ENV_POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-            INPUT_ENV_POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-            INPUT_ENV_DEFAULT_EMAIL: ${{ secrets.DEFAULT_EMAIL }}
-            INPUT_ENV_NGINX_PROXY_CONTAINER: ${{ secrets.NGINX_PROXY_CONTAINER }}
+          INPUT_ENV_DEBUG: ${{ secrets.DEBUG }}
+          INPUT_ENV_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          INPUT_ENV_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+          INPUT_ENV_CSRF_TRUSTED_ORIGINS: ${{ secrets.CSRF_TRUSTED_ORIGINS }}
+          INPUT_ENV_VIRTUAL_HOST: ${{ secrets.VIRTUAL_HOST }}
+          INPUT_ENV_LETSENCRYPT_HOST: ${{ secrets.LETSENCRYPT_HOST }}
+          INPUT_ENV_SQL_DATABASE: ${{ secrets.SQL_DATABASE }}
+          INPUT_ENV_SQL_USER: ${{ secrets.SQL_USER }}
+          INPUT_ENV_SQL_HOST: ${{ secrets.SQL_HOST }}
+          INPUT_ENV_SQL_PORT: ${{ secrets.SQL_PORT }}
+          INPUT_ENV_SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
+          INPUT_ENV_POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          INPUT_ENV_POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          INPUT_ENV_POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          INPUT_ENV_DEFAULT_EMAIL: ${{ secrets.DEFAULT_EMAIL }}
+          INPUT_ENV_NGINX_PROXY_CONTAINER: ${{ secrets.NGINX_PROXY_CONTAINER }}
 
       - name: Set environment variables
         run: |
@@ -115,4 +115,57 @@ jobs:
           docker push ${{ env.APP_IMAGE }}
           docker push ${{ env.NGINX_IMAGE }}
           docker push ${{ env.ACME_IMAGE }}
+
+  deploy:
+    name: Deploy to DigitalOcean
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@v1
+
+      - name: Add environment variables to .env
+        uses: ozaytsev86/create-env-file@v1
+        with:
+          INPUT_ENV_DEBUG: ${{ secrets.DEBUG }}
+          INPUT_ENV_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          INPUT_ENV_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+          INPUT_ENV_CSRF_TRUSTED_ORIGINS: ${{ secrets.CSRF_TRUSTED_ORIGINS }}
+          INPUT_ENV_VIRTUAL_HOST: ${{ secrets.VIRTUAL_HOST }}
+          INPUT_ENV_LETSENCRYPT_HOST: ${{ secrets.LETSENCRYPT_HOST }}
+          INPUT_ENV_SQL_DATABASE: ${{ secrets.SQL_DATABASE }}
+          INPUT_ENV_SQL_USER: ${{ secrets.SQL_USER }}
+          INPUT_ENV_SQL_HOST: ${{ secrets.SQL_HOST }}
+          INPUT_ENV_SQL_PORT: ${{ secrets.SQL_PORT }}
+          INPUT_ENV_SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
+          INPUT_ENV_POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          INPUT_ENV_POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          INPUT_ENV_POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          INPUT_ENV_DEFAULT_EMAIL: ${{ secrets.DEFAULT_EMAIL }}
+          INPUT_ENV_NGINX_PROXY_CONTAINER: ${{ secrets.NGINX_PROXY_CONTAINER }}
+
+      - name: Add the private SSH key to the ssh-agent
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          mkdir -p ~/.ssh
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          ssh-add - <<< "${{ secrets.PRIVATE_KEY }}"
+
+      - name: Build and deploy images on DigitalOcean
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          scp  -o StrictHostKeyChecking=no -r ./.env ./work_dir ./acme_companion ./nginx ./docker-compose.prod.yml root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/TEXT_EXTRACT_PDF
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} << 'ENDSSH'
+              cd /home/rodion/TEXT_EXTRACT_PDF
+              source .env
+              docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
+              docker pull $APP_IMAGE
+              docker pull $NGINX_IMAGE
+              docker pull $ACME_IMAGE
+              docker-compose -f docker-compose.prod.yml up -d
+          ENDSSH
           
