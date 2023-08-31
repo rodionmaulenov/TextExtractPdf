@@ -107,7 +107,7 @@ jobs:
 
       - name: Push images
         run: |
-          docker ${{ env.APP_IMAGE }}:latest push
-          docker ${{ env.NGINX_IMAGE }}:latest push
-          docker ${{ env.ACME_IMAGE }}:latest push
+          docker "${{ env.APP_IMAGE }}:latest" push
+          docker "${{ env.NGINX_IMAGE }}:latest" push
+          docker "${{ env.ACME_IMAGE }}:latest" push
           
