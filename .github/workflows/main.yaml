@@ -161,6 +161,7 @@ jobs:
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            scp -T -o StrictHostKeyChecking=no -r ./.env ./work_dir ./acme_companion ./nginx ./docker-compose.prod.yml root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/home/rodion/TEXT_EXTRACT_PDF
             cd /home/rodion/TEXT_EXTRACT_PDF
             source .env
             docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
@@ -174,9 +175,7 @@ jobs:
 #          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 #        run: |
 #          scp -T -o StrictHostKeyChecking=no -r ./.env ./work_dir ./acme_companion ./nginx ./docker-compose.prod.yml root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/home/rodion/TEXT_EXTRACT_PDF
-#          ssh -o StrictHostKeyChecking=no root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} << 'ENDSSH'
-#              apt update
-#              apt upgrade
+#          ssh -T -o StrictHostKeyChecking=no root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} << 'ENDSSH'
 #              cd /home/rodion/TEXT_EXTRACT_PDF
 #              source .env
 #              docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
