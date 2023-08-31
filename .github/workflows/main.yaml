@@ -154,18 +154,35 @@ jobs:
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           ssh-add - <<< "${{ secrets.PRIVATE_KEY }}"
 
-      - name: Build and deploy images on DigitalOcean
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: |
-          scp -T -o StrictHostKeyChecking=no -r ./.env ./work_dir ./acme_companion ./nginx ./docker-compose.prod.yml root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/home/rodion/TEXT_EXTRACT_PDF
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} << 'ENDSSH'
-              cd /home/rodion/TEXT_EXTRACT_PDF
-              source .env
-              docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
-              docker pull $APP_IMAGE
-              docker pull $NGINX_IMAGE
-              docker pull $ACME_IMAGE
-              docker-compose -f docker-compose.prod.yml up -d
-          ENDSSH
+      - name: Deploy using SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/rodion/TEXT_EXTRACT_PDF
+            source .env
+            docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
+            docker pull $APP_IMAGE
+            docker pull $NGINX_IMAGE
+            docker pull $ACME_IMAGE
+            docker-compose -f docker-compose.prod.yml up -d
+
+#      - name: Build and deploy images on DigitalOcean
+#        env:
+#          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+#        run: |
+#          scp -T -o StrictHostKeyChecking=no -r ./.env ./work_dir ./acme_companion ./nginx ./docker-compose.prod.yml root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/home/rodion/TEXT_EXTRACT_PDF
+#          ssh -o StrictHostKeyChecking=no root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} << 'ENDSSH'
+#              apt update
+#              apt upgrade
+#              cd /home/rodion/TEXT_EXTRACT_PDF
+#              source .env
+#              docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
+#              docker pull $APP_IMAGE
+#              docker pull $NGINX_IMAGE
+#              docker pull $ACME_IMAGE
+#              docker-compose -f docker-compose.prod.yml up -d
+#          ENDSSH
           
