@@ -145,6 +145,12 @@ jobs:
           INPUT_ENV_DEFAULT_EMAIL: ${{ secrets.DEFAULT_EMAIL }}
           INPUT_ENV_NGINX_PROXY_CONTAINER: ${{ secrets.NGINX_PROXY_CONTAINER }}
 
+          INPUT_ENV_APP_IMAGE: ${{ env.APP_IMAGE }} >> .env
+          INPUT_ENV_NGINX_IMAGE: ${{ env.NGINX_IMAGE }} >> .env
+          INPUT_ENV_ACME_IMAGE: ${{ env.ACME_IMAGE }} >> .env
+          INPUT_ENV_NAMESPACE: ${{ secrets.NAMESPACE }} >> .env
+          INPUT_ENV_PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .env
+
       - name: Add the private SSH key to the ssh-agent
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -159,7 +165,6 @@ jobs:
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
-          export PATH="$PATH:/home/rodion/.docker/cli-plugins"
           scp -T -o StrictHostKeyChecking=no -r ./.env \
                 ./work_dir \
                 ./acme_companion \
@@ -170,9 +175,9 @@ jobs:
               cd /home/rodion/TEXT_EXTRACT_PDF
               source .env
               docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
-              docker pull ${{ env.APP_IMAGE }}
-              docker pull ${{ env.NGINX_IMAGE }}
-              docker pull ${{ env.ACME_IMAGE }}
+              docker pull $APP_IMAGE
+              docker pull $NGINX_IMAGE
+              docker pull $env.ACME_IMAGE
               docker-compose -f docker-compose.prod.yml up -d
           ENDSSH
           
