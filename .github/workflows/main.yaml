@@ -158,7 +158,7 @@ jobs:
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
-          scp  -o StrictHostKeyChecking=no -r ./.env ./work_dir ./acme_companion ./nginx ./docker-compose.prod.yml root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/TEXT_EXTRACT_PDF
+          scp  -o StrictHostKeyChecking=no -r ./.env ./work_dir ./acme_companion ./nginx ./docker-compose.prod.yml root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/home/rodion/TEXT_EXTRACT_PDF
           ssh -o StrictHostKeyChecking=no root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} << 'ENDSSH'
               cd /home/rodion/TEXT_EXTRACT_PDF
               source .env
