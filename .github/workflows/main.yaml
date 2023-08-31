@@ -150,6 +150,12 @@ jobs:
           INPUT_ENV_NAMESPACE: ${{ secrets.NAMESPACE }} >> .env
           INPUT_ENV_PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .env
 
+      - name: Set environment variables
+        run: |
+          echo "APP_IMAGE=$(echo ${{ env.APP_IMAGE }} )" >> $GITHUB_ENV
+          echo "ACME_IMAGE=$(echo ${{ env.NGINX_IMAGE }} )" >> $GITHUB_ENV
+          echo "NGINX_IMAGE=$(echo ${{ env.ACME_IMAGE }} )" >> $GITHUB_ENV
+
       - name: Add the private SSH key to the ssh-agent
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
