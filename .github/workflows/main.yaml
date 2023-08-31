@@ -166,7 +166,7 @@ jobs:
                 ./nginx \
               ./docker-compose.prod.yml \
               root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/home/rodion/TEXT_EXTRACT_PDF
-          ssh -T -o StrictHostKeyChecking=no root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} << 'ENDSSH'
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} << 'ENDSSH'
               cd /home/rodion/TEXT_EXTRACT_PDF
               source .env
               docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
