@@ -15,6 +15,7 @@ jobs:
 
     env:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      CSRF_TRUSTED_ORIGINS: ${{ secrets.CSRF_TRUSTED_ORIGINS }}
       SQL_NAME: ${{ secrets.TEST_DB_NAME }}
       SQL_USER: ${{ secrets.TEST_DB_USER }}
       SQL_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
