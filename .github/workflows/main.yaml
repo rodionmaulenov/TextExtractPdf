@@ -144,7 +144,6 @@ jobs:
           INPUT_ENV_POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           INPUT_ENV_DEFAULT_EMAIL: ${{ secrets.DEFAULT_EMAIL }}
           INPUT_ENV_NGINX_PROXY_CONTAINER: ${{ secrets.NGINX_PROXY_CONTAINER }}
-
           INPUT_ENV_APP_IMAGE: ${{ env.APP_IMAGE }} >> .env
           INPUT_ENV_NGINX_IMAGE: ${{ env.NGINX_IMAGE }} >> .env
           INPUT_ENV_ACME_IMAGE: ${{ env.ACME_IMAGE }} >> .env
