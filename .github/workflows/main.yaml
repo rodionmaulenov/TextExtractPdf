@@ -144,9 +144,6 @@ jobs:
           INPUT_ENV_POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           INPUT_ENV_DEFAULT_EMAIL: ${{ secrets.DEFAULT_EMAIL }}
           INPUT_ENV_NGINX_PROXY_CONTAINER: ${{ secrets.NGINX_PROXY_CONTAINER }}
-          INPUT_ENV_APP_IMAGE: ${{ env.APP_IMAGE }} >> .env
-          INPUT_ENV_NGINX_IMAGE: ${{ env.NGINX_IMAGE }} >> .env
-          INPUT_ENV_ACME_IMAGE: ${{ env.ACME_IMAGE }} >> .env
           INPUT_ENV_NAMESPACE: ${{ secrets.NAMESPACE }} >> .env
           INPUT_ENV_PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .env
 
@@ -180,9 +177,9 @@ jobs:
               cd /home/rodion/TEXT_EXTRACT_PDF
               source .env
               docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
-              docker pull $APP_IMAGE
-              docker pull $NGINX_IMAGE
-              docker pull $env.ACME_IMAGE
+              docker pull ${{ env.APP_IMAGE }} 
+              docker pull ${{ env.NGINX_IMAGE }} 
+              docker pull ${{ env.ACME_IMAGE }} 
               docker-compose -f docker-compose.prod.yml up -d
           ENDSSH
           
