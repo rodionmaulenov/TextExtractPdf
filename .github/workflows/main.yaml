@@ -72,6 +72,7 @@ jobs:
       - name: Create .env file
         uses: ozaytsev86/create-env-file@v1
         with:
+          file-name: .env
           INPUT_ENV_DEBUG: ${{ secrets.DEBUG }}
           INPUT_ENV_SECRET_KEY: ${{ secrets.SECRET_KEY }}
           INPUT_ENV_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
@@ -128,6 +129,7 @@ jobs:
       - name: Add environment variables to .env
         uses: ozaytsev86/create-env-file@v1
         with:
+          file-name: .env
           INPUT_ENV_DEBUG: ${{ secrets.DEBUG }}
           INPUT_ENV_SECRET_KEY: ${{ secrets.SECRET_KEY }}
           INPUT_ENV_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
@@ -144,14 +146,11 @@ jobs:
           INPUT_ENV_POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           INPUT_ENV_DEFAULT_EMAIL: ${{ secrets.DEFAULT_EMAIL }}
           INPUT_ENV_NGINX_PROXY_CONTAINER: ${{ secrets.NGINX_PROXY_CONTAINER }}
-          INPUT_ENV_NAMESPACE: ${{ secrets.NAMESPACE }} >> .env
-          INPUT_ENV_PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .env
-
-      - name: Set environment variables
-        run: |
-          echo "APP_IMAGE=$(echo ${{ env.APP_IMAGE }} )" >> $GITHUB_ENV
-          echo "ACME_IMAGE=$(echo ${{ env.NGINX_IMAGE }} )" >> $GITHUB_ENV
-          echo "NGINX_IMAGE=$(echo ${{ env.ACME_IMAGE }} )" >> $GITHUB_ENV
+          INPUT_ENV_APP_IMAGE: ${{ env.APP_IMAGE }}
+          INPUT_ENV_NGINX_IMAGE: ${{ env.NGINX_IMAGE }}
+          INPUT_ENV_ACME_IMAGE: ${{ env.ACME_IMAGE }}
+          INPUT_ENV_NAMESPACE: ${{ secrets.NAMESPACE }}
+          INPUT_ENV_PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: Add the private SSH key to the ssh-agent
         env:
@@ -177,9 +176,9 @@ jobs:
               cd /home/rodion/TEXT_EXTRACT_PDF
               source .env
               docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
-              docker pull ${{ env.APP_IMAGE }} 
-              docker pull ${{ env.NGINX_IMAGE }} 
-              docker pull ${{ env.ACME_IMAGE }} 
+              docker pull $APP_IMAGE
+              docker pull $NGINX_IMAGE
+              docker pull $env.ACME_IMAGE
               docker-compose -f docker-compose.prod.yml up -d
           ENDSSH
           
