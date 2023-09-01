@@ -186,6 +186,8 @@ jobs:
               source .env
               echo ${{ env.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ env.NAMESPACE }} --password-stdin
               docker pull ghcr.io/rodionmaulenov/textextractpdf/text_extract 
+              docker pull ghcr.io/rodionmaulenov/textextractpdf/nginx 
+              docker pull ghcr.io/rodionmaulenov/textextractpdf/acme 
 
               docker-compose -f docker-compose.prod.yml up -d
 
