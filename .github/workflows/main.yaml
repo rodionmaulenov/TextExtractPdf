@@ -164,34 +164,52 @@ jobs:
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           ssh-add - <<< "${{ secrets.PRIVATE_KEY }}"
 
-      - name: Print APP_IMAGE
-        run: echo "APP_IMAGE=${APP_IMAGE}"
-
-      - name: Print NGINX_IMAGE
-        run: echo "NGINX_IMAGE=${NGINX_IMAGE}"
-
-      - name: Print ACME_IMAGE
-        run: echo "ACME_IMAGE=${ACME_IMAGE}"
-
-
-
-      - name: Build and deploy images on DigitalOcean
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+      - name: Copy Files to DigitalOcean
         run: |
-          scp -T -o StrictHostKeyChecking=no -r ./.env \
-                ./work_dir \
-                ./acme_companion \
-                ./nginx \
-              ./docker-compose.prod.yml \
-              root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/home/rodion/TEXT_EXTRACT_PDF
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} << 'ENDSSH'
-              cd /home/rodion/TEXT_EXTRACT_PDF
-              source .env
-              docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
-              docker pull $APP_IMAGE
-              docker pull $NGINX_IMAGE
-              docker pull $env.ACME_IMAGE
-              docker-compose -f docker-compose.prod.yml up -d
-          ENDSSH
-          
+          scp -o StrictHostKeyChecking=no \
+            .env \
+            deploy.sh \
+            ./acme_companion \
+            ./nginx \
+            ./docker-compose.prod.yml \
+            root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/home/rodion/TEXT_EXTRACT_PDF
+      
+
+      - name: SSH into DigitalOcean
+        id: ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}
+          username: root
+          key: ${{ secrets.PRIVATE_KEY }}
+          script: |
+            chmod +x /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
+            /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
+
+      - name: Check Deployment Status
+        run: |
+          echo "Exit status: ${{ steps.ssh.outputs.status }}"
+        if: steps.ssh.outputs.status == 0
+
+
+
+#      - name: Build and deploy images on DigitalOcean
+#        env:
+#          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+#        run: |
+#          scp -T -o StrictHostKeyChecking=no -r ./.env \
+#                ./work_dir \
+#                ./acme_companion \
+#                ./nginx \
+#              ./docker-compose.prod.yml \
+#              root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/home/rodion/TEXT_EXTRACT_PDF
+#          ssh -o StrictHostKeyChecking=no root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} << 'ENDSSH'
+#              cd /home/rodion/TEXT_EXTRACT_PDF
+#              source .env
+#              docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
+#              docker pull $APP_IMAGE
+#              docker pull $NGINX_IMAGE
+#              docker pull $env.ACME_IMAGE
+#              docker-compose -f docker-compose.prod.yml up -d
+#          ENDSSH
+
