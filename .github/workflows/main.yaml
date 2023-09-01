@@ -162,7 +162,7 @@ jobs:
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
-          username: root
+          username: rodion
           key: ${{ env.PRIVATE_KEY }}
           source: "./acme_companion, .env, ./nginx, ./docker-compose.prod.yml"
           target: /home/rodion/TEXT_EXTRACT_PDF
