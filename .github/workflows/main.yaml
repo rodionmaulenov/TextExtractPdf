@@ -50,25 +50,16 @@ jobs:
           envkey_NAMESPACE: ${{ secrets.NAMESPACE }}
           envkey_PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
-      - name: Debug Environment Variables
-        run: |
-          echo "DIGITAL_OCEAN_IP_ADDRESS: $DIGITAL_OCEAN_IP_ADDRESS"
-          echo "PRIVATE_KEY: $PRIVATE_KEY"
-          echo "Contents of PRIVATE_KEY:"
-          echo "$PRIVATE_KEY"
-        env:
-          DIGITAL_OCEAN_IP_ADDRESS: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
 
-
-      - name: Copy single file to remote
-        uses: garygrossgarten/github-action-scp@release
+      - name: SSH into DigitalOcean
+        id: ssh
+        uses: appleboy/ssh-action@master
         with:
-          local: ./deploy.sh
-          remote: /home/rodion/TEXT_EXTRACT_PDF
           host: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
           username: root
-          key: ${{ env.PRIVATE_KEY }}
+          privateKey: ${{ env.PRIVATE_KEY }}
+          source: "./deploy.sh"
+          target: /home/rodion/TEXT_EXTRACT_PDF
 
       - name: SSH into DigitalOcean
         id: ssh
