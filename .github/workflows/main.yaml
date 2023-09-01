@@ -50,6 +50,17 @@ jobs:
           envkey_NAMESPACE: ${{ secrets.NAMESPACE }}
           envkey_PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
+      - name: Debug Environment Variables
+        run: |
+          echo "DIGITAL_OCEAN_IP_ADDRESS: $DIGITAL_OCEAN_IP_ADDRESS"
+          echo "PRIVATE_KEY: $PRIVATE_KEY"
+          echo "Contents of PRIVATE_KEY:"
+          echo "$PRIVATE_KEY"
+        env:
+          DIGITAL_OCEAN_IP_ADDRESS: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+
+
       - name: Copy single file to remote
         uses: garygrossgarten/github-action-scp@release
         with:
