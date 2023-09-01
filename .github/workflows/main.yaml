@@ -61,13 +61,13 @@ jobs:
           source: "./deploy.sh"
           target: /home/rodion/TEXT_EXTRACT_PDF
 
-      - name: SSH into DigitalOcean
-        id: ssh
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
-          username: root
-          privateKey: ${{ env.PRIVATE_KEY }}
+#      - name: SSH into DigitalOcean
+#        id: ssh
+#        uses: appleboy/ssh-action@master
+#        with:
+#          host: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
+#          username: root
+#          privateKey: ${{ env.PRIVATE_KEY }}
 #          script: |
 #            scp -o StrictHostKeyChecking=no \
 #              -i ${{ env.PRIVATE_KEY }} \
