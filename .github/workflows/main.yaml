@@ -32,6 +32,7 @@ jobs:
 
     - name: Print ACME_IMAGE
       run: echo "ACME_IMAGE=${{ env.ACME_IMAGE }}"
+
   test:
     name: Run Tests
     runs-on: ubuntu-latest
