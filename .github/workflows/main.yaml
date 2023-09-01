@@ -184,9 +184,10 @@ jobs:
               
               source .env
               echo ${{ env.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ env.NAMESPACE }} --password-stdin
-              docker pull $APP_IMAGE
-              docker pull $NGINX_IMAGE
-              docker pull $ACME_IMAGE
+              docker pull ${{ env.APP_IMAGE }}
+              docker pull ${{ env.NGINX_IMAGE }}
+              docker pull ${{ env.ACME_IMAGE }}
+
               docker-compose -f docker-compose.prod.yml up -d
 
 
