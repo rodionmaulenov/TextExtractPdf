@@ -2,7 +2,7 @@
 set -e
 
 # Navigate to the project directory
-cd /path/to/your/project
+cd /home/rodion/TEXT_EXTRACT_PDF
 
 # Source environment variables
 source .env
