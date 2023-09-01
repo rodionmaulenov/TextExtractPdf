@@ -12,7 +12,7 @@ services:
 
 
   extract_text:
-    image: ghcr.io/rodionmaulenov/textextractpdf/text_extract
+    image: "${APP_IMAGE}"
     restart: always
     container_name: extract_text
     volumes:
@@ -33,7 +33,7 @@ services:
 
   nginx_proxy:
     container_name: nginx_proxy
-    image: ghcr.io/rodionmaulenov/textextractpdf/nginx
+    image: "${NGINX_IMAGE}"
     restart: always
     volumes:
       - static_volume:/home/app/web/static
@@ -50,7 +50,7 @@ services:
 
   acme_companion:
     container_name: acme_companion
-    image: ghcr.io/rodionmaulenov/textextractpdf/acme
+    image: "${ACME_IMAGE}"
     env_file:
       - .env
     volumes:
