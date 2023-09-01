@@ -51,35 +51,26 @@ jobs:
           envkey_PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
 
-      - name: SSH into DigitalOcean
+      - name: Copy files into DigitalOcean
         id: ssh
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
           username: root
           key: ${{ env.PRIVATE_KEY }}
-          source: "./deploy.sh"
+          source: "./deploy.sh, ./acme_companion, .env, ./nginx, ./docker-compose.prod.yml"
           target: /home/rodion/TEXT_EXTRACT_PDF
 
-#      - name: SSH into DigitalOcean
-#        id: ssh
-#        uses: appleboy/ssh-action@master
-#        with:
-#          host: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
-#          username: root
-#          privateKey: ${{ env.PRIVATE_KEY }}
-#          script: |
-#            scp -o StrictHostKeyChecking=no \
-#              -i ${{ env.PRIVATE_KEY }} \
-#              .env \
-#              deploy.sh \
-#              ./acme_companion \
-#              ./nginx \
-#              ./docker-compose.prod.yml \
-#              root@${{ env.DIGITAL_OCEAN_IP_ADDRESS }}:/home/rodion/TEXT_EXTRACT_PDF
-#
-#            chmod +x /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
-#            /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
+      - name: SSH into DigitalOcean
+        id: ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
+          username: root
+          privateKey: ${{ env.PRIVATE_KEY }}
+          script: |
+            chmod +x /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
+            /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
 
       - name: Check Deployment Status
         run: |
