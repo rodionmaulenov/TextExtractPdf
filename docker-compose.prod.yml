@@ -1,4 +1,4 @@
-version: '3.8'
+version: '2'
 
 services:
 
@@ -11,7 +11,6 @@ services:
 
   extract_text:
     image: ghcr.io/rodionmaulenov/textextractpdf/text_extract
-    restart: always
     container_name: extract_text
     volumes:
       - static_volume:/home/app/web/static
@@ -20,6 +19,9 @@ services:
       - 8000
     env_file:
       - .env
+    environment:
+      - VIRTUAL_HOST=${VIRTUAL_HOST}
+      - LETSENCRYPT_HOST=${LETSENCRYPT_HOST}
     depends_on:
       - defaultdb
     command: >
@@ -32,7 +34,6 @@ services:
   nginx_proxy:
     container_name: nginx_proxy
     image: ghcr.io/rodionmaulenov/textextractpdf/nginx
-    restart: always
     volumes:
       - static_volume:/home/app/web/static
       - media_volume:/home/app/web/media
@@ -51,11 +52,10 @@ services:
     image: ghcr.io/rodionmaulenov/textextractpdf/acme
     env_file:
       - .env
+    volumes_from:
+      - nginx_proxy
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - certs:/etc/nginx/certs
-      - html:/usr/share/nginx/html
-      - vhost:/etc/nginx/vhost.d
       - acme:/etc/acme.sh
     depends_on:
       - nginx_proxy
