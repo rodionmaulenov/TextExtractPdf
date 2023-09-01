@@ -51,40 +51,33 @@ jobs:
           envkey_PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
 
-      - name: Copy files into DigitalOcean
+      - name: SSH into DigitalOcean and run container
         id: ssh
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
           username: root
           key: ${{ env.PRIVATE_KEY }}
-          source: "./deploy.sh, ./acme_companion, .env, ./nginx, ./docker-compose.prod.yml"
+          source: "./acme_companion, .env, ./nginx, ./docker-compose.prod.yml"
           target: /home/rodion/TEXT_EXTRACT_PDF
           script: |
             cd /home/rodion/TEXT_EXTRACT_PDF
-            chmod +x /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
-            /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
-            
+ 
             source .env
             docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
-
+            
+             
             docker pull $APP_IMAGE
             docker pull $NGINX_IMAGE
             docker pull $ACME_IMAGE
             
-            # Bring up containers using Docker Compose
+            # Print Docker images after pulling
+            echo "List of Docker images after pulling:"
+            docker images
+            
             docker-compose -f docker-compose.prod.yml up -d
 
-#      - name: SSH into DigitalOcean
-#        id: ssh
-#        uses: appleboy/ssh-action@master
-#        with:
-#          host: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
-#          username: root
-#          privateKey: ${{ env.PRIVATE_KEY }}
-#          script: |
-#            chmod +x /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
-#            /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
+
 
 
 
