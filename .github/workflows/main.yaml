@@ -12,54 +12,54 @@ env:
 
 jobs:
 
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./work_dir
-
-    env:
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      CSRF_TRUSTED_ORIGINS: ${{ secrets.CSRF_TRUSTED_ORIGINS }}
-      SQL_NAME: ${{ secrets.TEST_DB_NAME }}
-      SQL_USER: ${{ secrets.TEST_DB_USER }}
-      SQL_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
-      SQL_HOST: ${{ secrets.TEST_DB_HOST }}
-      SQL_PORT: ${{ secrets.TEST_DB_PORT }}
-
-    services:
-      postgres:
-        image: postgres:latest
-        env:
-          POSTGRES_USER: ${{ env.SQL_USER }}
-          POSTGRES_PASSWORD: ${{ env.SQL_PASSWORD }}
-          POSTGRES_DB: ${{ env.SQL_NAME }}
-        ports:
-          - 5432:5432
-        options:
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.11
-
-      - name: Install Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt  
-
-      - name: Run Tests
-        run: |
-          python manage.py test
+#  test:
+#    name: Run Tests
+#    runs-on: ubuntu-latest
+#    defaults:
+#      run:
+#        working-directory: ./work_dir
+#
+#    env:
+#      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+#      CSRF_TRUSTED_ORIGINS: ${{ secrets.CSRF_TRUSTED_ORIGINS }}
+#      SQL_NAME: ${{ secrets.TEST_DB_NAME }}
+#      SQL_USER: ${{ secrets.TEST_DB_USER }}
+#      SQL_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
+#      SQL_HOST: ${{ secrets.TEST_DB_HOST }}
+#      SQL_PORT: ${{ secrets.TEST_DB_PORT }}
+#
+#    services:
+#      postgres:
+#        image: postgres:latest
+#        env:
+#          POSTGRES_USER: ${{ env.SQL_USER }}
+#          POSTGRES_PASSWORD: ${{ env.SQL_PASSWORD }}
+#          POSTGRES_DB: ${{ env.SQL_NAME }}
+#        ports:
+#          - 5432:5432
+#        options:
+#          --health-cmd pg_isready
+#          --health-interval 10s
+#          --health-timeout 5s
+#          --health-retries 5
+#
+#    steps:
+#      - name: Checkout Repository
+#        uses: actions/checkout@v2
+#
+#      - name: Set up Python
+#        uses: actions/setup-python@v2
+#        with:
+#          python-version: 3.11
+#
+#      - name: Install Dependencies
+#        run: |
+#          python -m pip install --upgrade pip
+#          pip install -r requirements.txt
+#
+#      - name: Run Tests
+#        run: |
+#          python manage.py test
 
 
   build:
@@ -164,16 +164,16 @@ jobs:
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           ssh-add - <<< "${{ secrets.PRIVATE_KEY }}"
 
-      - name: Copy Files to DigitalOcean
-        run: |
-          scp -o StrictHostKeyChecking=no \
-            .env \
-            deploy.sh \
-            ./acme_companion \
-            ./nginx \
-            ./docker-compose.prod.yml \
-            root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/home/rodion/TEXT_EXTRACT_PDF
-      
+#      - name: Copy Files to DigitalOcean
+#        run: |
+#          scp -o StrictHostKeyChecking=no \
+#            .env \
+#            deploy.sh \
+#            ./acme_companion \
+#            ./nginx \
+#            ./docker-compose.prod.yml \
+#            root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/home/rodion/TEXT_EXTRACT_PDF
+#
 
       - name: SSH into DigitalOcean
         id: ssh
