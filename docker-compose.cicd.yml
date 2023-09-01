@@ -4,12 +4,7 @@ services:
 
   db_postgres:
     container_name: postgresql_db
-    build:
-      context: ./postgres
-      dockerfile: Dockerfile
-      cache_from:
-        - "${POSTGRES_IMAGE}"
-    image: "${POSTGRES_IMAGE}"
+    image: postgres:latest
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
@@ -46,7 +41,7 @@ services:
       context: ./nginx
       dockerfile: Dockerfile
       cache_from:
-            - "${NGINX_IMAGE}"
+          - "${NGINX_IMAGE}"
     image: "${NGINX_IMAGE}"
     restart: always
     volumes:

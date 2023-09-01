@@ -16,77 +16,138 @@ env:
   NAMESPACE: ${{ secrets.NAMESPACE }}
 
 jobs:
-  deploy:
-    name: Copy file to DigitalOcean
-    runs-on: ubuntu-latest
-#    needs: build
-    steps:
-      - name: Checkout master
-        uses: actions/checkout@v1
 
-      - name: Make envfile
-        uses: SpicyPizza/create-envfile@v2.0
-        with:
-          file_name: .env
-          envkey_DEBUG: ${{ secrets.DEBUG }}
-          envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          envkey_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
-          envkey_CSRF_TRUSTED_ORIGINS: ${{ secrets.CSRF_TRUSTED_ORIGINS }}
-          envkey_VIRTUAL_HOST: ${{ secrets.VIRTUAL_HOST }}
-          envkey_LETSENCRYPT_HOST: ${{ secrets.LETSENCRYPT_HOST }}
-          envkey_SQL_DATABASE: ${{ secrets.SQL_DATABASE }}
-          envkey_SQL_USER: ${{ secrets.SQL_USER }}
-          envkey_SQL_HOST: ${{ secrets.SQL_HOST }}
-          envkey_SQL_PORT: ${{ secrets.SQL_PORT }}
-          envkey_SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
-          envkey_POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-          envkey_POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          envkey_POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          envkey_DEFAULT_EMAIL: ${{ secrets.DEFAULT_EMAIL }}
-          envkey_NGINX_PROXY_CONTAINER: ${{ secrets.NGINX_PROXY_CONTAINER }}
-          envkey_APP_IMAGE: ${{ env.APP_IMAGE }}
-          envkey_NGINX_IMAGE: ${{ env.NGINX_IMAGE }}
-          envkey_ACME_IMAGE: ${{ env.ACME_IMAGE }}
-          envkey_NAMESPACE: ${{ secrets.NAMESPACE }}
-          envkey_PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+    build:
+      name: Build Docker Images
+      runs-on: ubuntu-latest
+#      needs: test
+
+      steps:
+        - name: Checkout master
+          uses: actions/checkout@v1
+
+        - name: Make envfile
+          uses: SpicyPizza/create-envfile@v2.0
+          with:
+            file_name: .env
+            envkey_DEBUG: ${{ secrets.DEBUG }}
+            envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+            envkey_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+            envkey_CSRF_TRUSTED_ORIGINS: ${{ secrets.CSRF_TRUSTED_ORIGINS }}
+            envkey_VIRTUAL_HOST: ${{ secrets.VIRTUAL_HOST }}
+            envkey_LETSENCRYPT_HOST: ${{ secrets.LETSENCRYPT_HOST }}
+            envkey_SQL_DATABASE: ${{ secrets.SQL_DATABASE }}
+            envkey_SQL_USER: ${{ secrets.SQL_USER }}
+            envkey_SQL_HOST: ${{ secrets.SQL_HOST }}
+            envkey_SQL_PORT: ${{ secrets.SQL_PORT }}
+            envkey_SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
+            envkey_POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+            envkey_POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+            envkey_POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+            envkey_DEFAULT_EMAIL: ${{ secrets.DEFAULT_EMAIL }}
+            envkey_NGINX_PROXY_CONTAINER: ${{ secrets.NGINX_PROXY_CONTAINER }}
+
+        - name: Set environment variables
+          run: |
+            echo "APP_IMAGE=$(echo ${{ env.APP_IMAGE }} )" >> $GITHUB_ENV
+            echo "ACME_IMAGE=$(echo ${{ env.NGINX_IMAGE }} )" >> $GITHUB_ENV
+            echo "NGINX_IMAGE=$(echo ${{ env.ACME_IMAGE }} )" >> $GITHUB_ENV
+            echo "POSTGRES_IMAGE=$(echo ${{ env.POSTGRES_IMAGE }} )" >> $GITHUB_ENV
+
+        - name: Log in to GitHub Packages
+          run: echo ${PERSONAL_ACCESS_TOKEN} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
+          env:
+            PERSONAL_ACCESS_TACME_IMAGEOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+        - name: Pull images
+          run: |
+            docker pull ${{ env.APP_IMAGE }} || true
+            docker pull ${{ env.NGINX_IMAGE }} || true
+            docker pull ${{ env.ACME_IMAGE }} || true
+            docker pull ${{ env.POSTGRES_IMAGE }} || true
+
+        - name: Build images
+          run: |
+            docker-compose -f docker-compose.cicd.yml build
+
+        - name: Push images
+          run: |
+            docker push ${{ env.APP_IMAGE }}
+            docker push ${{ env.NGINX_IMAGE }}
+            docker push ${{ env.ACME_IMAGE }}
+            docker push ${{ env.POSTGRES_IMAGE }}
+
+    deploy:
+      name: Copy file to DigitalOcean
+      runs-on: ubuntu-latest
+      needs: build
+      steps:
+        - name: Checkout master
+          uses: actions/checkout@v1
+
+        - name: Make envfile
+          uses: SpicyPizza/create-envfile@v2.0
+          with:
+            file_name: .env
+            envkey_DEBUG: ${{ secrets.DEBUG }}
+            envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+            envkey_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+            envkey_CSRF_TRUSTED_ORIGINS: ${{ secrets.CSRF_TRUSTED_ORIGINS }}
+            envkey_VIRTUAL_HOST: ${{ secrets.VIRTUAL_HOST }}
+            envkey_LETSENCRYPT_HOST: ${{ secrets.LETSENCRYPT_HOST }}
+            envkey_SQL_DATABASE: ${{ secrets.SQL_DATABASE }}
+            envkey_SQL_USER: ${{ secrets.SQL_USER }}
+            envkey_SQL_HOST: ${{ secrets.SQL_HOST }}
+            envkey_SQL_PORT: ${{ secrets.SQL_PORT }}
+            envkey_SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
+            envkey_POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+            envkey_POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+            envkey_POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+            envkey_DEFAULT_EMAIL: ${{ secrets.DEFAULT_EMAIL }}
+            envkey_NGINX_PROXY_CONTAINER: ${{ secrets.NGINX_PROXY_CONTAINER }}
+            envkey_APP_IMAGE: ${{ env.APP_IMAGE }}
+            envkey_NGINX_IMAGE: ${{ env.NGINX_IMAGE }}
+            envkey_ACME_IMAGE: ${{ env.ACME_IMAGE }}
+            envkey_NAMESPACE: ${{ secrets.NAMESPACE }}
+            envkey_PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
 
-      - name: SSH into DigitalOcean and run container
-        id: ssh
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
-          username: root
-          key: ${{ env.PRIVATE_KEY }}
-          source: ".env, ./docker-compose.prod.yml"
-          target: /home/rodion/TEXT_EXTRACT_PDF
+        - name: SSH into DigitalOcean and run container
+          id: ssh
+          uses: appleboy/scp-action@v0.1.4
+          with:
+            host: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
+            username: root
+            key: ${{ env.PRIVATE_KEY }}
+            source: ".env, ./docker-compose.prod.yml"
+            target: /home/rodion/TEXT_EXTRACT_PDF
 
-#  deploy2:
-#      name: Deploy to DigitalOcean
-#      runs-on: ubuntu-latest
-##      needs: deploy
-#
-#      steps:
-#        - name: executing remote ssh commands using password
-#          uses: appleboy/ssh-action@v1.0.0
-#          with:
-#            host: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
-#            username: root
-#            key: ${{ env.PRIVATE_KEY }}
-#            script: |
-#              cd /home/rodion/TEXT_EXTRACT_PDF
-#
-#              source .env
-#              echo ${{ env.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ env.NAMESPACE }} --password-stdin
-#
-#              docker pull ghcr.io/rodionmaulenov/textextractpdf/text_extract
-#              docker pull ghcr.io/rodionmaulenov/textextractpdf/nginx
-#              docker pull ghcr.io/rodionmaulenov/textextractpdf/acme
-#              docker pull ghcr.io/rodionmaulenov/textextractpdf/postgres
-#
-#              docker-compose -f docker-compose.prod.yml up -d
+    deploy2:
+        name: Deploy to DigitalOcean
+        runs-on: ubuntu-latest
+        needs: deploy
 
-#docker image prune -a --filter "label=type=none"
+        steps:
+          - name: executing remote ssh commands using password
+            uses: appleboy/ssh-action@v1.0.0
+            with:
+              host: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
+              username: root
+              key: ${{ env.PRIVATE_KEY }}
+              script: |
+                cd /home/rodion/TEXT_EXTRACT_PDF
+  
+                source .env
+                echo ${{ env.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ env.NAMESPACE }} --password-stdin
+  
+                docker pull ghcr.io/rodionmaulenov/textextractpdf/text_extract
+                docker pull ghcr.io/rodionmaulenov/textextractpdf/nginx
+                docker pull ghcr.io/rodionmaulenov/textextractpdf/acme
+                docker pull ghcr.io/rodionmaulenov/textextractpdf/postgres
+  
+                docker-compose -f docker-compose.prod.yml up -d
+  
+                docker image prune -a --filter "label=type=none"
 
 
 
