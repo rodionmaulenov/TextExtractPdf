@@ -9,6 +9,8 @@ env:
   APP_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/text_extract
   NGINX_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/nginx
   ACME_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/acme
+  PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+
 
 jobs:
 
@@ -111,7 +113,7 @@ jobs:
         with:
           host: ${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}
           username: root
-          key: ${{ secrets.PRIVATE_KEY }}
+          key: ${{ env.PRIVATE_KEY }}
           script: |
             scp -o StrictHostKeyChecking=no \
               -i ${{ secrets.PRIVATE_KEY }} \
