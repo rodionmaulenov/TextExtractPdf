@@ -146,8 +146,9 @@ jobs:
                 docker pull ghcr.io/rodionmaulenov/textextractpdf/postgres
   
                 docker-compose -f docker-compose.prod.yml up -d
+                
+                docker image prune -a
   
-                docker image prune -a --filter "label=type=none"
 
 
 
