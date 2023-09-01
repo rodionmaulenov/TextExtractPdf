@@ -60,17 +60,20 @@ jobs:
           key: ${{ env.PRIVATE_KEY }}
           source: "./deploy.sh, ./acme_companion, .env, ./nginx, ./docker-compose.prod.yml"
           target: /home/rodion/TEXT_EXTRACT_PDF
-
-      - name: SSH into DigitalOcean
-        id: ssh
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
-          username: root
-          privateKey: ${{ env.PRIVATE_KEY }}
           script: |
             chmod +x /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
             /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
+
+#      - name: SSH into DigitalOcean
+#        id: ssh
+#        uses: appleboy/ssh-action@master
+#        with:
+#          host: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
+#          username: root
+#          privateKey: ${{ env.PRIVATE_KEY }}
+#          script: |
+#            chmod +x /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
+#            /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
 
       - name: Check Deployment Status
         run: |
