@@ -19,9 +19,6 @@ services:
     build:
       context: ./work_dir
       dockerfile: Dockerfileprod
-      cache_from:
-        - "${APP_IMAGE}"
-    image: "${APP_IMAGE}"
     expose:
       - 8000
     env_file:
@@ -40,9 +37,6 @@ services:
     build:
       context: ./nginx
       dockerfile: Dockerfile
-      cache_from:
-            - "${NGINX_IMAGE}"
-    image: "${NGINX_IMAGE}"
     restart: always
     volumes:
       - static_volume:/home/app/web/static
@@ -62,9 +56,6 @@ services:
     build:
       context: ./acme_companion
       dockerfile: Dockerfile
-      cache_from:
-        - "${ACME_IMAGE}"
-    image: "${ACME_IMAGE}"
     env_file:
       - .env
     volumes:
