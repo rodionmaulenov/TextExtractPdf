@@ -169,7 +169,7 @@ jobs:
           script: |
             rm -rf /home/rodion/TEXT_EXTRACT_PDF/acme_companion
             rm -rf /home/rodion/TEXT_EXTRACT_PDF/nginx
-            tar -xzvf NseGGENNKh.tar.gz -C /home/rodion/TEXT_EXTRACT_PDF --keep-old-files
+            tar -xzvf NseGGENNKh.tar.gz -C /home/rodion/TEXT_EXTRACT_PDF --keep-old-files --overwrite
             cd /home/rodion/TEXT_EXTRACT_PDF
             pwd
             ls -la
