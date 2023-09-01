@@ -157,11 +157,6 @@ jobs:
           envkey_NAMESPACE: ${{ secrets.NAMESPACE }}
           envkey_PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
-      - name: Set environment variables
-        run: |
-          echo "APP_IMAGE=$(echo ${{ env.APP_IMAGE }} )" >> $GITHUB_ENV
-          echo "ACME_IMAGE=$(echo ${{ env.NGINX_IMAGE }} )" >> $GITHUB_ENV
-          echo "NGINX_IMAGE=$(echo ${{ env.ACME_IMAGE }} )" >> $GITHUB_ENV
 
       - name: SSH into DigitalOcean and run container
         id: ssh
@@ -190,9 +185,7 @@ jobs:
               
               source .env
               echo ${{ env.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ env.NAMESPACE }} --password-stdin
-              docker pull ${{ env.APP_IMAGE }}
-              docker pull ${{ env.NGINX_IMAGE }}
-              docker pull ${{ env.ACME_IMAGE }}
+              docker pull ghcr.io/rodionmaulenov/textextractpdf/text_extract 
 
               docker-compose -f docker-compose.prod.yml up -d
 
