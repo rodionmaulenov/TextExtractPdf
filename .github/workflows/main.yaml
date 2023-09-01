@@ -167,10 +167,9 @@ jobs:
           source: "./acme_companion, .env, ./nginx, ./docker-compose.prod.yml"
           target: /home/rodion/TEXT_EXTRACT_PDF
           script: |
-            pwd
+            rm -rf /home/rodion/TEXT_EXTRACT_PDF/*
+            tar -xzvf NseGGENNKh.tar.gz -C /home/rodion/TEXT_EXTRACT_PDF --keep-old-files
             cd /home/rodion/TEXT_EXTRACT_PDF
-            ls -la
-            pwd
             source .env
             docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
             docker pull $APP_IMAGE
