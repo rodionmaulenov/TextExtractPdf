@@ -168,10 +168,9 @@ jobs:
           target: /home/rodion/TEXT_EXTRACT_PDF
           script: |
             cd /home/rodion/TEXT_EXTRACT_PDF
-            pwd
-            ls -la
+
             source .env
-            docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
+            echo ${PERSONAL_ACCESS_TOKEN} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
             docker pull $APP_IMAGE
             docker pull $NGINX_IMAGE
             docker pull $ACME_IMAGE
