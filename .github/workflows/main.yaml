@@ -50,6 +50,14 @@ jobs:
           envkey_NAMESPACE: ${{ secrets.NAMESPACE }}
           envkey_PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
+      - name: Copy single file to remote
+        uses: garygrossgarten/github-action-scp@release
+        with:
+          local: ./deploy.sh
+          remote: /home/rodion/TEXT_EXTRACT_PDF
+          host: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
+          username: root
+          key: ${{ env.PRIVATE_KEY }}
 
       - name: SSH into DigitalOcean
         id: ssh
@@ -57,17 +65,16 @@ jobs:
         with:
           host: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
           username: root
-          key: ${{ env.PRIVATE_KEY }}
-          script: |
-            echo "SSH connection successful"
-            scp -o StrictHostKeyChecking=no \
-              -i ${{ env.PRIVATE_KEY }} \
-              .env \
-              deploy.sh \
-              ./acme_companion \
-              ./nginx \
-              ./docker-compose.prod.yml \
-              root@${{ env.DIGITAL_OCEAN_IP_ADDRESS }}:/home/rodion/TEXT_EXTRACT_PDF
+          privateKey: ${{ env.PRIVATE_KEY }}
+#          script: |
+#            scp -o StrictHostKeyChecking=no \
+#              -i ${{ env.PRIVATE_KEY }} \
+#              .env \
+#              deploy.sh \
+#              ./acme_companion \
+#              ./nginx \
+#              ./docker-compose.prod.yml \
+#              root@${{ env.DIGITAL_OCEAN_IP_ADDRESS }}:/home/rodion/TEXT_EXTRACT_PDF
 #
 #            chmod +x /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
 #            /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
