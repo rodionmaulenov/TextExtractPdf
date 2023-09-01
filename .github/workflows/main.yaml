@@ -113,14 +113,15 @@ jobs:
           username: root
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
-             scp -o StrictHostKeyChecking=no \
-                -i ${{ secrets.PRIVATE_KEY }} \
-                .env \
-                deploy.sh \
-                ./acme_companion \
-                ./nginx \
-                ./docker-compose.prod.yml \
-                root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/home/rodion/TEXT_EXTRACT_PDF
+            scp -o StrictHostKeyChecking=no \
+              -i ${{ secrets.PRIVATE_KEY }} \
+              .env \
+              deploy.sh \
+              ./acme_companion \
+              ./nginx \
+              ./docker-compose.prod.yml \
+              root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/home/rodion/TEXT_EXTRACT_PDF
+
             chmod +x /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
             /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
 
