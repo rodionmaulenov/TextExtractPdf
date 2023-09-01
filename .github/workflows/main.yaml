@@ -57,7 +57,7 @@ jobs:
         with:
           host: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
           username: root
-          privateKey: ${{ env.PRIVATE_KEY }}
+          key: ${{ env.PRIVATE_KEY }}
           source: "./deploy.sh"
           target: /home/rodion/TEXT_EXTRACT_PDF
 
