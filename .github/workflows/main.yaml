@@ -61,8 +61,19 @@ jobs:
           source: "./deploy.sh, ./acme_companion, .env, ./nginx, ./docker-compose.prod.yml"
           target: /home/rodion/TEXT_EXTRACT_PDF
           script: |
+            cd /home/rodion/TEXT_EXTRACT_PDF
             chmod +x /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
             /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
+            
+            source .env
+            docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
+
+            docker pull $APP_IMAGE
+            docker pull $NGINX_IMAGE
+            docker pull $ACME_IMAGE
+            
+            # Bring up containers using Docker Compose
+            docker-compose -f docker-compose.prod.yml up -d
 
 #      - name: SSH into DigitalOcean
 #        id: ssh
@@ -75,10 +86,7 @@ jobs:
 #            chmod +x /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
 #            /home/rodion/TEXT_EXTRACT_PDF/deploy.sh
 
-      - name: Check Deployment Status
-        run: |
-          echo "Exit status: ${{ steps.ssh.outputs.status }}"
-        if: steps.ssh.outputs.status == 0
+
 
 
 
