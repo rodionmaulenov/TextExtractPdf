@@ -187,7 +187,6 @@ jobs:
               docker pull ghcr.io/rodionmaulenov/textextractpdf/text_extract 
               docker pull ghcr.io/rodionmaulenov/textextractpdf/nginx 
               docker pull ghcr.io/rodionmaulenov/textextractpdf/acme 
-
               docker-compose -f docker-compose.prod.yml up -d
 
 
