@@ -39,7 +39,7 @@ services:
     container_name: nginx_proxy
     build:
       context: ./nginx
-      dockerfile: Dockerfileprod
+      dockerfile: Dockerfile
       cache_from:
             - "${NGINX_IMAGE}"
     image: "${NGINX_IMAGE}"
@@ -61,7 +61,7 @@ services:
     container_name: acme_companion
     build:
       context: ./acme_companion
-      dockerfile: Dockerfileprod
+      dockerfile: Dockerfile
       cache_from:
         - "${ACME_IMAGE}"
     image: "${ACME_IMAGE}"
