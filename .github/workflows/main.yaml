@@ -162,18 +162,14 @@ jobs:
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
-          username: rodion
+          username: root
           key: ${{ env.PRIVATE_KEY }}
           source: "./acme_companion, .env, ./nginx, ./docker-compose.prod.yml"
           target: /home/rodion/TEXT_EXTRACT_PDF
           script: |
-            rm -rf /home/rodion/TEXT_EXTRACT_PDF/acme_companion
-            rm -rf /home/rodion/TEXT_EXTRACT_PDF/nginx
-            tar -xzvf NseGGENNKh.tar.gz -C /home/rodion/TEXT_EXTRACT_PDF --keep-old-files --overwrite
             cd /home/rodion/TEXT_EXTRACT_PDF
             pwd
             ls -la
-            cd /home/rodion/TEXT_EXTRACT_PDF
             source .env
             docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
             docker pull $APP_IMAGE
