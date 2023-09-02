@@ -5,7 +5,7 @@ WORKDIR /work_dir
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-RUN apt-get update && apt-get install -y netcat default-jre
+RUN apt-get update && apt-get install -y netcat default.conf-jre
 
 RUN pip install --upgrade pip
 COPY ./requirements.txt .

@@ -1,7 +1,0 @@
-location /static/ {
-  alias /home/app/web/;
-}
-
-location /media/ {
-  alias /home/app/web/;
-}

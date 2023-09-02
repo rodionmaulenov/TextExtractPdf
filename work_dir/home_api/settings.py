@@ -96,7 +96,7 @@ DATABASES = {
 
 
 # DATABASES = {
-#     'default': {
+#     'default.conf': {
 #         'ENGINE': 'django.db.backends.postgresql',
 #         'NAME': 'yourdbname',
 #         'USER': 'yourdbuser',
@@ -107,7 +107,7 @@ DATABASES = {
 # }
 
 # DATABASES = {
-#     'default': {
+#     'default.conf': {
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
 #         'NAME': 'popanegra2',
 #         'USER': 'popanegra3',

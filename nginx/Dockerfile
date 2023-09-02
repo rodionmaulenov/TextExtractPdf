@@ -1,3 +1,3 @@
-FROM jwilder/nginx-proxy:1.3
+FROM nginx
 
-COPY default /etc/nginx/vhost.d/default
+COPY ./default.conf /etc/nginx/conf.d/default.conf
