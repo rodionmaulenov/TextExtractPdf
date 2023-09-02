@@ -80,12 +80,12 @@ jobs:
               ssh-keyscan github.com >> ~/.ssh/known_hosts
               ssh-add - <<< "${{ secrets.PRIVATE_KEY }}"
 
-        - name: Build and deploy images on DigitalOcean
+        - name: Copied files on DigitalOcean
           env:
             SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           run: |
             scp -o StrictHostKeyChecking=no \
-              -r ./.env ./work_dir ./nginx ./docker-compose.prod.yml \
+              -r ./work_dir ./nginx ./docker-compose.prod.yml \
               root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/home/rodion/TEXT_EXTRACT_PDF
 
 #    deploy:
