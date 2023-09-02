@@ -61,7 +61,7 @@ jobs:
         - name: Checkout master
           uses: actions/checkout@v1
 
-        - name: configure ssh connection
+        - name: Configure ssh connection
           env:
               SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           run: |
@@ -103,7 +103,7 @@ jobs:
                 docker-compose -f docker-compose.prod.yml up -d
                 
                 chmod +x cleanup_docker_images.sh
-                cleanup_docker_images.sh
+                ./cleanup_docker_images.sh
 
 
 
