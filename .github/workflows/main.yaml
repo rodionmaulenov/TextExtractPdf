@@ -119,7 +119,7 @@ jobs:
             host: ${{ env.DIGITAL_OCEAN_IP_ADDRESS }}
             username: root
             key: ${{ env.PRIVATE_KEY }}
-            source: ".env, ./docker-compose.prod.yml, ./docker-compose.cicd.yml, ./nginx, ./persistentdata"
+            source: "./work_dir ./docker-compose.prod.yml, ./docker-compose.cicd.yml, ./nginx"
             target: /home/rodion/TEXT_EXTRACT_PDF
 
 #    deploy2:
