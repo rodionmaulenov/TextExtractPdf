@@ -2,11 +2,9 @@ version: '3.9'
 
 services:
 
-  db_postgres:
+  db-postgresql-text-extract-pdf-do-user-14589010-0.b.db.ondigitalocean.com:
     container_name: postgresql_db
     image: postgres:latest
-    volumes:
-      - ./persistentdata/db:/var/lib/postgresql/data
     env_file:
       - .env
 
@@ -24,7 +22,7 @@ services:
     env_file:
       - .env
     depends_on:
-      - db_postgres
+      - db-postgresql-text-extract-pdf-do-user-14589010-0.b.db.ondigitalocean.com
     command: >
       bash -c "
               ./manage.py collectstatic --noinput &&
