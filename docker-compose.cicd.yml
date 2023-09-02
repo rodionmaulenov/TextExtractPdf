@@ -4,7 +4,10 @@ services:
 
   postgresql_db:
     container_name: postgresql_db
-    image: postgres:latest
+    build:
+      context: ./postgresql
+      dockerfile: Dockerfile
+    image: "${POSTGRES_IMAGE}"
     env_file:
       - .env
 
@@ -14,6 +17,7 @@ services:
     build:
       context: ./work_dir
       dockerfile: Dockerfileprod
+    image: "${APP_IMAGE}"
     expose:
       - '8000'
     volumes:
@@ -35,6 +39,7 @@ services:
     build:
       context: ./nginx
       dockerfile: Dockerfile
+    image: "${NGINX_IMAGE}"
     ports:
       - "80:80"
       - "443:443"

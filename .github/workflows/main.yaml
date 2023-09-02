@@ -38,6 +38,10 @@ jobs:
             envkey_POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
             envkey_POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
             envkey_POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+            envkey_APP_IMAGE: ${{ env.APP_IMAGE }}
+            envkey_NGINX_IMAGE: ${{ env.NGINX_IMAGE }}
+            envkey_POSTGRES_IMAGE: ${{ env.POSTGRES_IMAGE }}
+
 
 #        - name: Set environment variables
 #          run: |
@@ -51,8 +55,6 @@ jobs:
 
         - name: Log in to GitHub Packages
           run: echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
-          env:
-            PERSONAL_ACCESS_TACME_IMAGEOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
         - name: Push images
           run: |
