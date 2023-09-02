@@ -69,7 +69,7 @@ jobs:
             key: ${{ secrets.PRIVATE_KEY }}
             source: "./work_dir ./docker-compose.prod.yml, ./nginx"
             target: /home/rodion/TEXT_EXTRACT_PDF
-            overwrite: '--overwrite'
+            overwrite: true
 
 #    deploy:
 #        name: Deploy to DigitalOcean
