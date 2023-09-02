@@ -12,6 +12,7 @@ env:
 
 jobs:
 
+
 #    build:
 #      name: Build Docker Images
 #      runs-on: ubuntu-latest
@@ -67,7 +68,7 @@ jobs:
             host: ${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}
             username: root
             key: ${{ secrets.PRIVATE_KEY }}
-            source: ".env, ./work_dir ./docker-compose.prod.yml, ./nginx"
+            source: "./work_dir ./docker-compose.prod.yml, ./nginx"
             target: /home/rodion/TEXT_EXTRACT_PDF
 
     deploy:
@@ -85,11 +86,11 @@ jobs:
               script: |
                 cd /home/rodion/TEXT_EXTRACT_PDF
                 
-                sudo sh -c 'echo "APP_IMAGE=${{ env.APP_IMAGE }}" >> .env'
-                sudo sh -c 'echo "NGINX_IMAGE=${{ env.NGINX_IMAGE }}" >> .env'
-
+                sudo sh -c 'echo "NEW_VARIABLE=value" >> .env'
+                sudo sh -c 'echo "ANOTHER_VARIABLE=another_value" >> .env'
                 source .env
-                echo ${{ env.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ env.NAMESPACE }} --password-stdin
+                
+                echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
 
                 docker pull ${{ env.APP_IMAGE }}
                 docker pull ${{ env.NGINX_IMAGE }}
