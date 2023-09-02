@@ -16,6 +16,8 @@ services:
     build:
       context: ./work_dir
       dockerfile: Dockerfileprod
+    expose:
+      - '8000'
     volumes:
       - ./persistentdata/static:/home/app/web/static
       - ./persistentdata/media:/home/app/web/media
