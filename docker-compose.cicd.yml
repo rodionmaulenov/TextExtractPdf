@@ -4,10 +4,7 @@ services:
 
   postgresql_db:
     container_name: postgresql_db
-    build:
-      context: ./postgresql
-      dockerfile: Dockerfile
-    image: "${POSTGRES_IMAGE}"
+    image: postgres:latest
     env_file:
       - .env
 
