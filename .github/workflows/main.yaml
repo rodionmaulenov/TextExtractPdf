@@ -75,7 +75,7 @@ jobs:
             SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           run: |
             scp -o StrictHostKeyChecking=no \
-              -r ./work_dir ./nginx ./docker-compose.prod.yml ./docker-compose.cicd.yml \
+              -r ./work_dir ./nginx ./docker-compose.prod.yml \
               root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/home/rodion/TEXT_EXTRACT_PDF
 
     deploy:
@@ -93,8 +93,6 @@ jobs:
               script: |
                 cd /home/rodion/TEXT_EXTRACT_PDF
 
-                sudo sh -c 'echo "APP_IMAGE=${{ secrets.APP_IMAGE }}" >> .env'
-                sudo sh -c 'echo "NGINX_IMAGE=${{ secrets.NGINX_IMAGE }}" >> .env'
                 source .env
 
                 echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
@@ -102,9 +100,9 @@ jobs:
                 docker pull ${{ env.APP_IMAGE }}
                 docker pull ${{ env.NGINX_IMAGE }}
 
-#                docker-compose -f docker-compose.prod.yml up -d
-#
-#                docker image prune -a -f
+                docker-compose -f docker-compose.prod.yml up -d
+
+                docker image prune -a -f
 
 
 

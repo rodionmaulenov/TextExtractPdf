@@ -30,7 +30,7 @@ services:
 
   nginx_proxy:
     container_name: nginx_proxy
-    image: "${NGINX_IMAGE}"
+    image: ghcr.io/rodionmaulenov/textextractpdf/nginx
     ports:
       - "80:80"
       - "443:443"
