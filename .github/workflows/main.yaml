@@ -50,7 +50,7 @@ jobs:
             docker-compose -f docker-compose.cicd.yml build
 
         - name: Log in to GitHub Packages
-          run: echo ${PERSONAL_ACCESS_TOKEN} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
+          run: echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
           env:
             PERSONAL_ACCESS_TACME_IMAGEOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
