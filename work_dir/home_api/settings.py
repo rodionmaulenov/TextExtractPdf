@@ -91,6 +91,9 @@ DATABASES = {
         'PASSWORD': os.environ.get('SQL_PASSWORD'),
         'HOST': os.environ.get('SQL_HOST'),
         'PORT': os.environ.get('SQL_PORT'),
+        'OPTIONS': {
+            'sslmode': 'require',  # Enable SSL connection (required for DigitalOcean PostgreSQL)
+        },
     }
 }
 
