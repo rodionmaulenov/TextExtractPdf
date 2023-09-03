@@ -123,7 +123,7 @@ jobs:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
           scp -o StrictHostKeyChecking=no \
-            -r ./work_dir ./nginx ./docker-compose.prod.yml ./cleanup_docker_images.sh \
+            -r ./work_dir ./nginx ./docker-compose.prod.yml \
             root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/home/rodion/TEXT_EXTRACT_PDF
 
   deploy:
