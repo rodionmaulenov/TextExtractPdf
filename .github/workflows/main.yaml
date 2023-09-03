@@ -45,7 +45,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.6.0
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -68,7 +68,7 @@ jobs:
 
     steps:
       - name: Checkout master
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3.6.0
 
       - name: Make envfile
         uses: SpicyPizza/create-envfile@v2.0
@@ -107,7 +107,7 @@ jobs:
     needs: build
     steps:
       - name: Checkout master
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3.6.0
 
       - name: Configure ssh connection
         env:
@@ -123,7 +123,7 @@ jobs:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
           scp -o StrictHostKeyChecking=no \
-            -r ./work_dir ./nginx ./docker-compose.prod.yml \
+            -r ./work_dir ./nginx ./docker-compose.prod.yml ./cleanup_docker_images.sh \
             root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/home/rodion/TEXT_EXTRACT_PDF
 
   deploy:
