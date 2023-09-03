@@ -21,7 +21,7 @@ jobs:
 
     env:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      CSRF_TRUSTED_ORIGINS: ${{ secrets.CSRF_TRUSTED_ORIGINS }}
+      DEBUG: ${{ secrets.TEST_DEBUG }}
       SQL_NAME: ${{ secrets.TEST_DB_NAME }}
       SQL_USER: ${{ secrets.TEST_DB_USER }}
       SQL_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
@@ -60,6 +60,7 @@ jobs:
       - name: Run Tests
         run: |
           python manage.py test
+
 #    build:
 #      name: Build Docker Images
 #      runs-on: ubuntu-latest

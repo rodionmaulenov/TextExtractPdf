@@ -94,18 +94,6 @@ DATABASES = {
     }
 }
 
-
-# DATABASES = {
-#     'default.conf': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'yourdbname',
-#         'USER': 'yourdbuser',
-#         'PASSWORD': 'yourdbpassword',
-#         'HOST': 'localhost',  # or '127.0.0.1'
-#         'PORT': '5432',
-#     }
-# }
-
 # DATABASES = {
 #     'default.conf': {
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -162,12 +150,13 @@ LOGIN_URL = '/admin/login/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
-CSRF_TRUSTED_ORIGINS = [os.environ.get("CSRF_TRUSTED_ORIGINS")]
+    CSRF_TRUSTED_ORIGINS = [os.environ.get("CSRF_TRUSTED_ORIGINS")]
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]

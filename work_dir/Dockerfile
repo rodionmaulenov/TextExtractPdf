@@ -1,11 +1,11 @@
 FROM python:3.11.4-slim-buster
 
-WORKDIR /work_dir
+WORKDIR /home/app/web
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-RUN apt-get update && apt-get install -y netcat default.conf-jre
+RUN apt-get update && apt-get install -y netcat default-jre
 
 RUN pip install --upgrade pip
 COPY ./requirements.txt .

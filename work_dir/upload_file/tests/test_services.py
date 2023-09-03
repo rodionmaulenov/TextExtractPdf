@@ -98,7 +98,7 @@ class MyAdminViewPostRequestDnkFormTestCase(TestCase):
     def test_pdf_extract_text(self):
         pdf_path = 'test_pdf/TasuVasile.pdf'
         csv_file_path = pdf_extract_text(pdf_path)
-        self.assertEqual(csv_file_path, '/home/runner/work/TextExtractPdf/TextExtractPdf/work_dir/upload_file/csv_files/Tasu_Vasile.csv')
+        self.assertEqual(csv_file_path, '/home/app/web/upload_file/csv_files/Tasu_Vasile.csv')
 
     def test_pdf_not_extract_text(self):
         pdf_path = 'test_pdf/RRodion.pdf'
@@ -106,7 +106,7 @@ class MyAdminViewPostRequestDnkFormTestCase(TestCase):
         self.assertEqual(csv_file_path, None)
 
     def test_retrieve_values(self):
-        csv_path = '/home/runner/work/TextExtractPdf/TextExtractPdf/work_dir/upload_file/csv_files/Tasu_Vasile.csv'
+        csv_path = '/home/app/web/upload_file/csv_files/Tasu_Vasile.csv'
 
         name, locus_dict = retrieve_values(csv_path)
 
