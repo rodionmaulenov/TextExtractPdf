@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG')
 
 ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
-# ALLOWED_HOSTS = ['127.0.0.1']
+# ALLOWED_HOSTS = ['0.0.0.0']
 
 # Application definition
 
@@ -96,7 +96,7 @@ DATABASES = {
 }
 
 # DATABASES = {
-#     'default.conf': {
+#     'default': {
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
 #         'NAME': 'popanegra2',
 #         'USER': 'popanegra3',
