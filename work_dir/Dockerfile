@@ -4,7 +4,6 @@ WORKDIR /home/app/web
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-ENV DJANGO_SETTINGS_MODULE home_api.settings.docker_stage_settings
 
 RUN apt-get update && apt-get install -y netcat default-jre
 
