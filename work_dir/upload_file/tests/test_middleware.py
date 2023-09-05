@@ -34,4 +34,3 @@ class MiddleWearTestCase(TestCase):
         response = self.client.get(admin_url)
 
         self.assertEqual(response.status_code, 200)
-        print(response.context)
