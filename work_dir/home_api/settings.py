@@ -165,7 +165,7 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
-CSRF_TRUSTED_ORIGINS = ['https://myproject.kyiv.ua']
+    CSRF_TRUSTED_ORIGINS = ['https://myproject.kyiv.ua']
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]
