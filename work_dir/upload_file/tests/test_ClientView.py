@@ -20,13 +20,13 @@ class MyAdminViewGetRequestTestCase(TestCase):
         super().setUpClass()
         cls.url = '/admin/upload_file/client/form/'
 
-    # def test_my_view_get_request_when_authorized_and_has_credentials(self):
-    #     User.objects.create_user(username='staff', password='password', is_staff=True)
-    #     self.client.login(username='staff', password='password')
-    #     response = self.client.get(self.url)
-    #
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertTemplateUsed(response, 'admin/custom_base.html')
+    def test_my_view_get_request_when_authorized_and_has_credentials(self):
+        User.objects.create_user(username='staff', password='password', is_staff=True)
+        self.client.login(username='staff', password='password')
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'admin/custom_base.html')
 
     def test_my_view_get_request_invalid_url_when_authorized(self):
         User.objects.create_user(username='staff', password='password', is_staff=True)
