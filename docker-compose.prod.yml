@@ -2,13 +2,6 @@ version: '3.9'
 
 services:
 
-  postgresql_db:
-    container_name: postgresql_db
-    image: postgres:latest
-    env_file:
-      - .env
-
-
   extract_text:
     container_name: extract_text
     build:
@@ -19,10 +12,14 @@ services:
     volumes:
       - ./persistentdata/static:/home/app/web/static
       - ./persistentdata/media:/home/app/web/media
+    environment:
+      - SQL_NAME="${SQL_NAME}"
+      - SQL_USER="${SQL_USER}"
+      - SQL_PASSWORD="${SQL_PASSWORD}"
+      - SQL_HOST="${SQL_HOST}"
+      - SQL_PORT="${SQL_PORT}"
     env_file:
       - .env
-    depends_on:
-      - postgresql_db
     command: >
       bash -c "
               ./manage.py collectstatic --noinput &&
