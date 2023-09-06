@@ -34,15 +34,15 @@ jobs:
 
       - name: Add environment variables to .env
         run: |
-          echo 'DEBUG=${{ secrets.DEBUG }}' >> .env
-          echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
-          echo SQL_NAME=${{ secrets.SQL_NAME }} >> .env
-          echo SQL_USER=${{ secrets.SQL_USER }} >> .env
-          echo SQL_PASSWORD=${{ secrets.SQL_PASSWORD }} >> .env
-          echo SQL_HOST=${{ secrets.SQL_HOST }} >> .env
-          echo SQL_PORT=${{ secrets.SQL_PORT }} >> .env
-          echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
-          echo CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }} >> .env
+          echo "DEBUG=${{ secrets.DEBUG }}" >> .env
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+          echo "SQL_NAME=${{ secrets.SQL_NAME }}" >> .env
+          echo "SQL_USER=${{ secrets.SQL_USER }}" >> .env
+          echo "SQL_PASSWORD=${{ secrets.SQL_PASSWORD }}" >> .env
+          echo "SQL_HOST=${{ secrets.SQL_HOST }}" >> .env
+          echo "SQL_PORT=${{ secrets.SQL_PORT }}" >> .env
+          echo "ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}" >> .env
+          echo "CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}" >> .env
       
 
       - name: Checkout master
