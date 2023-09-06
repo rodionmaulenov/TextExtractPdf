@@ -12,12 +12,6 @@ services:
     volumes:
       - ./persistentdata/static:/home/app/web/static
       - ./persistentdata/media:/home/app/web/media
-    environment:
-      - SQL_NAME="${SQL_NAME}"
-      - SQL_USER="${SQL_USER}"
-      - SQL_PASSWORD="${SQL_PASSWORD}"
-      - SQL_HOST="${SQL_HOST}"
-      - SQL_PORT="${SQL_PORT}"
     env_file:
       - .env
     command: >
