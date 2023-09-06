@@ -46,10 +46,10 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.0.0
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4.7.0
         with:
           python-version: 3.11
 
@@ -69,7 +69,7 @@ jobs:
 
     steps:
       - name: Checkout master
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.0.0
 
       - name: Make envfile
         uses: SpicyPizza/create-envfile@v2.0
@@ -108,7 +108,7 @@ jobs:
     needs: build
     steps:
       - name: Checkout master
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.0.0
 
       - name: Configure ssh connection
         env:
@@ -138,7 +138,7 @@ jobs:
 
       steps:
         - name: Checkout master
-          uses: actions/checkout@v3.6.0
+          uses: actions/checkout@v4.0.0
 
         - name: Make envfile
           uses: SpicyPizza/create-envfile@v2.0
@@ -171,6 +171,6 @@ jobs:
               docker pull ${{ env.APP_IMAGE }}
               docker pull ${{ env.NGINX_IMAGE }}
               source .env
-              docker-compose -f docker-compose.prod.yml up -d
+              docker-compose -f docker-compose.prod.yml up
               chmod +x cleanup_docker_images.sh
               ./cleanup_docker_images.sh
