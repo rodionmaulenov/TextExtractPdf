@@ -148,6 +148,7 @@ jobs:
               echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
               docker pull ${{ env.APP_IMAGE }}
               docker pull ${{ env.NGINX_IMAGE }}
+              source .env
               docker-compose -f docker-compose.prod.yml up -d
               chmod +x cleanup_docker_images.sh
               ./cleanup_docker_images.sh
