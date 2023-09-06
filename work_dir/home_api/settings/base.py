@@ -13,27 +13,27 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
-DEBUG = os.environ.get('DEBUG')
-ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
-
-if not DEBUG:
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-
-    CSRF_TRUSTED_ORIGINS = [os.environ.get('CSRF_TRUSTED_ORIGINS')]
-
-
-# SECRET_KEY = 'django-insecure-fy!otfu*^lbwn_%vav4rw+d$8%4afj4j5rme&$(&eh$8jh4nea'
+# SECRET_KEY = os.environ.get('SECRET_KEY')
+# DEBUG = os.environ.get('DEBUG')
+# ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
 #
-# DEBUG = True
+# if not DEBUG:
+#     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+#     SECURE_SSL_REDIRECT = True
+#     SESSION_COOKIE_SECURE = True
+#     CSRF_COOKIE_SECURE = True
 #
-# ALLOWED_HOSTS = ['127.0.0.1']
+#     CSRF_TRUSTED_ORIGINS = [os.environ.get('CSRF_TRUSTED_ORIGINS')]
+
+
+SECRET_KEY = 'django-insecure-fy!otfu*^lbwn_%vav4rw+d$8%4afj4j5rme&$(&eh$8jh4nea'
+
+DEBUG = True
+
+ALLOWED_HOSTS = ['127.0.0.1']
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -98,28 +98,28 @@ WSGI_APPLICATION = 'home_api.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': "django.db.backends.postgresql_psycopg2",
-        'NAME': os.environ.get('SQL_NAME'),
-        'USER': os.environ.get('SQL_USER'),
-        'PASSWORD': os.environ.get('SQL_PASSWORD'),
-        'HOST': os.environ.get('SQL_HOST'),
-        'PORT': os.environ.get('SQL_PORT'),
-    }
-}
-
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'popanegra2',
-#         'USER': 'popanegra3',
-#         'PASSWORD': 'popanegra4',
-#         'HOST': '127.0.0.1',
-#         'PORT': '5432',
+#         'ENGINE': "django.db.backends.postgresql_psycopg2",
+#         'NAME': os.environ.get('SQL_NAME'),
+#         'USER': os.environ.get('SQL_USER'),
+#         'PASSWORD': os.environ.get('SQL_PASSWORD'),
+#         'HOST': os.environ.get('SQL_HOST'),
+#         'PORT': os.environ.get('SQL_PORT'),
 #     }
 # }
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'popanegra2',
+        'USER': 'popanegra3',
+        'PASSWORD': 'popanegra4',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

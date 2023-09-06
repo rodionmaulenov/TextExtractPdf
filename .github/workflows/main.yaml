@@ -20,6 +20,7 @@ jobs:
         working-directory: ./work_dir
 
     env:
+      DJANGO_SETTINGS_MODULE: ${{ secrets.TEST_ENV_SETTINGS }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       DEBUG: ${{ secrets.TEST_DEBUG }}
       SQL_NAME: ${{ secrets.TEST_DB_NAME }}
