@@ -79,7 +79,7 @@ jobs:
           envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
           envkey_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
           envkey_CSRF_TRUSTED_ORIGINS: ${{ secrets.CSRF_TRUSTED_ORIGINS }}
-          envkey_SQL_NAME: ${{ secrets.SQL_DATABASE }}
+          envkey_SQL_NAME: ${{ secrets.SQL_NAME }}
           envkey_SQL_USER: ${{ secrets.SQL_USER }}
           envkey_SQL_HOST: ${{ secrets.SQL_HOST }}
           envkey_SQL_PORT: ${{ secrets.SQL_PORT }}
@@ -148,7 +148,7 @@ jobs:
             envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
             envkey_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
             envkey_CSRF_TRUSTED_ORIGINS: ${{ secrets.CSRF_TRUSTED_ORIGINS }}
-            envkey_SQL_NAME: ${{ secrets.SQL_DATABASE }}
+            envkey_SQL_NAME: ${{ secrets.SQL_NAME }}
             envkey_SQL_USER: ${{ secrets.SQL_USER }}
             envkey_SQL_HOST: ${{ secrets.SQL_HOST }}
             envkey_SQL_PORT: ${{ secrets.SQL_PORT }}
@@ -172,5 +172,5 @@ jobs:
               docker pull ${{ env.NGINX_IMAGE }}
               source .env
               docker-compose -f docker-compose.prod.yml up
-              chmod +x cleanup_docker_images.sh
-              ./cleanup_docker_images.sh
+#              chmod +x cleanup_docker_images.sh
+#              ./cleanup_docker_images.sh
