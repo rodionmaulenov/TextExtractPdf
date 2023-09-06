@@ -16,19 +16,6 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECRET_KEY = os.environ.get('SECRET_KEY')
-# DEBUG = os.environ.get('DEBUG')
-# ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
-#
-# if not DEBUG:
-#     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-#     SECURE_SSL_REDIRECT = True
-#     SESSION_COOKIE_SECURE = True
-#     CSRF_COOKIE_SECURE = True
-#
-#     CSRF_TRUSTED_ORIGINS = [os.environ.get('CSRF_TRUSTED_ORIGINS')]
-
-
 SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG')
 ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
@@ -40,17 +27,6 @@ CSRF_COOKIE_SECURE = True
 
 CSRF_TRUSTED_ORIGINS = [os.environ.get('CSRF_TRUSTED_ORIGINS')]
 
-
-DATABASES = {
-    'default': {
-        'ENGINE': "django.db.backends.postgresql_psycopg2",
-        'NAME': os.environ.get('SQL_NAME'),
-        'USER': os.environ.get('SQL_USER'),
-        'PASSWORD': os.environ.get('SQL_PASSWORD'),
-        'HOST': os.environ.get('SQL_HOST'),
-        'PORT': os.environ.get('SQL_PORT'),
-    }
-}
 
 # SECRET_KEY = 'django-insecure-fy!otfu*^lbwn_%vav4rw+d$8%4afj4j5rme&$(&eh$8jh4nea'
 #
@@ -121,16 +97,16 @@ WSGI_APPLICATION = 'home_api.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': "django.db.backends.postgresql_psycopg2",
-#         'NAME': os.environ.get('SQL_NAME'),
-#         'USER': os.environ.get('SQL_USER'),
-#         'PASSWORD': os.environ.get('SQL_PASSWORD'),
-#         'HOST': os.environ.get('SQL_HOST'),
-#         'PORT': os.environ.get('SQL_PORT'),
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': "django.db.backends.postgresql_psycopg2",
+        'NAME': os.environ.get('SQL_NAME'),
+        'USER': os.environ.get('SQL_USER'),
+        'PASSWORD': os.environ.get('SQL_PASSWORD'),
+        'HOST': os.environ.get('SQL_HOST'),
+        'PORT': os.environ.get('SQL_PORT'),
+    }
+}
 
 
 # Password validation
