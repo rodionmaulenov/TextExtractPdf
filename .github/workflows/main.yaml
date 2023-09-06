@@ -148,3 +148,4 @@ jobs:
               echo $DEBUG
               chmod +x cleanup_docker_images.sh
               ./cleanup_docker_images.sh
+              echo $DEBUG
