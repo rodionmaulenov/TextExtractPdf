@@ -141,7 +141,7 @@ jobs:
             docker pull ${{ env.APP_IMAGE }}
             docker pull ${{ env.NGINX_IMAGE }}
             source .env
-            docker-compose -f docker-compose.prod.yml up
+            docker-compose -f docker-compose.prod.yml up -d
           EOF
 
 #  deploy:

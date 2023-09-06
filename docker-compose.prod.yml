@@ -11,7 +11,9 @@ services:
 
   extract_text:
     container_name: extract_text
-    image: "${APP_IMAGE}"
+    build:
+      context: ./work_dir
+      dockerfile: Dockerfileprod
     expose:
       - '8000'
     volumes:
@@ -30,7 +32,9 @@ services:
 
   nginx_proxy:
     container_name: nginx_proxy
-    image: ghcr.io/rodionmaulenov/textextractpdf/nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
     ports:
       - "80:80"
       - "443:443"
