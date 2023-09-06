@@ -56,7 +56,7 @@ jobs:
 
       - name: Copy files to DigitalOcean
         env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+            SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
           scp -o StrictHostKeyChecking=no \
             -r ./work_dir ./nginx ./docker-compose.prod.yml ./cleanup_docker_images.sh \
