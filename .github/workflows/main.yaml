@@ -35,15 +35,15 @@ jobs:
       - name: Make envfile
         uses: SpicyPizza/create-envfile@v2.0.2
         with:
-          envkey_DEBUG: ${{ secrets.DEBUG }} >> .env
-          envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }} >> .env
-          envkey_SQL_NAME: ${{ secrets.SQL_NAME }} >> .env
-          envkey_SQL_USER: ${{ secrets.SQL_USER }} >> .env
-          envkey_SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }} >> .env
-          envkey_SQL_HOST: ${{ secrets.SQL_HOST }} >> .env
-          envkey_SQL_PORT: ${{ secrets.SQL_PORT }} >> .env
-          envkey_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }} >> .env
-          envkey_CSRF_TRUSTED_ORIGINS: ${{ secrets.CSRF_TRUSTED_ORIGINS }} >> .env
+          envkey_DEBUG: ${{ secrets.DEBUG }}
+          envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          envkey_SQL_NAME: ${{ secrets.SQL_NAME }}
+          envkey_SQL_USER: ${{ secrets.SQL_USER }}
+          envkey_SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
+          envkey_SQL_HOST: ${{ secrets.SQL_HOST }}
+          envkey_SQL_PORT: ${{ secrets.SQL_PORT }}
+          envkey_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+          envkey_CSRF_TRUSTED_ORIGINS: ${{ secrets.CSRF_TRUSTED_ORIGINS }}
 
       - name: Configure ssh connection
         env:
