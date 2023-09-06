@@ -149,7 +149,5 @@ jobs:
               docker pull ${{ env.APP_IMAGE }}
               docker pull ${{ env.NGINX_IMAGE }}
               docker-compose -f docker-compose.prod.yml up -d
-              echo $DEBUG
               chmod +x cleanup_docker_images.sh
               ./cleanup_docker_images.sh
-              echo $DEBUG
