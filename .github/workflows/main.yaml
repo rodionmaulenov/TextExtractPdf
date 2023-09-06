@@ -62,9 +62,9 @@ jobs:
             -r ./work_dir ./nginx ./docker-compose.prod.yml ./cleanup_docker_images.sh \
             root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/home/rodion/TEXT_EXTRACT_PDF
           
-          ssh -o StrictHostKeyChecking=no \
-            root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} \
-            chown -R rodion:rodion /home/rodion/TEXT_EXTRACT_PDF
+#          ssh -o StrictHostKeyChecking=no \
+#            root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} \
+#            chown -R rodion:rodion /home/rodion/TEXT_EXTRACT_PDF
 
           ssh  -o StrictHostKeyChecking=no root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} <<EOF
             cd /home/rodion/TEXT_EXTRACT_PDF
