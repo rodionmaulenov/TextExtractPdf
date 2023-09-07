@@ -16,7 +16,8 @@ services:
       - .env
     command: >
       bash -c "
-              /home/app/web/manage.py collectstatic --noinput &&
+              ./manage.py shell --noinput &&
+              ./manage.py collectstatic --noinput &&
               ./manage.py migrate &&
               gunicorn -b 0.0.0.0:8000 home_api.wsgi:application
             "
