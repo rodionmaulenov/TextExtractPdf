@@ -25,7 +25,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG')
 print(DEBUG)
 
-ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS'), os.environ.get('SQL_HOST')]
+ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS'), os.environ.get('SQL_HOST'), 'www.myproject.kyiv.ua', '*.myproject.kyiv.ua']
 
 # SECRET_KEY = 'django-insecure-fy!otfu*^lbwn_%vav4rw+d$8%4afj4j5rme&$(&eh$8jh4nea'
 #
