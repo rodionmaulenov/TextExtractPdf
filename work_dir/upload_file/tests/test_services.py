@@ -1,6 +1,8 @@
 import os
 from unittest import TestCase
 
+from django.conf import settings
+
 from upload_file.forms import DnkForm
 from upload_file.models import Client, Child
 from upload_file.services import compare_dnk_child_with_clients, get_dict_from_instances, pdf_extract_text, \
@@ -98,9 +100,12 @@ class MyAdminViewPostRequestDnkFormTestCase(TestCase):
     def test_pdf_extract_text(self):
         pdf_path = 'test_pdf/TasuVasile.pdf'
         csv_file_path = pdf_extract_text(pdf_path)
-        self.assertEqual(csv_file_path,
-                         '/home/runner/work/TextExtractPdf/TextExtractPdf/work_dir/upload_file/csv_files/Tasu_Vasile.csv')
-        # self.assertEqual(csv_file_path, '/home/rodion/Desktop/ExtractTextPdf/work_dir/upload_file/csv_files/Tasu_Vasile.csv')
+        if settings.DEBUG:
+            self.assertEqual(csv_file_path,
+                             '/home/runner/work/TextExtractPdf/TextExtractPdf/work_dir/upload_file/csv_files/Tasu_Vasile.csv')
+        else:
+            self.assertEqual(csv_file_path,
+                             '/home/rodion/Desktop/ExtractTextPdf/work_dir/upload_file/csv_files/Tasu_Vasile.csv')
 
     def test_pdf_not_extract_text(self):
         pdf_path = 'test_pdf/RRodion.pdf'
@@ -108,9 +113,12 @@ class MyAdminViewPostRequestDnkFormTestCase(TestCase):
         self.assertEqual(csv_file_path, None)
 
     def test_retrieve_values(self):
-        csv_path = '/home/runner/work/TextExtractPdf/TextExtractPdf/work_dir/upload_file/csv_files/Tasu_Vasile.csv'
-        # csv_path = '/home/rodion/Desktop/ExtractTextPdf/work_dir/upload_file/csv_files/Tasu_Vasile.csv'
+        print(settings.DEBUG)
+        if settings.DEBUG:
 
+            csv_path = '/home/runner/work/TextExtractPdf/TextExtractPdf/work_dir/upload_file/csv_files/Tasu_Vasile.csv'
+        else:
+            csv_path = '/home/rodion/Desktop/ExtractTextPdf/work_dir/upload_file/csv_files/Tasu_Vasile.csv'
         name, locus_dict = retrieve_values(csv_path)
 
         expected_name = 'Tasu Vasile'

@@ -1,4 +1,7 @@
 from django.db import models
+from django.db.models.signals import pre_delete
+
+from upload_file.receivers import delete_client_pdf_file
 
 
 def user_directory_path(instance, filename):
@@ -16,12 +19,15 @@ class Client(models.Model):
         return self.name
 
 
+pre_delete.connect(delete_client_pdf_file, sender=Client)
+
+
 class Child(models.Model):
     name = models.CharField(max_length=100, null=True, blank=True)
     client = models.ForeignKey(Client, on_delete=models.PROTECT, null=True, blank=True)
 
-    # def __str__(self):
-    #     return self.name
+    def __str__(self):
+        return self.name
 
 
 class DNK(models.Model):
