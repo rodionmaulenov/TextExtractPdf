@@ -44,6 +44,7 @@ jobs:
           echo "SQL_PORT=${{ secrets.SQL_PORT }}" >> .env
           echo "ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}" >> .env
           echo "CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}" >> .env
+          
 
 
       - name: Configure ssh connection
