@@ -2,28 +2,30 @@ version: '3.9'
 
 services:
 
-  postgresql_db:
-    container_name: postgresql_db
-    image: postgres:latest
-    env_file:
-      - .env
-
-
   extract_text:
     container_name: extract_text
     build:
       context: ./work_dir
       dockerfile: Dockerfileprod
     image: "${APP_IMAGE}"
+    environment:
+      - DEBUG=${DEBUG}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
+      - SQL_NAME=${SQL_NAME}
+      - SQL_USER=${SQL_USER}
+      - SQL_PASSWORD=${SQL_PASSWORD}
+      - SQL_HOST=${SQL_HOST}
+      - SQL_PORT=${SQL_PORT}
     expose:
       - '8000'
     volumes:
       - ./persistentdata/static:/home/app/web/static
       - ./persistentdata/media:/home/app/web/media
+      - ./.env:/home/app/web/.env
     env_file:
       - .env
-    depends_on:
-      - postgresql_db
     command: >
       bash -c "
               ./manage.py collectstatic --noinput &&
