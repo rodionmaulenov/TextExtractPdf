@@ -16,13 +16,7 @@ services:
     env_file:
       - .env
     command: >
-      bash -c '
-              ./manage.py shell &&
-              echo $SECRET_KEY &&
-              ./manage.py collectstatic --noinput &&
-              ./manage.py migrate &&
-              gunicorn -b 0.0.0.0:8000 home_api.wsgi:application
-            '
+      bash -c 'echo $SECRET_KEY'
 
   nginx_proxy:
     container_name: nginx_proxy
