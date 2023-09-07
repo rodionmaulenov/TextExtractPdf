@@ -15,8 +15,8 @@ services:
       - ./.env:/home/app/web/.env
     env_file:
       - .env
-    command: >
-      bash -c 'echo $SECRET_KEY'
+    command: bash -c 'echo $SECRET_KEY'
+
 
   nginx_proxy:
     container_name: nginx_proxy
