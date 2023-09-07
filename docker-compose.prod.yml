@@ -9,9 +9,10 @@ services:
 
   extract_text:
     container_name: extract_text
-    build:
-      context: ./work_dir
-      dockerfile: Dockerfileprod
+#    build:
+#      context: ./work_dir
+#      dockerfile: Dockerfileprod
+    image: "${APP_IMAGE}"
     expose:
       - '8000'
     volumes:
@@ -31,9 +32,10 @@ services:
 
   nginx_proxy:
     container_name: nginx_proxy
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
+#    build:
+#      context: ./nginx
+#      dockerfile: Dockerfile
+    image: "${NGINX_IMAGE}"
     ports:
       - "80:80"
       - "443:443"
