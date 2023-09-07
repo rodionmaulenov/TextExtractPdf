@@ -30,14 +30,14 @@ jobs:
         working-directory: ./work_dir
 
     env:
-      DJANGO_SETTINGS_MODULE: ${{ secrets.TEST_ENV_SETTINGS }}
+      DJANGO_SETTINGS_MODULE: home_api.settings.dev
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      DEBUG: ${{ secrets.TEST_DEBUG }}
-      SQL_NAME: ${{ secrets.TEST_DB_NAME }}
-      SQL_USER: ${{ secrets.TEST_DB_USER }}
-      SQL_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
-      SQL_HOST: ${{ secrets.TEST_DB_HOST }}
-      SQL_PORT: ${{ secrets.TEST_DB_PORT }}
+      DEBUG: True
+      SQL_NAME: databasename
+      SQL_USER: databaseuser
+      SQL_PASSWORD: databasepassword
+      SQL_HOST: localhost
+      SQL_PORT: 5432
 
     services:
       postgres:
