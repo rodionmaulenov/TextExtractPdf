@@ -111,6 +111,7 @@ jobs:
             docker pull ${{ env.APP_IMAGE }}
             docker pull ${{ env.NGINX_IMAGE }}
             source .env
+            docker-compose -f docker-compose.prod.yml up
             chmod +x cleanup_docker_images.sh
             ./cleanup_docker_images.sh
           EOF
