@@ -1,6 +1,11 @@
 version: '3.9'
 
 services:
+  postgresql_db:
+    container_name: postgresql_db
+    image: postgres:latest
+    env_file:
+      - .env
 
   extract_text:
     container_name: extract_text
@@ -15,6 +20,8 @@ services:
       - ./.env:/home/app/web/.env
     env_file:
       - .env
+    depends_on:
+      - postgresql_db
     command: >
       bash -c '
               ./manage.py migrate &&

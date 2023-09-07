@@ -122,14 +122,25 @@ WSGI_APPLICATION = 'home_api.wsgi.application'
 #     }
 
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': "django.db.backends.postgresql_psycopg2",
+#         'NAME': os.environ.get('SQL_NAME'),
+#         'USER': os.environ.get('SQL_USER'),
+#         'PASSWORD': os.environ.get('SQL_PASSWORD'),
+#         'HOST': os.environ.get('SQL_HOST'),
+#         'PORT': os.environ.get('SQL_PORT'),
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': "django.db.backends.postgresql_psycopg2",
-        'NAME': os.environ.get('SQL_NAME'),
-        'USER': os.environ.get('SQL_USER'),
-        'PASSWORD': os.environ.get('SQL_PASSWORD'),
-        'HOST': os.environ.get('SQL_HOST'),
-        'PORT': os.environ.get('SQL_PORT'),
+        'NAME': 'popanegra',
+        'USER': 'popanegra1',
+        'PASSWORD': 'popanegra2',
+        'HOST': 'postgresql_db',
+        'PORT': '5432',
     }
 }
 
