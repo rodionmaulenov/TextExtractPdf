@@ -23,16 +23,53 @@ on:
 #  POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
 
 jobs:
-
-  deploy:
-    name: Deploy to DigitalOcean
+  build:
+    name: Build Docker Images
     runs-on: ubuntu-latest
-#    needs: build
+    needs: test
+
     steps:
       - name: Checkout master
         uses: actions/checkout@v4.0.0
 
-      - name: 'Create env file'
+      - name: Create env file
+        run: |
+          touch .env
+          echo DEBUG=${{ secrets.DEBUG }} >> .env
+          echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
+          echo SQL_NAME=${{ secrets.SQL_NAME }} >> .env
+          echo SQL_USER=${{ secrets.SQL_USER }} >> .env
+          echo SQL_PASSWORD=${{ secrets.SQL_PASSWORD }} >> .env
+          echo SQL_HOST=${{ secrets.SQL_HOST }} >> .env
+          echo SQL_PORT=${{ secrets.SQL_PORT }} >> .env
+          echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
+          echo CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }} >> .env
+          echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
+          echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
+          echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
+      
+
+      - name: Build images
+        run: |
+          docker-compose -f docker-compose.cicd.yml build
+
+      - name: Log in to GitHub Packages
+        run: echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
+
+      - name: Push images
+        run: |
+          docker push ${{ env.APP_IMAGE }}
+          docker push ${{ env.NGINX_IMAGE }}
+
+  deploy:
+    name: Deploy to DigitalOcean
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@v4.0.0
+
+      - name: Create env file
         run: |
           touch .env
           echo DEBUG=${{ secrets.DEBUG }} >> .env
@@ -68,6 +105,9 @@ jobs:
           ssh -o StrictHostKeyChecking=no root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} <<EOF
             chown -R rodion:rodion /home/rodion/TEXT_EXTRACT_PDF
             cd /home/rodion/TEXT_EXTRACT_PDF
+            echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
+            docker pull ${{ env.APP_IMAGE }}
+            docker pull ${{ env.NGINX_IMAGE }}
             source .env
             docker-compose -f docker-compose.prod.yml up -d --build
           EOF
