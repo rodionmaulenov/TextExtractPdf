@@ -100,7 +100,7 @@ class MyAdminViewPostRequestDnkFormTestCase(TestCase):
     def test_pdf_extract_text(self):
         pdf_path = 'test_pdf/TasuVasile.pdf'
         csv_file_path = pdf_extract_text(pdf_path)
-        if settings.DEBUG:
+        if 'dev' in os.environ.get('DJANGO_SETTINGS_MODULE'):
             self.assertEqual(csv_file_path,
                              '/home/runner/work/TextExtractPdf/TextExtractPdf/work_dir/upload_file/csv_files/Tasu_Vasile.csv')
         else:
@@ -113,9 +113,7 @@ class MyAdminViewPostRequestDnkFormTestCase(TestCase):
         self.assertEqual(csv_file_path, None)
 
     def test_retrieve_values(self):
-        print(settings.DEBUG)
-        if settings.DEBUG:
-
+        if 'dev' in os.environ.get('DJANGO_SETTINGS_MODULE'):
             csv_path = '/home/runner/work/TextExtractPdf/TextExtractPdf/work_dir/upload_file/csv_files/Tasu_Vasile.csv'
         else:
             csv_path = '/home/rodion/Desktop/ExtractTextPdf/work_dir/upload_file/csv_files/Tasu_Vasile.csv'
