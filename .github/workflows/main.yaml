@@ -35,17 +35,19 @@ jobs:
       - name: 'Create env file'
         run: |
           touch .env
-          echo "DEBUG=${{ secrets.DEBUG }}" >> .env
-          echo "SECRET_KEY=\"${{ secrets.SECRET_KEY }}\"" >> .env
-          echo "SQL_NAME=${{ secrets.SQL_NAME }}" >> .env
-          echo "SQL_USER=${{ secrets.SQL_USER }}" >> .env
-          echo "SQL_PASSWORD=${{ secrets.SQL_PASSWORD }}" >> .env
-          echo "SQL_HOST=${{ secrets.SQL_HOST }}" >> .env
-          echo "SQL_PORT=${{ secrets.SQL_PORT }}" >> .env
-          echo "ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}" >> .env
-          echo "CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}" >> .env
-          
-
+          printf "DEBUG=%s\nSECRET_KEY='%s'\nSQL_NAME=%s\nSQL_USER=%s\nSQL_PASSWORD=%s\nSQL_HOST=%s\nSQL_PORT=%s\nALLOWED_HOSTS=%s\nCSRF_TRUSTED_ORIGINS=%s" \
+            "${{ secrets.DEBUG }}" \
+            "${{ secrets.SECRET_KEY }}" \
+            "${{ secrets.SQL_NAME }}" \
+            "${{ secrets.SQL_USER }}" \
+            "${{ secrets.SQL_PASSWORD }}" \
+            "${{ secrets.SQL_HOST }}" \
+            "${{ secrets.SQL_PORT }}" \
+            "${{ secrets.ALLOWED_HOSTS }}" \
+            "${{ secrets.CSRF_TRUSTED_ORIGINS }}" > .env
+      
+      
+      
 
       - name: Configure ssh connection
         env:
