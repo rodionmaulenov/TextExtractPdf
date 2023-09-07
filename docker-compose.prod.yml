@@ -12,6 +12,7 @@ services:
     volumes:
       - ./persistentdata/static:/home/app/web/static
       - ./persistentdata/media:/home/app/web/media
+      - ./.env:/home/app/web/.env
     env_file:
       - .env
     command: >
