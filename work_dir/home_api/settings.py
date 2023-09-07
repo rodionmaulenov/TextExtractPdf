@@ -24,7 +24,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY') == 'True'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG')
 
-ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
+ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS'), os.environ.get('SQL_HOST')]
 
 # SECRET_KEY = 'django-insecure-fy!otfu*^lbwn_%vav4rw+d$8%4afj4j5rme&$(&eh$8jh4nea'
 #
@@ -92,46 +92,46 @@ WSGI_APPLICATION = 'home_api.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 
-POSTGRES_DB = os.environ.get("SQL_NAME")
-POSTGRES_PASSWORD = os.environ.get("SQL_PASSWORD")
-POSTGRES_USER = os.environ.get("SQL_USER")
-POSTGRES_HOST = os.environ.get("SQL_HOST")
-POSTGRES_PORT = os.environ.get("SQL_PORT")
-
-
-POSTGRES_READY = (
-    POSTGRES_DB is not None
-    and POSTGRES_PASSWORD is not None
-    and POSTGRES_USER is not None
-    and POSTGRES_HOST is not None
-    and POSTGRES_PORT is not None
-)
-
-print(POSTGRES_READY)
-
-if POSTGRES_READY:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": POSTGRES_DB,
-            "USER": POSTGRES_USER,
-            "PASSWORD": POSTGRES_PASSWORD,
-            "HOST": POSTGRES_HOST,
-            "PORT": POSTGRES_PORT,
-        }
-    }
-
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': "django.db.backends.postgresql_psycopg2",
-#         'NAME': os.environ.get('SQL_NAME'),
-#         'USER': os.environ.get('SQL_USER'),
-#         'PASSWORD': os.environ.get('SQL_PASSWORD'),
-#         'HOST': os.environ.get('SQL_HOST'),
-#         'PORT': os.environ.get('SQL_PORT'),
+# POSTGRES_DB = os.environ.get("SQL_NAME")
+# POSTGRES_PASSWORD = os.environ.get("SQL_PASSWORD")
+# POSTGRES_USER = os.environ.get("SQL_USER")
+# POSTGRES_HOST = os.environ.get("SQL_HOST")
+# POSTGRES_PORT = os.environ.get("SQL_PORT")
+#
+#
+# POSTGRES_READY = (
+#     POSTGRES_DB is not None
+#     and POSTGRES_PASSWORD is not None
+#     and POSTGRES_USER is not None
+#     and POSTGRES_HOST is not None
+#     and POSTGRES_PORT is not None
+# )
+#
+# print(POSTGRES_READY)
+#
+# if POSTGRES_READY:
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.postgresql",
+#             "NAME": POSTGRES_DB,
+#             "USER": POSTGRES_USER,
+#             "PASSWORD": POSTGRES_PASSWORD,
+#             "HOST": POSTGRES_HOST,
+#             "PORT": POSTGRES_PORT,
+#         }
 #     }
-# }
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': "django.db.backends.postgresql_psycopg2",
+        'NAME': os.environ.get('SQL_NAME'),
+        'USER': os.environ.get('SQL_USER'),
+        'PASSWORD': os.environ.get('SQL_PASSWORD'),
+        'HOST': os.environ.get('SQL_HOST'),
+        'PORT': os.environ.get('SQL_PORT'),
+    }
+}
 
 
 # Password validation
