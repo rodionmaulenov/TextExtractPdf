@@ -28,6 +28,7 @@ ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
 
 # SECRET_KEY = 'django-insecure-fy!otfu*^lbwn_%vav4rw+d$8%4afj4j5rme&$(&eh$8jh4nea'
 #
+
 # DEBUG = True
 #
 # ALLOWED_HOSTS = ['127.0.0.1']
