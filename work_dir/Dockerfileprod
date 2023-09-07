@@ -32,7 +32,6 @@ RUN pip install --no-cache /wheels/*
 
 COPY . $APP_HOME
 
-RUN source .env
 
 
 
