@@ -10,6 +10,8 @@ services:
   extract_text:
     container_name: extract_text
     image: "${APP_IMAGE}"
+    environment:
+      - DJANGO_SETTINGS_MODULE="${DJANGO_SETTINGS_MODULE}"
     expose:
       - '8000'
     volumes:
