@@ -5,7 +5,6 @@ on:
     branches:
       - main
 
-
 env:
   APP_IMAGE: ghcr.io/${{ secrets.REPOSITORY_GITHUB }}/text_extract
   NGINX_IMAGE: ghcr.io/${{ secrets.REPOSITORY_GITHUB }}/nginx
@@ -21,7 +20,6 @@ env:
   SQL_HOST: ${{ secrets.SQL_HOST }}
   SQL_PORT: ${{ secrets.SQL_PORT }}
   SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
-
 
 jobs:
   test:
