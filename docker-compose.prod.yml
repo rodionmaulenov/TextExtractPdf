@@ -16,7 +16,8 @@ services:
       - .env
     command: >
       bash -c "
-              ./manage.py shell --noinput &&
+              ./manage.py shell &&
+              echo $SECRET_KEY &&
               ./manage.py collectstatic --noinput &&
               ./manage.py migrate &&
               gunicorn -b 0.0.0.0:8000 home_api.wsgi:application
@@ -37,7 +38,7 @@ services:
       - ./persistentdata/static:/home/app/web/static
       - ./persistentdata/media:/home/app/web/media
     depends_on:
-    - extract_text
+      - extract_text
 
   certbot:
     container_name: certbot
