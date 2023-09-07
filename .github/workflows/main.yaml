@@ -35,10 +35,8 @@ jobs:
       - name: 'Create env file'
         run: |
           touch .env
-          SECRET_KEY_BASE64="${{ secrets.SECRET_KEY_BASE64 }}"
-          SECRET_KEY=$(echo "$SECRET_KEY_BASE64" | base64 -d)
           echo DEBUG=${{ secrets.DEBUG }} >> .env
-          echo "SECRET_KEY='$SECRET_KEY'" >> .env
+          echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
           echo SQL_NAME=${{ secrets.SQL_NAME }} >> .env
           echo SQL_USER=${{ secrets.SQL_USER }} >> .env
           echo SQL_PASSWORD=${{ secrets.SQL_PASSWORD }} >> .env
