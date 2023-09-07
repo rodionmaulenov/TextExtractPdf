@@ -104,7 +104,6 @@ class ClientAdmin(admin.ModelAdmin):
                     obj.file_upload = pdf_file  # add pdf file to instance Client
                     obj.save()
                     messages.success(request, f'Client instance {name} saved successfully')
-                    print(settings.DEBUG)
                     return redirect_to(request)
                 else:
                     messages.error(request, 'Form is not valid. Please check the uploaded file.')
