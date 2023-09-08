@@ -30,9 +30,8 @@ jobs:
         working-directory: ./work_dir
 
     env:
-      DJANGO_SETTINGS_MODULE: home_api.settings.dev
+      DJANGO_SETTINGS_MODULE: home_api.settings.test
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      DEBUG: True
       SQL_NAME: databasename
       SQL_USER: databaseuser
       SQL_PASSWORD: databasepassword
