@@ -1,10 +1,11 @@
 from django.contrib import admin
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.template.response import TemplateResponse
 from django.urls import path
 from django.shortcuts import redirect
 from django.contrib import messages
 
+from upload_file.decorators import user_in_group
 from upload_file.forms import FileUploadForm, DnkForm
 from upload_file.models import Client, Child, DNK
 from upload_file.services import pdf_extract_text, retrieve_values, get_dict_from_instances, \
@@ -73,6 +74,7 @@ class ClientAdmin(admin.ModelAdmin):
         ]
         return my_urls + urls
 
+    @user_in_group('user_input_text', 'users_upload')
     def my_view(self, request):
         template_name = 'admin/custom_base.html'
 
