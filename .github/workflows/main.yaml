@@ -31,7 +31,8 @@ jobs:
 
     env:
       DJANGO_SETTINGS_MODULE: home_api.settings.test
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      SECRET_KEY: test-key-not-good-maybe-you-doing-better
+      DEBUG: True
       SQL_NAME: databasename
       SQL_USER: databaseuser
       SQL_PASSWORD: databasepassword
