@@ -14,7 +14,7 @@ class TestUserInGroupDecorator(TestCase):
         group2 = Group.objects.create(name='users_upload')
         user.groups.add(group1, group2)
 
-        self.client.force_login(user=user)
+        self.client.login(username='testuser', password='password')
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
