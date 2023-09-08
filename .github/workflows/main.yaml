@@ -32,7 +32,7 @@ jobs:
     env:
       DJANGO_SETTINGS_MODULE: home_api.settings.dev
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      DEBUG: False
+      DEBUG: True
       SQL_NAME: databasename
       SQL_USER: databaseuser
       SQL_PASSWORD: databasepassword
