@@ -74,7 +74,7 @@ class ClientAdmin(admin.ModelAdmin):
         ]
         return my_urls + urls
 
-    @user_in_group('user_input_text', 'users_upload')
+    # @user_in_group('user_input_text', 'users_upload')
     def my_view(self, request):
         template_name = 'admin/custom_base.html'
 
