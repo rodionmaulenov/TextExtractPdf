@@ -57,7 +57,7 @@ class ChildCountFilter(admin.SimpleListFilter):
 
 
 class ClientAdmin(admin.ModelAdmin):
-    fields = ('name', 'locus', 'date_update', 'date_create', 'file_upload', 'childs')
+    fields = ('name', 'date_update', 'date_create', 'file_upload', 'childs')
     readonly_fields = ('name', 'date_update', 'date_create', 'file_upload', 'childs')
     list_display = ('name', 'date_update', 'date_create', 'file_upload', 'childs')
     search_fields = ('name__icontains',)
