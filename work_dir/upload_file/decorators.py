@@ -13,8 +13,7 @@ def user_in_group(q1, q2):
                 group2 = None
             if request.user.is_superuser:
                 return view_func(self, request, *args, **kwargs)
-            elif ((group1 and group2) and request.user.groups.filter(id=group1.id).exists()
-                    and request.user.groups.filter(id=group2.id).exists()):
+            elif request.user.groups.filter(id=group1.id).exists() and request.user.groups.filter(id=group2.id).exists():
                 return view_func(self, request, *args, **kwargs)
             else:
                 return HttpResponse("Unauthorized access, you don`t have correct credentials")
