@@ -55,7 +55,7 @@ class MyAdminViewPostRequestUploadFormTestCase(TestCase):
                                                    is_superuser=True)
         self.user = User.objects.create_user(username='testuser', password='password', is_staff=True)
 
-        group1 = Group.objects.create(name='user_input_text')
+        group1 = Group.objects.create(name='users_input_text')
         group2 = Group.objects.create(name='users_upload')
         self.user.groups.add(group1, group2)
 
@@ -382,7 +382,7 @@ class MyAdminViewPostRequestDnkFormTestCase(TestCase):
                                                    is_superuser=True)
         self.user = User.objects.create_user(username='testuser', password='password', is_staff=True)
 
-        group1 = Group.objects.create(name='user_input_text')
+        group1 = Group.objects.create(name='users_input_text')
         group2 = Group.objects.create(name='users_upload')
         self.user.groups.add(group1, group2)
 

@@ -10,7 +10,7 @@ class TestUserInGroupDecorator(TestCase):
 
     def test_user_in_correct_group(self):
         user = User.objects.create_user(username='testuser', password='password', is_staff=True)
-        group1 = Group.objects.create(name='user_input_text')
+        group1 = Group.objects.create(name='users_input_text')
         group2 = Group.objects.create(name='users_upload')
         user.groups.add(group1, group2)
 
