@@ -1,9 +1,8 @@
 import os
 
 
-def delete_client_pdf_file(sender, **kwargs):
-    client = kwargs.get('instance')
-    pdf_file_path = client.file_upload.path
-    print(pdf_file_path)
-    if os.path.exists(pdf_file_path):
-        os.remove(pdf_file_path)
+def delete_client_pdf_file(sender, instance, **kwargs):
+    if hasattr(instance, 'file_upload') and instance.file_upload:
+        pdf_file_path = instance.file_upload.path
+        if os.path.exists(pdf_file_path):
+            os.remove(pdf_file_path)
