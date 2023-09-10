@@ -712,6 +712,7 @@ class MyAdminViewPostRequestDnkFormTestCase(TestCase):
         response = client_admin.my_view(request)
 
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/admin/upload_file/client/form/')
 
         messages = list(get_messages(request))
         message = ''
@@ -743,6 +744,7 @@ class MyAdminViewPostRequestDnkFormTestCase(TestCase):
         response = client_admin.my_view(request)
 
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/admin/upload_file/client/form/')
 
         messages = list(get_messages(request))
         message = ''
