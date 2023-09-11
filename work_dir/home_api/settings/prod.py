@@ -29,30 +29,8 @@ CSRF_COOKIE_SECURE = True
 CSRF_TRUSTED_ORIGINS = [os.environ.get('CSRF_TRUSTED_ORIGINS')]
 
 
-STORAGES = {
-    "media": {
-        "BACKEND": "home_api.cdn.backends.MediaRootS3BotoStorage",
-        "OPTIONS": {
-            "AWS_ACCESS_KEY_ID": AWS_ACCESS_KEY_ID,
-            "AWS_SECRET_ACCESS_KEY": AWS_SECRET_ACCESS_KEY,
-            "AWS_STORAGE_BUCKET_NAME": AWS_STORAGE_BUCKET_NAME,
-            "AWS_S3_ENDPOINT_URL": AWS_S3_ENDPOINT_URL,
-            "AWS_S3_OBJECT_PARAMETERS": AWS_S3_OBJECT_PARAMETERS,
-            "AWS_LOCATION": AWS_LOCATION,
-        },
-    },
-    "static": {
-        "BACKEND": "home_api.cdn.backends.StaticRootS3BotoStorage",
-        "OPTIONS": {
-            "AWS_ACCESS_KEY_ID": AWS_ACCESS_KEY_ID,
-            "AWS_SECRET_ACCESS_KEY": AWS_SECRET_ACCESS_KEY,
-            "AWS_STORAGE_BUCKET_NAME": AWS_STORAGE_BUCKET_NAME,
-            "AWS_S3_ENDPOINT_URL": AWS_S3_ENDPOINT_URL,
-            "AWS_S3_OBJECT_PARAMETERS": AWS_S3_OBJECT_PARAMETERS,
-            "AWS_LOCATION": AWS_LOCATION,
-        },
-    },
-}
+
+
 
 
 

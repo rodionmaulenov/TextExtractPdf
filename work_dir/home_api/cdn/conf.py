@@ -9,3 +9,5 @@ AWS_S3_OBJECT_PARAMETERS = {
     "ACL": "public-read"
 }
 AWS_LOCATION = "https://text-extract-pdf-spaces.fra1.digitaloceanspaces.com"
+DEFAULT_FILE_STORAGE = "home_api.cdn.backends.MediaRootS3BotoStorage"
+STATICFILES_STORAGE = 'home_api.cdn.backends.StaticRootS3BotoStorage'
