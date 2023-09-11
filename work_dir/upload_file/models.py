@@ -1,3 +1,6 @@
+import os
+
+from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.db.models.signals import pre_delete
 
@@ -13,7 +16,8 @@ from upload_file.receivers import delete_client_pdf_file
 class Client(models.Model):
     name = models.CharField(max_length=50, blank=True, null=True)
     locus = models.JSONField(blank=True, null=True)
-    file_upload = models.FileField(storage=MediaRootS3BotoStorage())
+    file_upload = models.FileField(
+        storage=MediaRootS3BotoStorage() if 'prod' in os.environ.get('DJANGO_SETTINGS_MODULE') else FileSystemStorage())
     date_create = models.DateField(auto_now_add=True)
     date_update = models.DateTimeField(auto_now=True)
 

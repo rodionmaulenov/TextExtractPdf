@@ -108,11 +108,9 @@ class ClientAdmin(admin.ModelAdmin):
                         messages.warning(request, f'Exactly the same client {name} already exists')
                         return redirect_to(request)
 
-                    # obj.file_upload = pdf_file  # add pdf file to instance Client
-                    # obj.save()
+                    obj.file_upload = pdf_file.name  # add pdf file to instance Client
+                    obj.save()
                     # Create a relative path for the PDF file using the client's name as the file name
-                    client_instance = obj(file_upload=pdf_file)
-                    client_instance.save()
                     messages.success(request, f'Client instance {name} saved successfully')
                     return redirect_to(request)
                 else:
