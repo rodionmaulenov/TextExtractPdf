@@ -1,4 +1,6 @@
-from .base import *
+from home_api.cdn.conf import *
+from home_api.settings.base import *
+
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
@@ -25,3 +27,5 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
 CSRF_TRUSTED_ORIGINS = [os.environ.get('CSRF_TRUSTED_ORIGINS')]
+
+
