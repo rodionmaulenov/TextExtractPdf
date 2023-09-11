@@ -1,4 +1,4 @@
-from home_api.cdn.conf import *
+# from home_api.cdn.conf import *
 from home_api.settings.base import *
 
 
