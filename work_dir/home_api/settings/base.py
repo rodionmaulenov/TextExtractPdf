@@ -41,6 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # third party packages
+    'storages'
+
     # my applications
     'upload_file'
 ]
