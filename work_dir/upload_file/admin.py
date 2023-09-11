@@ -1,3 +1,5 @@
+import os
+
 from django.contrib import admin
 from django.db.models import Count
 from django.template.response import TemplateResponse
@@ -10,7 +12,6 @@ from upload_file.forms import FileUploadForm, DnkForm
 from upload_file.models import Client, Child, DNK
 from upload_file.services import pdf_extract_text, retrieve_values, get_dict_from_instances, \
     compare_dnk_child_with_clients, verify_data
-
 
 from io import BytesIO
 from django.core.files.base import ContentFile
@@ -91,6 +92,7 @@ class ClientAdmin(admin.ModelAdmin):
             if 'upload_form_submit' in request.POST:
                 form = FileUploadForm(request.POST, request.FILES)
                 if form.is_valid():
+                    image_file = request.FILES['file_upload']
                     pdf_file = form.cleaned_data['file_upload']
                     if not pdf_file.name.endswith('.pdf'):
                         messages.warning(request, 'Wrong type file was uploaded. Must be in PDF format')
@@ -108,9 +110,15 @@ class ClientAdmin(admin.ModelAdmin):
                         messages.warning(request, f'Exactly the same client {name} already exists')
                         return redirect_to(request)
 
-                    obj.file_upload = f'{name}.pdf'  # add pdf file to instance Client
-                    obj.save()
+                    # obj.file_upload = pdf_file  # add pdf file to instance Client
+                    # obj.save()
                     # Create a relative path for the PDF file using the client's name as the file name
+                    if 'prod' in os.environ.get('DJANGO_SETTINGS_MODULE'):
+                        upload = obj(file=image_file)
+                        upload.save()
+                    else:
+                        obj.save(image_file.name, image_file)
+
                     messages.success(request, f'Client instance {name} saved successfully')
                     return redirect_to(request)
                 else:
