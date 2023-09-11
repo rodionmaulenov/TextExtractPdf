@@ -12,12 +12,12 @@ from upload_file.receivers import delete_client_pdf_file
 # def user_directory_path(instance, filename):
 #     return f"{'*'.join(instance.name.split())}.pdf"
 
+#storage=MediaRootS3BotoStorage() if 'prod' in os.environ.get('DJANGO_SETTINGS_MODULE') else FileSystemStorage()
 
 class Client(models.Model):
     name = models.CharField(max_length=50, blank=True, null=True)
     locus = models.JSONField(blank=True, null=True)
-    file_upload = models.FileField(
-        storage=MediaRootS3BotoStorage() if 'prod' in os.environ.get('DJANGO_SETTINGS_MODULE') else FileSystemStorage())
+    file_upload = models.FileField()
     date_create = models.DateField(auto_now_add=True)
     date_update = models.DateTimeField(auto_now=True)
 
