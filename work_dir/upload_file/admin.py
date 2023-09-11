@@ -114,8 +114,8 @@ class ClientAdmin(admin.ModelAdmin):
                     # obj.save()
                     # Create a relative path for the PDF file using the client's name as the file name
                     if 'prod' in os.environ.get('DJANGO_SETTINGS_MODULE'):
-                        upload = obj(file=image_file)
-                        upload.save()
+                        obj.file_upload = image_file
+                        obj.save()
                     else:
                         obj.save(image_file.name, image_file)
 
