@@ -1,9 +1,10 @@
 from django.contrib import admin
-from django.db.models import Count, Q
+from django.db.models import Count
 from django.template.response import TemplateResponse
 from django.urls import path
 from django.shortcuts import redirect
 from django.contrib import messages
+from django.core.files.base import ContentFile
 
 from upload_file.decorators import user_in_group
 from upload_file.forms import FileUploadForm, DnkForm
@@ -102,8 +103,9 @@ class ClientAdmin(admin.ModelAdmin):
                         messages.warning(request, f'Exactly the same client {name} already exists')
                         return redirect_to(request)
 
-                    obj.file_upload = pdf_file.name  # add pdf file to instance Client
-                    obj.save()
+                    # obj.file_upload = pdf_file  # add pdf file to instance Client
+                    # obj.save()
+                    obj.file_upload.save(pdf_file.name, ContentFile(pdf_file.read()))
                     messages.success(request, f'Client instance {name} saved successfully')
                     return redirect_to(request)
                 else:
