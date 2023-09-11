@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # third party packages
-    'storages'
+    # 'storages',
 
     # my applications
     'upload_file'
