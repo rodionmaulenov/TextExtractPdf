@@ -110,24 +110,14 @@ class ClientAdmin(admin.ModelAdmin):
 
                     # obj.file_upload = pdf_file  # add pdf file to instance Client
                     # obj.save()
-                    obj.file_upload.save(pdf_file.name, ContentFile(pdf_file.read()))
-                    # pdf_content = pdf_file.read()
-                    #
-                    # # Resize the PDF file (for demonstration purposes)
-                    # # Replace this part with your actual PDF manipulation code
-                    # pdf_buffer = BytesIO(pdf_content)
-                    # pdf_image = Image.open(pdf_buffer)
-                    # pdf_image.thumbnail((200, 200))
-                    #
-                    # # Save the modified PDF image as a JPEG
-                    # modified_pdf_buffer = BytesIO()
-                    # pdf_image.save(modified_pdf_buffer, 'JPEG')
-                    #
-                    # # Save the modified PDF image as the file_upload attribute
-                    # obj.file_upload.save(pdf_file.name, ContentFile(modified_pdf_buffer.getvalue()), save=False)
-                    #
-                    # # Save the object with the updated file_upload attribute
-                    # obj.save()
+                    # Create a relative path for the PDF file using the client's name as the file name
+                    pdf_filename = f'{name}.pdf'
+
+                    # Save the PDF file using the relative path
+                    obj.file_upload.save(pdf_filename, pdf_file, save=False)
+
+                    # Save the object with the updated file_upload attribute
+                    obj.save()
                     messages.success(request, f'Client instance {name} saved successfully')
                     return redirect_to(request)
                 else:
