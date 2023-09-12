@@ -32,13 +32,14 @@ AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = 'text-extract-pdf-spaces'
 AWS_S3_CUSTOM_DOMAIN = 'text-extract-pdf-spaces.fra1.digitaloceanspaces.com'
 
-AWS_S3_OBJECT_PARAMETERS = {
-    "CacheControl": "max-age=86400",
-    "ACL": "public-read"
-}
+AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+AWS_DEFAULT_ACL = 'public-read'
 
-STATIC_URL = 'https://text-extract-pdf-spaces.fra1.digitaloceanspaces.com/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+AWS_LOCATION = 'static'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+STATIC_URL = 'https://text-extract-pdf-spaces.fra1.digitaloceanspaces.com/static/'
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # MEDIA_LOCATION = 'media'
