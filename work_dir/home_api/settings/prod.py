@@ -1,13 +1,11 @@
 from home_api.settings.base import *
 
-
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 DEBUG = os.environ.get('DEBUG')
 
 ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS'), os.environ.get('SQL_HOST'), os.environ.get("WWW_HOST"),
                  os.environ.get('OTHERS_HOSTS')]
-
 
 DATABASES = {
     'default': {
@@ -27,28 +25,15 @@ CSRF_COOKIE_SECURE = True
 
 CSRF_TRUSTED_ORIGINS = [os.environ.get('CSRF_TRUSTED_ORIGINS')]
 
+
 AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = 'text-extract-pdf-spaces'
-AWS_S3_CUSTOM_DOMAIN = 'text-extract-pdf-spaces.fra1.digitaloceanspaces.com'
-
-AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
-AWS_DEFAULT_ACL = 'public-read'
-
-AWS_LOCATION = 'static'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
-STATIC_URL = 'https://text-extract-pdf-spaces.fra1.digitaloceanspaces.com/static/'
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
-# MEDIA_LOCATION = 'media'
-# MEDIA_URL = '{}/{}/'.format(AWS_S3_ENDPOINT_URL, MEDIA_LOCATION)
-# DEFAULT_FILE_STORAGE = "home_api.cdn.backends.MediaRootS3BotoStorage"
-
-
-
-
-
-
-
+AWS_S3_ENDPOINT_URL = "https://fra1.digitaloceanspaces.com"
+AWS_S3_OBJECT_PARAMETERS = {
+    "CacheControl": "max-age=86400",
+    "ACL": "public-read"
+}
+AWS_LOCATION = "https://text-extract-pdf-spaces.fra1.digitaloceanspaces.com"
+DEFAULT_FILE_STORAGE = "home_api.storages.MediaRootS3BotoStorage"
+STATICFILES_STORAGE = 'home_api.storages.StaticRootS3BotoStorage'
