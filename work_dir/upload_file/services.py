@@ -17,11 +17,11 @@ def pdf_extract_text(pdf_file=None):
       and return path to writing file"""
     try:
         table = tabula.read_pdf(pdf_file, pages='3')  # get 3 page from pdf
+        csv_data = table[0].to_csv(index=False)  # get table without indexing rows
+        file_name = '_'.join(table[0].columns[1].split())  # forms name file by name client
+
     except:
         return None
-
-    csv_data = table[0].to_csv(index=False)  # get table without indexing rows
-    file_name = '_'.join(table[0].columns[1].split())  # forms name file by name client
 
     csv_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'csv_files')  # mount storage directory
 

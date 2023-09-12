@@ -92,7 +92,6 @@ class ClientAdmin(admin.ModelAdmin):
             if 'upload_form_submit' in request.POST:
                 form = FileUploadForm(request.POST, request.FILES)
                 if form.is_valid():
-                    image_file = request.FILES['file_upload']
                     pdf_file = form.cleaned_data['file_upload']
                     if not pdf_file.name.endswith('.pdf'):
                         messages.warning(request, 'Wrong type file was uploaded. Must be in PDF format')
