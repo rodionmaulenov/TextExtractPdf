@@ -43,9 +43,6 @@ INSTALLED_APPS = [
 
     # my applications
     'upload_file',
-
-    # third party packages
-    'storages'
 ]
 
 MIDDLEWARE = [
