@@ -110,14 +110,9 @@ class ClientAdmin(admin.ModelAdmin):
                         messages.warning(request, f'Exactly the same client {name} already exists')
                         return redirect_to(request)
 
-                    # obj.file_upload = pdf_file  # add pdf file to instance Client
-                    # obj.save()
+                    obj.file_upload = pdf_file  # add pdf file to instance Client
+                    obj.save()
                     # Create a relative path for the PDF file using the client's name as the file name
-                    if 'prod' in os.environ.get('DJANGO_SETTINGS_MODULE'):
-                        obj.file_upload = image_file
-                        obj.save()
-                    else:
-                        obj.save(image_file.name, image_file)
 
                     messages.success(request, f'Client instance {name} saved successfully')
                     return redirect_to(request)
