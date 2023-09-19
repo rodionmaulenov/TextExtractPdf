@@ -592,7 +592,7 @@ class MyAdminViewPostRequestDnkFormTestCase(TestCase):
         for m in messages:
             message += str(m)
 
-        self.assertEqual(message, 'We have matching father TASU VASILE')
+        self.assertEqual(message, 'Client instance <a href="/admin/upload_file/client/7/change/">TASU VASILE</a> saved successfully')
 
     def test_view_post_dnk_form_submit_valid_matching_not_find_with_group_and_staff_credentials(self):
         data = {
