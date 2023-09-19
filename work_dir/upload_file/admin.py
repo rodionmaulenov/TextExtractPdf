@@ -1,9 +1,10 @@
 from django.contrib import admin
 from django.db.models import Count
 from django.template.response import TemplateResponse
-from django.urls import path
+from django.urls import path, reverse
 from django.shortcuts import redirect
 from django.contrib import messages
+from django.utils.safestring import mark_safe
 
 from upload_file.decorators import user_in_group
 from upload_file.forms import FileUploadForm, DnkForm
@@ -58,7 +59,7 @@ class ChildCountFilter(admin.SimpleListFilter):
 
 
 class ClientAdmin(admin.ModelAdmin):
-    fields = ('name', 'locus', 'date_update', 'date_create', 'file_upload', 'childs')
+    fields = ('name', 'date_update', 'date_create', 'file_upload', 'childs')
     readonly_fields = ('name', 'date_update', 'date_create', 'file_upload', 'childs')
     list_display = ('name', 'date_update', 'date_create', 'file_upload', 'childs')
     search_fields = ('name__icontains',)
@@ -136,7 +137,12 @@ class ClientAdmin(admin.ModelAdmin):
                             child.client = client_obj  # add relationship 1_to_many
                             child.save()
                             child.dnk.delete()  # has removed unnecessary instance dnk
-                            messages.success(request, f'We have matching father {client_obj.name.upper()}')
+
+                            admin_change_url = reverse(
+                                'admin:%s_%s_change' % (client_obj._meta.app_label, client_obj._meta.model_name),
+                                args=[client_obj.pk])
+                            messages.success(request, mark_safe(
+                                f'Client instance <a href="{admin_change_url}">{client_obj.name.upper()}</a> saved successfully'))
                             return redirect_to(request)
                         else:
                             child.dnk.delete()  # if not have matching in verifying client and child instances removed dnk related vith child
