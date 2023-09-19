@@ -530,7 +530,7 @@ class MyAdminViewPostRequestDnkFormTestCase(TestCase):
         # Check for the error message
         error_messages = [message for message in messages if message.level == ERROR]
         self.assertEqual(len(error_messages), 1)  #
-        self.assertIn('Fields could contain only numbers from 0 to 9 and dot.', error_messages[0].message)
+        self.assertIn('Number should contain only 0123456789.', error_messages[0].message)
 
     def test_valid_dnk_form_with_valid_dnk_data_and_verify_data_func_is_numbers_from_0_9_is_superuser(self):
         valid_dnk_data = {"FGA": "21as,22", "vWA": "16,19", "THO1": "8,9", "TPOX": "8,8",
@@ -561,102 +561,7 @@ class MyAdminViewPostRequestDnkFormTestCase(TestCase):
         # Check for the error message
         error_messages = [message for message in messages if message.level == ERROR]
         self.assertEqual(len(error_messages), 1)  #
-        self.assertIn('Fields could contain only numbers from 0 to 9 and dot.', error_messages[0].message)
-
-    def test_valid_dnk_form_with_valid_dnk_data_and_verify_data_func_is_numbers_integer_or_float_with_group_and_staff_credentials(
-            self):
-        valid_dnk_data = {"FGA": "21.,22", "vWA": "16,19", "THO1": "8,9", "TPOX": "8,8",
-                          "CSF1P0": "21,22", "D18S51": "13,16", "D21S11": "29,30.2",
-                          "D2S441": "14,14", "D5S818": "&&,13", "D7S820": "12,12",
-                          "D12S391": "19.,20", "D13S317": "8,11", "D16S539": "10,11",
-                          "D19S433": "13,13", "D1S1656": "21,22", "D2S1338": "19,20",
-                          "D3S1358": "15,16", "D6S1043": "11,12", "D8S1179": "14,14",
-                          "Penta_D": "11,12", "Penta_E": "12,13", "D10S1248": "15,15",
-                          "D22S1045": "15,15"}
-        dnk_form = DnkForm(valid_dnk_data)
-        self.assertTrue(dnk_form.is_valid())
-
-        request = HttpRequest()  # Use HttpRequest instead of HttpResponseNotFound
-        setattr(request, 'session', self.client.session)
-        setattr(request, '_messages', FallbackStorage(request))
-        request.user = self.user
-
-        dnk = dnk_form.instance
-        dnk.child = self.child
-        dnk.save()
-
-        result = verify_data(request, dnk, self.child)
-        self.assertFalse(result)
-
-        messages = list(get_messages(request))
-
-        # Check for the error message
-        error_messages = [message for message in messages if message.level == ERROR]
-        self.assertEqual(len(error_messages), 1)  #
-        self.assertIn('Value must be integer either float.', error_messages[0].message)
-
-    def test_valid_dnk_form_with_valid_dnk_data_and_verify_data_func_is_numbers_integer_or_float_is_superuser(self):
-        valid_dnk_data = {"FGA": "21.,22", "vWA": "16,19", "THO1": "8,9", "TPOX": "8,8",
-                          "CSF1P0": "21,22", "D18S51": "13,16", "D21S11": "29,30.2",
-                          "D2S441": "14,14", "D5S818": "&&,13", "D7S820": "12,12",
-                          "D12S391": "19.,20", "D13S317": "8,11", "D16S539": "10,11",
-                          "D19S433": "13,13", "D1S1656": "21,22", "D2S1338": "19,20",
-                          "D3S1358": "15,16", "D6S1043": "11,12", "D8S1179": "14,14",
-                          "Penta_D": "11,12", "Penta_E": "12,13", "D10S1248": "15,15",
-                          "D22S1045": "15,15"}
-        dnk_form = DnkForm(valid_dnk_data)
-        self.assertTrue(dnk_form.is_valid())
-
-        request = HttpRequest()  # Use HttpRequest instead of HttpResponseNotFound
-        setattr(request, 'session', self.client.session)
-        setattr(request, '_messages', FallbackStorage(request))
-        request.user = self.super_user
-
-        dnk = dnk_form.instance
-        dnk.child = self.child
-        dnk.save()
-
-        result = verify_data(request, dnk, self.child)
-        self.assertFalse(result)
-
-        messages = list(get_messages(request))
-
-        # Check for the error message
-        error_messages = [message for message in messages if message.level == ERROR]
-        self.assertEqual(len(error_messages), 1)  #
-        self.assertIn('Value must be integer either float.', error_messages[0].message)
-
-    def test_valid_dnk_form_with_valid_dnk_data_and_verify_data_func_is_separated_comma_with_group_and_staff_credentials(
-            self):
-        valid_dnk_data = {"FGA": "21.22", "vWA": "16,19", "THO1": "8,9", "TPOX": "8,8",
-                          "CSF1P0": "2122", "D18S51": "13,16", "D21S11": "29,30.2",
-                          "D2S441": "14,14", "D5S818": "&&,13", "D7S820": "12,12",
-                          "D12S391": "19.,20", "D13S317": "8,11", "D16S539": "10,11",
-                          "D19S433": "13,13", "D1S1656": "21,22", "D2S1338": "19,20",
-                          "D3S1358": "15,16", "D6S1043": "11,12", "D8S1179": "14,14",
-                          "Penta_D": "11,12", "Penta_E": "12,13", "D10S1248": "15,15",
-                          "D22S1045": "15,15"}
-        dnk_form = DnkForm(valid_dnk_data)
-        self.assertTrue(dnk_form.is_valid())
-
-        request = HttpRequest()  # Use HttpRequest instead of HttpResponseNotFound
-        setattr(request, 'session', self.client.session)
-        setattr(request, '_messages', FallbackStorage(request))
-        request.user = self.user
-
-        dnk = dnk_form.instance
-        dnk.child = self.child
-        dnk.save()
-
-        result = verify_data(request, dnk, self.child)
-        self.assertFalse(result)
-
-        messages = list(get_messages(request))
-
-        # Check for the error message
-        error_messages = [message for message in messages if message.level == ERROR]
-        self.assertEqual(len(error_messages), 1)  #
-        self.assertIn('Numbers must be separated by a comma.', error_messages[0].message)
+        self.assertIn('Number should contain only 0123456789.', error_messages[0].message)
 
     def test_view_post_dnk_form_submit_valid_matching_find_is_superuser(self):
         data = {

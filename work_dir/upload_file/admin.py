@@ -1,5 +1,3 @@
-import os
-
 from django.contrib import admin
 from django.db.models import Count
 from django.template.response import TemplateResponse
@@ -10,13 +8,8 @@ from django.contrib import messages
 from upload_file.decorators import user_in_group
 from upload_file.forms import FileUploadForm, DnkForm
 from upload_file.models import Client, Child, DNK
-from upload_file.services import pdf_extract_text, retrieve_values, get_dict_from_instances, \
+from upload_file.services import pdf_extract_text, retrieve_values, get_dict_from_instance, \
     compare_dnk_child_with_clients, verify_data
-
-from io import BytesIO
-from django.core.files.base import ContentFile
-from django.core.files.storage import default_storage as storage
-from PIL import Image
 
 
 class ChildCountFilter(admin.SimpleListFilter):
@@ -65,7 +58,7 @@ class ChildCountFilter(admin.SimpleListFilter):
 
 
 class ClientAdmin(admin.ModelAdmin):
-    fields = ('name', 'date_update', 'date_create', 'file_upload', 'childs')
+    fields = ('name', 'locus', 'date_update', 'date_create', 'file_upload', 'childs')
     readonly_fields = ('name', 'date_update', 'date_create', 'file_upload', 'childs')
     list_display = ('name', 'date_update', 'date_create', 'file_upload', 'childs')
     search_fields = ('name__icontains',)
@@ -124,15 +117,15 @@ class ClientAdmin(admin.ModelAdmin):
                 child = Child.objects.create()
 
                 if dnk_form.is_valid():
-                    obj_dnk = dnk_form.save(commit=False)
-                    obj_dnk.child = child
-                    obj_dnk.save()  # assign relation 1_to_1 model child to dnk
-                    verify = verify_data(request, obj_dnk, child)  # verify input form data
+                    dnk_instance = dnk_form.save(commit=False)
+                    dnk_instance.child = child
+                    dnk_instance.save()  # assign relation 1_to_1 model child to dnk
+                    verify = verify_data(request, dnk_instance, child)  # verify input form data
 
                     if verify:
                         clients = Client.objects.all()
-                        child_locus_dict = get_dict_from_instances(
-                            obj_dnk)  # retrieve data from instance and convert into dict
+                        child_locus_dict = get_dict_from_instance(
+                            dnk_instance)  # retrieve data from instance and convert into dict
                         client_obj = compare_dnk_child_with_clients(child_locus_dict,
                                                                     clients)  # identify matching client and child dnk locus
 

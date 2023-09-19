@@ -1,6 +1,5 @@
 import csv
 import os
-import re
 
 import tabula
 from django.forms import model_to_dict
@@ -19,7 +18,6 @@ def pdf_extract_text(pdf_file=None):
         table = tabula.read_pdf(pdf_file, pages='3')  # get 3 page from pdf
         csv_data = table[0].to_csv(index=False)  # get table without indexing rows
         file_name = '_'.join(table[0].columns[1].split())  # forms name file by name client
-
     except:
         return None
 
@@ -57,10 +55,10 @@ def retrieve_values(file_path):
     return name, locus_dict
 
 
-def get_dict_from_instances(obj_dnk):
+def get_dict_from_instance(child_dnk):
     """Derive dict from DNK objects"""
     locus_dict_from_object = {}
-    for key, value in model_to_dict(obj_dnk, exclude=('id', 'child')).items():
+    for key, value in model_to_dict(child_dnk, exclude=('id', 'child')).items():
         if key == 'Penta_D' or key == 'Penta_E':
             key = 'Penta D' if key == 'Penta_D' else 'Penta E'
             locus_dict_from_object[key] = value
@@ -68,25 +66,27 @@ def get_dict_from_instances(obj_dnk):
     return locus_dict_from_object
 
 
-def compare_dnk_child_with_clients(dictionary_dnk, client_list):
+def compare_dnk_child_with_clients(child_dnk_dict, clients):
     """Find father by locus child"""
-    count_matching = []
+    list_matching = []
     client = None
-    for obj in client_list:
-        client_locus = obj.locus
+    for obj in clients:
+        client_dnk = obj.locus
 
-        for key, value in dictionary_dnk.items():
+        for key, value in child_dnk_dict.items():
             if not key:
                 return client
-            if key in client_locus:
-                dnk_child_to_match = value.split(',')
-                client_property_value = client_locus[key]
-                numbers_in_property = [num.strip() for num in client_property_value.split(',')]
+            if key in client_dnk:
+                child_property_value = value.split(',')
+                client_property_value = client_dnk[key]
+                client_locus = [num.strip() for num in client_property_value.split(',')]
 
-                count_matching.append(any(num.strip() in numbers_in_property for num in dnk_child_to_match))
+                list_matching.append(any(num.strip() in client_locus for num in child_property_value))
 
-        if all(count_matching):
+        if all(list_matching) and len(list_matching) > 1:
             client = obj
+        else:
+            list_matching = []
 
     return client
 
@@ -116,19 +116,12 @@ def verify_data(request, dnk, child):
             int_and_dot = '0123456789.'
             for number in two_numbers:
                 if len(number.strip(int_and_dot)) != 0:
-                    messages.error(request, 'Fields could contain only numbers from 0 to 9 and dot.')
+                    messages.error(request, 'Number should contain only 0123456789.')
                     remove_objects(dnk, child)
                     return False
 
-            for number in two_numbers:
-                if '.' in number:
-                    if not re.match(r'^\d+\.\d+$', number):
-                        messages.error(request, 'Value must be integer either float.')
-                        remove_objects(dnk, child)
-                        return False
-
             if len(two_numbers) != 2:
-                messages.error(request, 'Numbers must be separated by a comma.')
+                messages.error(request, 'Only two numbers separated by a comma')
                 remove_objects(dnk, child)
                 return False
 
