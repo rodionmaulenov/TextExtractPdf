@@ -7,6 +7,7 @@ DEBUG = os.environ.get('DEBUG')
 ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS'), os.environ.get('SQL_HOST'), os.environ.get("WWW_HOST"),
                  os.environ.get('OTHERS_HOSTS')]
 
+
 DATABASES = {
     'default': {
         'ENGINE': "django.db.backends.postgresql_psycopg2",
