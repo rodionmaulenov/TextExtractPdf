@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.db.models import Count
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
 from django.shortcuts import redirect
@@ -7,63 +6,17 @@ from django.contrib import messages
 from django.utils.safestring import mark_safe
 
 from upload_file.decorators import user_in_group
-from upload_file.forms import FileUploadForm, DnkForm
-from upload_file.models import Client, Child, DNK
-from upload_file.services import pdf_extract_text, retrieve_values, get_dict_from_instance, \
-    compare_dnk_child_with_clients, verify_data
-
-
-class ChildCountFilter(admin.SimpleListFilter):
-    title = 'childs have'
-    parameter_name = 'childs'
-
-    def lookups(self, request, model_admin):
-        dict_numbers = {
-            0: 'zero',
-            1: 'one',
-            2: 'two',
-            3: 'three',
-            4: 'four',
-        }
-        lst = []
-        for i in range(5):
-            lst.append((str(i), f'{dict_numbers.get(i)} childs'))
-
-        return lst
-
-    def queryset(self, request, queryset):
-        if self.value() is not None:
-            value = int(self.value())
-
-            if value >= 0 and value <= 4:
-                queryset = queryset.annotate(childs=Count('child'))
-                return queryset.filter(childs=value)
-
-        return queryset
-    # def queryset(self, request, queryset):
-    #     if self.value() == '0':
-    #         queryset = queryset.annotate(childs=Count('child'))
-    #         return queryset.filter(childs=0)
-    #     if self.value() == '1':
-    #         queryset = queryset.annotate(childs=Count('child'))
-    #         return queryset.filter(childs=1)
-    #     if self.value() == '2':
-    #         queryset = queryset.annotate(childs=Count('child'))
-    #         return queryset.filter(childs=2)
-    #     if self.value() == '3':
-    #         queryset = queryset.annotate(childs=Count('child'))
-    #         return queryset.filter(childs=3)
-    #     if self.value() == '4':
-    #         queryset = queryset.annotate(childs=Count('child'))
-    #         return queryset.filter(childs=4)
+from upload_file.forms import FileUploadForm, LocusForm
+from upload_file.models import Client
+from upload_file.services import verify_form_fields, get_table_from_pdf_file, compare_dnk_child_with_father
 
 
 class ClientAdmin(admin.ModelAdmin):
-    fields = ('name', 'date_update', 'date_create', 'file_upload', 'childs')
-    readonly_fields = ('name', 'date_update', 'date_create', 'file_upload', 'childs')
-    list_display = ('name', 'date_update', 'date_create', 'file_upload', 'childs')
+    fields = ('name', 'locus', 'date_update', 'date_create', 'file_upload')
+    readonly_fields = ('name', 'date_update', 'date_create', 'file_upload')
+    list_display = ('name', 'date_update', 'date_create', 'file_upload')
     search_fields = ('name__icontains',)
-    list_filter = ('date_update', 'date_create', ChildCountFilter)
+    list_filter = ('date_update', 'date_create')
 
     def childs(self, obj):
         return obj.child_set.count()
@@ -79,92 +32,80 @@ class ClientAdmin(admin.ModelAdmin):
     def my_view(self, request):
         template_name = 'admin/custom_base.html'
 
-        def redirect_to(request):
+        def redirect_home(request):
             return redirect(request.path_info)
 
         if request.method == 'POST':
+
             if 'upload_form_submit' in request.POST:
                 form = FileUploadForm(request.POST, request.FILES)
                 if form.is_valid():
                     pdf_file = form.cleaned_data['file_upload']
-                    if not pdf_file.name.endswith('.pdf'):
-                        messages.warning(request, 'Wrong type file was uploaded. Must be in PDF format')
-                        return redirect_to(request)
+                    # verify file extension
+                    if not pdf_file.name.endswith('pdf'):
+                        messages.warning(request, 'Only pdf extension')
+                        return redirect_home(request)
 
-                    path_to_record = pdf_extract_text(pdf_file)  # extract locus data from upload pdf to csv_file
-                    if path_to_record is None:
-                        messages.warning(request, 'Must be a pdf file with locus table')
-                        return redirect_to(request)
-                    name, locus_dict = retrieve_values(
-                        path_to_record)  # get client name and dnk locus client in format dict
-                    obj, created = Client.objects.get_or_create(name=name, locus=locus_dict)
+                    try:
+                        locus_dict, name = get_table_from_pdf_file(request, pdf_file)
+                    except Exception:
+                        messages.error(request, 'Invalid file')
+                        return redirect_home(request)
 
-                    if not created:
-                        messages.warning(request, f'Exactly the same client {name} already exists')
-                        return redirect_to(request)
+                    if locus_dict and name:
+                        father, created = Client.objects.get_or_create(name=name, locus=locus_dict)
 
-                    obj.file_upload = pdf_file  # add pdf file to instance Client
-                    obj.save()
-                    # Create a relative path for the PDF file using the client's name as the file name
+                        if not created:
+                            messages.warning(request, f'Exactly the same client {name} already exists')
+                            return redirect_home(request)
 
-                    messages.success(request, f'Client instance {name} saved successfully')
-                    return redirect_to(request)
+                        father.name = name
+                        father.locus = locus_dict
+                        father.file_upload = pdf_file
+                        father.save()
+
+                        messages.success(request, f'Client instance {name} saved successfully')
+                        return redirect_home(request)
+
+                    else:
+                        # if logic func "get_table_from_pdf_file" work but return None
+                        messages.warning(request, "Return None. Blank file")
+                        return redirect_home(request)
                 else:
-                    messages.error(request, 'Form is not valid. Please check the uploaded file.')
-                    return redirect_to(request)
+                    messages.error(request, 'Error form. Please check the uploaded file.')
+                    return redirect_home(request)
 
             if 'dnk_form_submit' in request.POST:
-                dnk_form = DnkForm(request.POST)
-                child = Child.objects.create()
-
+                dnk_form = LocusForm(request.POST)
                 if dnk_form.is_valid():
-                    dnk_instance = dnk_form.save(commit=False)
-                    dnk_instance.child = child
-                    dnk_instance.save()  # assign relation 1_to_1 model child to dnk
-                    verify = verify_data(request, dnk_instance, child)  # verify input form data
+                    child_dnk = dnk_form.cleaned_data.items()
+                    verify = verify_form_fields(request, child_dnk)
 
                     if verify:
-                        clients = Client.objects.all()
-                        child_locus_dict = get_dict_from_instance(
-                            dnk_instance)  # retrieve data from instance and convert into dict
-                        client_obj = compare_dnk_child_with_clients(child_locus_dict,
-                                                                    clients)  # identify matching client and child dnk locus
+                        father = compare_dnk_child_with_father(child_dnk)
 
-                        if client_obj:
-                            snippet_name = str(1) if client_obj.child_set.count() == 0 else str(
-                                client_obj.child_set.count() + 1)
-                            child.name = client_obj.name + ' child ' + snippet_name  # create name child instance
-                            child.client = client_obj  # add relationship 1_to_many
-                            child.save()
-                            child.dnk.delete()  # has removed unnecessary instance dnk
-
-                            admin_change_url = reverse(
-                                'admin:%s_%s_change' % (client_obj._meta.app_label, client_obj._meta.model_name),
-                                args=[client_obj.pk])
+                        if father:
+                            change_url_admin = reverse(
+                                'admin:%s_%s_change' % (father._meta.app_label, father._meta.model_name),
+                                args=[father.pk])
                             messages.success(request, mark_safe(
-                                f'Client instance <a href="{admin_change_url}">{client_obj.name.upper()}</a> saved successfully'))
-                            return redirect_to(request)
+                                f'Father instance <a href="{change_url_admin}">{father.name.upper()}</a> match'))
+                            return redirect_home(request)
                         else:
-                            child.dnk.delete()  # if not have matching in verifying client and child instances removed dnk related vith child
-                            child.delete()  # if not have matching in verifying client and child instances removed child obj
-                            messages.error(request, 'Matching not found. Maybe you enter invalid data')
-                            return redirect_to(request)
-                else:
-                    messages.error(request, 'DNK form is not valid. Please check the form entries.')
-
-            return redirect_to(request)
+                            messages.error(request, 'Matching not found.')
+                            return redirect_home(request)
+                    else:
+                        return redirect_home(request)
 
         form = FileUploadForm()
-        dnk_form = DnkForm()
+        dnk_form = LocusForm()
         context = dict(
             self.admin_site.each_context(request),
             form=form,
-            dnk_form=dnk_form
+            dnk_form=dnk_form,
         )
 
         return TemplateResponse(request, template_name, context)
 
 
 admin.site.register(Client, ClientAdmin)
-admin.site.register(Child)
-admin.site.register(DNK)

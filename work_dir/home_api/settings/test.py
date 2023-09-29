@@ -1,4 +1,4 @@
-from .base import *
+from home_api.settings.base import *
 
 DATABASES = {
     'default': {

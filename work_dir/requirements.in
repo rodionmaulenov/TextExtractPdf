@@ -1,0 +1,5 @@
+django>=3.2,<4.0
+psycopg2-binary
+pdfplumber
+gunicorn
+django-admin-interface

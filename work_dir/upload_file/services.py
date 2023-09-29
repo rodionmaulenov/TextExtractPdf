@@ -1,128 +1,107 @@
-import csv
-import os
-
-import tabula
-from django.forms import model_to_dict
+import pdfplumber
 from django.contrib import messages
 
-locus = ['D3S1358', 'vWA', 'D16S539', 'CSF1P0', 'TPOX', 'D8S1179', 'D21S11', 'D18S51', 'Penta E', 'D2S441',
-         'D19S433', 'THO1', 'FGA', 'D22S1045', 'D5S818', 'D13S317', 'D7S820', 'D6S1043', 'D10S1248', 'D1S1656',
-         'D12S391', 'D2S1338', 'Penta D']
+from upload_file.models import Client
+
+locus_from_mother_and_child = ['D3S1358', 'vWA', 'D16S539', 'CSF1PO', 'TPOX', 'D8S1179', 'D21S11', 'D18S51', 'Penta E',
+                               'D2S441', 'D19S433', 'THO1', 'FGA', 'D22S1O45', 'D5S818', 'D13S317', 'D7S82O', 'D6S1O43',
+                               'D1OS1248', 'D1S1656', 'D12S391', 'D2S1338', 'Penta D']
 
 
-def pdf_extract_text(pdf_file=None):
-    """First get pdf file
-     second create new directory
-      and return path to writing file"""
-    try:
-        table = tabula.read_pdf(pdf_file, pages='3')  # get 3 page from pdf
-        csv_data = table[0].to_csv(index=False)  # get table without indexing rows
-        file_name = '_'.join(table[0].columns[1].split())  # forms name file by name client
-    except:
-        return None
+def get_table_from_pdf_file(request, file_pdf):
+    """Extract locus from pdf file 'Mother and child' or 'Evrolab' firms"""
+    with pdfplumber.open(file_pdf) as pdf:
+        try:
+            # this is Mother and Child table page
+            page = pdf.pages[2]
 
-    csv_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'csv_files')  # mount storage directory
+        except IndexError:
+            # this is evrolab table page
+            page = pdf.pages[0]
 
-    if not os.path.exists(csv_directory):
-        os.makedirs(csv_directory)
+        table = page.extract_table()
 
-    csv_file_path = os.path.join(csv_directory,
-                                 f"{file_name}.csv")  # create path to storage directory with specific file
-
-    with open(csv_file_path, 'w') as csv_file:
-        csv_file.write(csv_data)  # writes csv file from path to previously prepared csv directory
-
-    return csv_file_path  # path to file
-
-
-def retrieve_values(file_path):
-    """Obtain the values from file"""
-    with open(file_path, 'r') as csv_file:
-        csv_reader = csv.reader(csv_file)  # read csv file with method "reader" from csv package
         locus_dict = {}
+        for row in table:
+            key = row[0].replace('0', 'O') if row[0] is not None and '0' in row[0] else row[0]
+            if key in locus_from_mother_and_child:
+                locus_dict[key] = row[1].replace(' ', '')
+
+        lines_pdf = page.extract_text()
+
+        lines = lines_pdf.split('\n')
         name = ''
-        for ind, line in enumerate(csv_reader):
-            key, value = line
-            if len(line) != 2:
-                break
-            if ind == 0:
-                name += value
-            if key in locus:
-                locus_dict[key] = value
+        if 'eurolab' in lines_pdf:
+            for line in lines:
+                if 'Name' in line:
+                    name += line.split(':')[-1].strip()
+                if name:
+                    break
+        else:
+            for line in lines:
+                if 'Locus' in line:
+                    name += (line.split()[1] + ' ' + line.split()[2]).strip()
+                if name:
+                    break
 
-    os.remove(file_path)
+        if locus_dict and name:
+            return locus_dict, name
 
-    return name, locus_dict
-
-
-def get_dict_from_instance(child_dnk):
-    """Derive dict from DNK objects"""
-    locus_dict_from_object = {}
-    for key, value in model_to_dict(child_dnk, exclude=('id', 'child')).items():
-        if key == 'Penta_D' or key == 'Penta_E':
-            key = 'Penta D' if key == 'Penta_D' else 'Penta E'
-            locus_dict_from_object[key] = value
-        locus_dict_from_object[key] = value
-    return locus_dict_from_object
+    return None, None
 
 
-def compare_dnk_child_with_clients(child_dnk_dict, clients):
+def compare_dnk_child_with_father(child_dnk):
     """Find father by locus child"""
-    list_matching = []
-    client = None
-    for obj in clients:
-        client_dnk = obj.locus
+    for father_instance in Client.objects.all():
+        father_dnk = father_instance.locus
 
-        for key, value in child_dnk_dict.items():
-            if not key:
-                return client
-            if key in client_dnk:
-                child_property_value = value.split(',')
-                client_property_value = client_dnk[key]
-                client_locus = [num.strip() for num in client_property_value.split(',')]
+        child_dnk = [(name, value) for name, value in child_dnk]
+        if len(father_dnk) == 15:
+            exclude = ['Penta E', 'D2S441', 'D22S1O45', 'D6S1O43', 'D1OS1248', 'D1S1656', 'D12S391', 'Penta D']
+            child_dnk = [(name, value) for name, value in child_dnk if name not in exclude]
 
-                list_matching.append(any(num.strip() in client_locus for num in child_property_value))
+        list_matching = []
+        for key, value in child_dnk:
+            if key in father_dnk:
+                child_value = value.split(',')
+                father_value = father_dnk[key]
+
+                father_locus = [num.strip() for num in father_value.split(',')]
+                list_matching.append(any(num.strip() in father_locus for num in child_value))
 
         if all(list_matching) and len(list_matching) > 1:
-            client = obj
+            return father_instance
         else:
             list_matching = []
 
-    return client
+    return None
 
 
-def verify_data(request, dnk, child):
+def verify_form_fields(request, dnk):
     """Validating data from dnk form
         if False delete child and dnk objects
         else return True"""
-    def remove_objects(dnk, child):
-        dnk.delete()
-        child.delete()
 
-    for key, value in model_to_dict(dnk, exclude=('id', 'child')).items():  # convert instance obj to dict
+    items = [(name, value) for name, value in dnk]
+    integer_and_dot = '0123456789.'
+    for key, value in items:
+
+        while ' ' in value:
+            value = value.replace(' ', '')
+
         if not value:
             messages.error(request, 'Form lines can not be a empty')
-            remove_objects(dnk, child)
             return False
 
-        if (key in locus and value) or (key in ('Penta E', 'Penta D') and value):
-            field_value = value
+        try:
+            share_value = value.split(',')
 
-            while ' ' in field_value:
-                field_value = field_value.replace(' ', '')
-
-            two_numbers = field_value.split(',')
-
-            int_and_dot = '0123456789.'
-            for number in two_numbers:
-                if len(number.strip(int_and_dot)) != 0:
-                    messages.error(request, 'Number should contain only 0123456789.')
-                    remove_objects(dnk, child)
-                    return False
-
-            if len(two_numbers) != 2:
-                messages.error(request, 'Only two numbers separated by a comma')
-                remove_objects(dnk, child)
+            if len(share_value[0].strip(integer_and_dot)) != 0 or len(share_value[1].strip(integer_and_dot)) != 0:
+                messages.error(request, 'Number should contain only 0123456789.')
                 return False
+        except IndexError:
+            messages.error(request, 'Only two numbers separated by a comma')
+            return False
 
-    return True
+    else:
+        return True

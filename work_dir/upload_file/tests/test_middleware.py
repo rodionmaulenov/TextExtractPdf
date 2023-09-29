@@ -9,7 +9,15 @@ class MiddleWearTestCase(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 302)
+        print(response.url)
         self.assertEqual(response.url, "/admin/")
+
+    def test_none_authenticated_user_get_admin_url(self):
+        admin_url = reverse('admin:index')
+        response = self.client.get(admin_url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/admin/login/?next=/admin/")
 
     def test_get_request_to_home_url_authorized(self):
         user = User.objects.create_user(username='testuser', password='testpassword', is_staff=True)
@@ -19,13 +27,6 @@ class MiddleWearTestCase(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/admin/")
-
-    def test_none_authenticated_user_get_admin_url(self):
-        admin_url = reverse('admin:index')
-        response = self.client.get(admin_url)
-
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/admin/login/?next=/admin/")
 
     def test_authenticated_user_get_admin_url(self):
         user = User.objects.create_user(username='testuser', password='testpassword', is_staff=True)

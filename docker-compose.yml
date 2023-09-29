@@ -21,9 +21,9 @@ services:
     depends_on:
       - db_postgres
     command: >
-      bash -c "
+      sh -c "
               ./manage.py migrate &&
-              ./manage.py runserver
+              ./manage.py runserver 0.0.0.0:8000
               "
 
 volumes:
