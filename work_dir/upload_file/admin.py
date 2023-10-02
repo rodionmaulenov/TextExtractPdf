@@ -12,7 +12,7 @@ from upload_file.services import verify_form_fields, get_table_from_pdf_file, co
 
 
 class ClientAdmin(admin.ModelAdmin):
-    fields = ('name', 'locus', 'date_update', 'date_create', 'file_upload')
+    fields = ('name', 'date_update', 'date_create', 'file_upload')
     readonly_fields = ('name', 'date_update', 'date_create', 'file_upload')
     list_display = ('name', 'date_update', 'date_create', 'file_upload')
     search_fields = ('name__icontains',)
@@ -38,42 +38,36 @@ class ClientAdmin(admin.ModelAdmin):
         if request.method == 'POST':
 
             if 'upload_form_submit' in request.POST:
-                form = FileUploadForm(request.POST, request.FILES)
-                if form.is_valid():
-                    pdf_file = form.cleaned_data['file_upload']
-                    # verify file extension
-                    if not pdf_file.name.endswith('pdf'):
-                        messages.warning(request, 'Only pdf extension')
-                        return redirect_home(request)
+                uploaded_files = request.FILES.getlist('file_upload')
+                for pdf_file in uploaded_files:
+                    if pdf_file.name.endswith('.pdf'):
+                        try:
+                            locus_dict, name = get_table_from_pdf_file(request, pdf_file)
+                        except Exception:
+                            messages.error(request, f'Error processing file: {pdf_file.name}')
+                            continue
 
-                    try:
-                        locus_dict, name = get_table_from_pdf_file(request, pdf_file)
-                    except Exception:
-                        messages.error(request, 'Invalid file')
-                        return redirect_home(request)
+                        if locus_dict and name:
+                            father, created = Client.objects.get_or_create(name=name, locus=locus_dict)
 
-                    if locus_dict and name:
-                        father, created = Client.objects.get_or_create(name=name, locus=locus_dict)
+                            if not created:
+                                messages.warning(request,
+                                                 f'Exactly the same client {name} already exists for file: {pdf_file.name}')
+                            else:
+                                father.name = name
+                                father.locus = locus_dict
+                                father.file_upload = pdf_file
+                                father.save()
 
-                        if not created:
-                            messages.warning(request, f'Exactly the same client {name} already exists')
-                            return redirect_home(request)
-
-                        father.name = name
-                        father.locus = locus_dict
-                        father.file_upload = pdf_file
-                        father.save()
-
-                        messages.success(request, f'Client instance {name} saved successfully')
-                        return redirect_home(request)
+                                messages.success(request,
+                                                 f'Client instance {name} saved successfully from file: {pdf_file.name}')
+                        else:
+                            messages.warning(request, f"Returned None for file: {pdf_file.name}. Blank name or dict")
 
                     else:
-                        # if logic func "get_table_from_pdf_file" work but return None
-                        messages.warning(request, "Return None. Blank file")
-                        return redirect_home(request)
-                else:
-                    messages.error(request, 'Error form. Please check the uploaded file.')
-                    return redirect_home(request)
+                        messages.warning(request, f'Invalid file extension for file: {pdf_file.name}')
+
+                return redirect_home(request)
 
             if 'dnk_form_submit' in request.POST:
                 dnk_form = LocusForm(request.POST)

@@ -1,9 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.models import User, Group
-from django.contrib.messages import get_messages, ERROR
+from django.contrib.messages import get_messages
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.http import HttpRequest
 from django.test import TestCase, RequestFactory
 
 from upload_file.admin import ClientAdmin
@@ -66,7 +65,7 @@ class MyAdminViewPostRequestUploadFormTestCase(TestCase):
         for m in messages:
             message += str(m)
 
-        self.assertEqual(message, 'Client instance Tasu Vasile saved successfully')
+        self.assertEqual(message, 'Client instance Tasu Vasile saved successfully from file: real_file.pdf')
 
     def test_mother_and_child_valid_post_request_upload_form_view_level_if_superuser(self):
         with open(self.mother_and_child, 'rb') as pdf_file:
@@ -98,7 +97,7 @@ class MyAdminViewPostRequestUploadFormTestCase(TestCase):
         for m in messages:
             message += str(m)
 
-        self.assertEqual(message, 'Client instance Tasu Vasile saved successfully')
+        self.assertEqual(message, 'Client instance Tasu Vasile saved successfully from file: real_file.pdf')
 
     def test_evrolab_valid_post_request_upload_form_view_level_with_group_and_staff_credentials(self):
         with open(self.eurolab, 'rb') as pdf_file:
@@ -130,7 +129,7 @@ class MyAdminViewPostRequestUploadFormTestCase(TestCase):
         for m in messages:
             message += str(m)
 
-        self.assertEqual(message, 'Client instance Tiganis Nicholas saved successfully')
+        self.assertEqual(message, 'Client instance Tiganis Nicholas saved successfully from file: real_file.pdf')
 
     def test_evrolab_valid_post_request_upload_form_view_level_if_superuser(self):
         with open(self.eurolab, 'rb') as pdf_file:
@@ -162,40 +161,7 @@ class MyAdminViewPostRequestUploadFormTestCase(TestCase):
         for m in messages:
             message += str(m)
 
-        self.assertEqual(message, 'Client instance Tiganis Nicholas saved successfully')
-
-    #
-    def test_post_request_invalid_upload_form_with_group_and_staff_credentials(self):
-        data = {
-            'upload_form_submit': '',
-        }
-
-        self.client.login(username='testuser', password='password')
-        response = self.client.post(self.url, data)
-
-        self.assertEqual(response.status_code, 302)
-
-        self.assertFalse(Client.objects.exists())
-
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), 'Error form. Please check the uploaded file.')
-
-    def test_post_request_invalid_upload_form_is_superuser(self):
-        data = {
-            'upload_form_submit': '',
-        }
-
-        self.client.login(username='superuser', password='password')
-        response = self.client.post(self.url, data)
-
-        self.assertEqual(response.status_code, 302)
-
-        self.assertFalse(Client.objects.exists())
-
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), 'Error form. Please check the uploaded file.')
+        self.assertEqual(message, 'Client instance Tiganis Nicholas saved successfully from file: real_file.pdf')
 
     def test_post_request_upload_form_not_pdf_format_with_group_and_staff_credentials(self):
         fake_txt_content = b'This is a fake TXT content.'
@@ -216,7 +182,7 @@ class MyAdminViewPostRequestUploadFormTestCase(TestCase):
         messages = list(get_messages(response.wsgi_request))
 
         self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), 'Only pdf extension')
+        self.assertEqual(str(messages[0]), 'Invalid file extension for file: fake_file.txt')
 
     def test_post_request_upload_form_not_pdf_format_is_superuser(self):
         fake_txt_content = b'This is a fake TXT content.'
@@ -237,7 +203,7 @@ class MyAdminViewPostRequestUploadFormTestCase(TestCase):
         messages = list(get_messages(response.wsgi_request))
 
         self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), 'Only pdf extension')
+        self.assertEqual(str(messages[0]), 'Invalid file extension for file: fake_file.txt')
 
     def test_request_post_upload_form_another_pdf_file_broke_func_logic_with_group_and_staff_credentials(self):
         with open(self.brake_logic_pdf_file, 'rb') as pdf_file:
@@ -260,7 +226,7 @@ class MyAdminViewPostRequestUploadFormTestCase(TestCase):
 
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), 'Invalid file')
+        self.assertEqual(str(messages[0]), 'Error processing file: fake_file.pdf')
 
     def test_request_post_upload_form_another_pdf_file_broke_func_logic_is_superuser(self):
         with open(self.brake_logic_pdf_file, 'rb') as pdf_file:
@@ -283,7 +249,7 @@ class MyAdminViewPostRequestUploadFormTestCase(TestCase):
 
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), 'Invalid file')
+        self.assertEqual(str(messages[0]), 'Error processing file: fake_file.pdf')
 
     def test_request_post_upload_form_another_pdf_file_return_none_func_logic_with_group_and_staff_credentials(self):
         with open(self.file_return_none, 'rb') as pdf_file:
@@ -306,7 +272,7 @@ class MyAdminViewPostRequestUploadFormTestCase(TestCase):
 
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), 'Return None. Blank file')
+        self.assertEqual(str(messages[0]), "Returned None for file: fake_file.pdf. Blank name or dict")
 
     def test_request_post_upload_form_another_pdf_file_return_none_func_logic_is_superuser(self):
         with open(self.file_return_none, 'rb') as pdf_file:
@@ -329,7 +295,7 @@ class MyAdminViewPostRequestUploadFormTestCase(TestCase):
 
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), 'Return None. Blank file')
+        self.assertEqual(str(messages[0]), "Returned None for file: fake_file.pdf. Blank name or dict")
 
     def test_mother_and_child_post_request_upload_form_existing_client_with_group_and_staff_credentials(self):
         self.assertEqual(0, Client.objects.count())
@@ -362,7 +328,7 @@ class MyAdminViewPostRequestUploadFormTestCase(TestCase):
 
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), 'Exactly the same client Tasu Vasile already exists')
+        self.assertEqual(str(messages[0]), 'Exactly the same client Tasu Vasile already exists for file: real_file.pdf')
 
     def test_mother_and_child_post_request_upload_form_existing_client_is_superuser(self):
         self.assertEqual(0, Client.objects.count())
@@ -402,7 +368,7 @@ class MyAdminViewPostRequestUploadFormTestCase(TestCase):
 
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), 'Exactly the same client Tasu Vasile already exists')
+        self.assertEqual(str(messages[0]), 'Exactly the same client Tasu Vasile already exists for file: real_file.pdf')
 
     def test_eurolab_post_request_upload_form_existing_client_with_group_and_staff_credentials(self):
         self.assertEqual(0, Client.objects.count())
@@ -432,7 +398,7 @@ class MyAdminViewPostRequestUploadFormTestCase(TestCase):
 
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), 'Exactly the same client Tiganis Nicholas already exists')
+        self.assertEqual(str(messages[0]), 'Exactly the same client Tiganis Nicholas already exists for file: real_file.pdf')
 
     def test_eurolab_post_request_upload_form_existing_client_is_superuser(self):
         self.assertEqual(0, Client.objects.count())
@@ -462,4 +428,4 @@ class MyAdminViewPostRequestUploadFormTestCase(TestCase):
 
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), 'Exactly the same client Tiganis Nicholas already exists')
+        self.assertEqual(str(messages[0]), 'Exactly the same client Tiganis Nicholas already exists for file: real_file.pdf')
