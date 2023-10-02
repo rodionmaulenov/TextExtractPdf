@@ -14,7 +14,7 @@ services:
     env_file:
       - .env
     command: >
-      bash -c '
+      sh -c '
               ./manage.py collectstatic --noinput &&
               ./manage.py makemigrations &&
               ./manage.py migrate &&
