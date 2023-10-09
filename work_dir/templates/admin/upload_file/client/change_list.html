@@ -2,6 +2,8 @@
 {% load static %}
 
 {% block content %}
-<a href="form/">Upload a pdf file</a>
+<a href="{% url 'upload_file' %}">Upload file</a>
+&nbsp;&nbsp;&nbsp;
+<a href="{% url 'input_text' %}">Input form</a>
 {{ block.super }}
 {% endblock %}

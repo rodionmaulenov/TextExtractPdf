@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Input Animation | CodingNepal</title>
+    <link type="text/css" rel="stylesheet" href="{% static 'input_text/css/style.css' %}">
+</head>
+<body>
+
+    <div class="message-container">
+        {% for message in messages %}
+        <h3>{{ message }}</h3>
+        {% endfor %}
+    </div>
+
+<div class="wrapper">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <table>
+            <tr>
+                <td>
+                    {% for field in form %}
+                    {% if not forloop.counter|divisibleby:2 %}
+                    <div class="input-data">
+                        <input type="text" required name="{{ field.name }}" class="smaller-input"
+                               value="{{ field.value|default:'' }}">
+                        <div class="underline"></div>
+                        <label class="smaller-label">{{ field.label_tag|upper|safe }}</label>
+                        {% if field.errors %}
+                        <div class="error-message">{{ field.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for field in form %}
+                    {% if forloop.counter|divisibleby:2 %}
+                    <div class="input-data">
+                        <input type="text" required name="{{ field.name }}" class="smaller-input"
+                               value="{{ field.value|default:'' }}">
+                        <div class="underline"></div>
+                        <label class="smaller-label">{{ field.label_tag|upper|safe }}</label>
+                        {% if field.errors %}
+                        <div class="error-message">{{ field.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+        </table>
+        <button type="submit" class="blue-button">Push text</button>
+    </form>
+</div>
+</body>
+</html>

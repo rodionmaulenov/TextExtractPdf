@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 
     # my applications
     'upload_file',
+    'input_text'
 ]
 
 MIDDLEWARE = [
@@ -53,7 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'upload_file.middleware.RedirectMiddleware',
+    'home_api.middleware.RedirectMiddleware',
 ]
 
 ROOT_URLCONF = 'home_api.urls'

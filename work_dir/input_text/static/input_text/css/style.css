@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');
+* {
+  margin: 0;
+  padding: 0;
+  outline: none;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(-135deg, #c850c0, #4158d0);
+}
+
+.wrapper {
+  width: 440px;
+  background: #fff;
+  padding: 30px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.wrapper .input-data {
+  height: 45px;
+  width: 120%;
+  position: relative;
+  margin-bottom: 20px;
+  padding: 0 20px;
+}
+
+.smaller-input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  font-size: 16px;
+  border-bottom: 2px solid silver;
+  text-align: center;
+}
+
+.smaller-label {
+  position: absolute;
+  bottom: 0;
+  left: 20px;
+  color: grey;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  font-size: 15px;
+  transform: translateY(20px);
+}
+
+.smaller-input:focus ~ .smaller-label,
+.smaller-input:valid ~ .smaller-label {
+  transform: translateY(-20px);
+  font-size: 14px;
+}
+
+.input-data .underline {
+  position: absolute;
+  height: 2px;
+  width: 90%;
+  bottom: 0;
+}
+
+.input-data .underline:before {
+  position: absolute;
+  content: "";
+  height: 100%;
+  width: 100%;
+  background: #4158d0;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.smaller-input:focus ~ .underline:before,
+.smaller-input:valid ~ .underline:before {
+  transform: scaleX(1);
+}
+
+/* Add this CSS to your existing code to style the button with color #3196ab */
+.blue-button {
+  background-color: #3196ab; /* Updated color to #3196ab */
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.blue-button:hover {
+  background-color: #237a8d; /* Darker shade for hover effect */
+}
+
+.error-message {
+  color: red;
+  font-size: 14px; /* Adjust the font size for error messages */
+  /* You can add more custom styles for error messages as needed */
+}
+
+
+.message-container {
+    position: fixed !important;
+    left: 20px !important;
+    top: 20px !important;
+    z-index: 1000 !important;
+}
+
+
+
