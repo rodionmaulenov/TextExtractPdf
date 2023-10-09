@@ -7,12 +7,22 @@
   font-family: 'Poppins', sans-serif;
 }
 
+.home-link {
+    color: white; /* White color */
+    text-decoration: none; /* Remove underline */
+    margin: 20px 20px; /* Adjust margin as needed */
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
 body {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(-135deg, #c850c0, #4158d0);
+  background: #7494EC;
 }
 
 .wrapper {
@@ -107,7 +117,21 @@ body {
     left: 20px !important;
     top: 20px !important;
     z-index: 1000 !important;
+    margin-top: 2em;
 }
 
+.success-message {
+    color: green; /* Green color for success messages */
+}
 
+/* Style for info messages */
+.info-message {
+    color: yellow; /* Yellow color for info messages */
+}
+
+/* Remove underline from links inside success messages */
+.success-message a {
+     color: green;
+    text-decoration: none;
+}
 

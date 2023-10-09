@@ -37,10 +37,15 @@ class CompareLocusMixin:
                     list_matching.append(any(num.strip() in father_locus for num in child_value))
 
             if all(list_matching) and len(list_matching) > 1:
-                change_url_admin = self.get_link(father_instance)
-                messages.success(request, mark_safe(
-                    f'father <a href="{change_url_admin}">{father_instance.name.title()}</a>'))
+                return father_instance
             else:
-                messages.info(request, 'not matching')
                 list_matching = []
+        return None
 
+    def get_message(self, request, father_instance):
+        if father_instance:
+            change_url_admin = self.get_link(father_instance)
+            messages.success(request, mark_safe(
+                f'<span class="success-message">father <a href="{change_url_admin}">{father_instance.name.title()}</a></span>'))
+        else:
+            messages.info(request, '<span class="info-message">not matching</span>')

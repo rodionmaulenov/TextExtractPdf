@@ -1,10 +1,23 @@
 /* optional google fonts */
 @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap');
+
+.home-link {
+    color: white; /* White color */
+    text-decoration: none; /* Remove underline */
+    margin: 20px 20px; /* Adjust margin as needed */
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
 body{
     background-color: #7494EC;
     padding: 30px;
     margin: 0px;
 }
+
+
 *{
     font-family: 'Ubuntu', sans-serif;
 }
@@ -197,9 +210,3 @@ body{
 .list-section li.in-prog svg.tick{
     display: none;
 }
-
-
-
-
-
-
