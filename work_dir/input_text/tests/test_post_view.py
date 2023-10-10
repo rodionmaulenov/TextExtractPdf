@@ -16,7 +16,7 @@ class PostInputTextViewTest(TestCase):
         group2.user_set.add(self.user)
         self.client.login(username='testuser', password='testpassword')
 
-    def test_post_found_matching(self):
+    def test_post_found_matching_all_locus_match(self):
         url = reverse('input_text')
 
         Father.objects.create(name='Tasu Vasile',
@@ -26,7 +26,7 @@ class PostInputTextViewTest(TestCase):
                                      "D12S391": "19,20", "D13S317": "8,11", "D16S539": "10,11",
                                      "D19S433": "13,13", "D1S1656": "14,16.3", "D2S1338": "19,20",
                                      "D3S1358": "15,16", "D6S1O43": "11,12", "D8S1179": "14,14",
-                                     "Penta D": "11,12", "Penta E": "12,13", "D1OS1248": "15,15",
+                                     "Penta E": "12,13", "D1OS1248": "15,15",
                                      "D22S1O45": "15,15"})
 
         data = {"FGA": "21,22", "vWA": "16,19", "THO1": "8,9", "TPOX": "8,8",
@@ -35,7 +35,7 @@ class PostInputTextViewTest(TestCase):
                 "D12S391": "19,20", "D13S317": "8,11", "D16S539": "10,11",
                 "D19S433": "13,13", "D1S1656": "14,16.3", "D2S1338": "19,20",
                 "D3S1358": "15,16", "D6S1O43": "11,12", "D8S1179": "14,14",
-                "Penta D": "11,12", "Penta E": "12,13", "D1OS1248": "15,15",
+                "Penta E": "12,13", "D1OS1248": "15,15",
                 "D22S1O45": "15,15"}
 
         response = self.client.post(url, data)
@@ -48,7 +48,7 @@ class PostInputTextViewTest(TestCase):
                 in message.message for message in messages)
         )
 
-    def test_another_post_found_matching(self):
+    def test_another_post_found_matching_one_locus_not_match(self):
         url = reverse('input_text')
 
         Father.objects.create(name='Pislaru Madalin',
@@ -57,13 +57,13 @@ class PostInputTextViewTest(TestCase):
                                      "Penta E": "7,17", "D2S441": "10,10", "D19S433": "12,15", "THO1": "7,9",
                                      "FGA": "19,23", "D22S1O45": "15,15", "D5S818": "12,13", "D13S317": "9,12",
                                      "D7S82O": "11,11", "D6S1O43": "17,18", "D1OS1248": "13,16", "D1S1656": "11,12",
-                                     "D12S391": "18,18", "D2S1338": "18,24", "Penta D": "11,11"})
-
-        data = {"D3S1358": "14,1", "vWA": "1,16", "D16S539": "0,12", "CSF1PO": "4,11", "TPOX": "4.4,9",
+                                     "D12S391": "18,18", "D2S1338": "18,24"})
+        # not match "vWA": "1,1"
+        data = {"D3S1358": "14,1", "vWA": "1,1", "D16S539": "0,12", "CSF1PO": "4,11", "TPOX": "4.4,9",
                 "D8S1179": "5,15", "D21S11": "29,19", "D18S51": "17,20", "Penta E": "7.4,17", "D2S441": "1,10",
                 "D19S433": "12,1", "THO1": "7.34,9", "FGA": "19.25,23", "D22S1O45": "15.1,15", "D5S818": "3,13",
                 "D13S317": "8,12", "D7S82O": "1,11", "D6S1O43": "7,18", "D1OS1248": "3,16", "D1S1656": "11,2",
-                "D12S391": "8,18", "D2S1338": "18,24.1", "Penta D": "11.1,11"}
+                "D12S391": "8,18", "D2S1338": "18,24.1"}
         response = self.client.post(url, data)
 
         self.assertEqual(response.status_code, 200)
@@ -95,7 +95,7 @@ class PostInputTextViewTest(TestCase):
             # this is unnecessary locus
             'Penta E': "15,17", 'D2S441': "15,17", 'D22S1O45': "15,17",
             'D6S1O43': "15,17", 'D1OS1248': "15,17", 'D1S1656': "15,17",
-            'D12S391': "15,17", 'Penta D': "15,17"
+            'D12S391': "15,17"
         }
 
         response = self.client.post(url, data)
@@ -118,17 +118,15 @@ class PostInputTextViewTest(TestCase):
                                      "D12S391": "19,20", "D13S317": "8,11", "D16S539": "10,11",
                                      "D19S433": "13,13", "D1S1656": "14,16.3", "D2S1338": "19,20",
                                      "D3S1358": "15,16", "D6S1O43": "11,12", "D8S1179": "14,14",
-                                     "Penta D": "11,12", "Penta E": "12,13", "D1OS1248": "15,15",
-                                     "D22S1O45": "15,15"})
-        # change FGA
-        data = {"FGA": "1,1", "vWA": "16,19", "THO1": "8,9", "TPOX": "8,8",
+                                     "Penta E": "12,13", "D1OS1248": "15,15", "D22S1O45": "15,15"})
+        # change FGA, vWA
+        data = {"FGA": "1,1", "vWA": "10,10", "THO1": "8,9", "TPOX": "8,8",
                 "CSF1PO": "11,14", "D18S51": "13,16", "D21S11": "29,30.2",
                 "D2S441": "11,14", "D5S818": "13,13", "D7S82O": "12,12",
                 "D12S391": "19,20", "D13S317": "8,11", "D16S539": "10,11",
                 "D19S433": "13,13", "D1S1656": "14,16.3", "D2S1338": "19,20",
                 "D3S1358": "15,16", "D6S1O43": "11,12", "D8S1179": "14,14",
-                "Penta D": "11,12", "Penta E": "12,13", "D1OS1248": "15,15",
-                "D22S1O45": "15,15"}
+                "Penta E": "12,13", "D1OS1248": "15,15", "D22S1O45": "15,15"}
 
         response = self.client.post(url, data)
 
