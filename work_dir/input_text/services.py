@@ -27,7 +27,7 @@ class CompareLocusMixin:
                 del father_dnk['Penta D']
 
             child_dnk = [(name, form.cleaned_data.get(name)) for name in locus]
-            if len(father_dnk) == 15:
+            if len(father_dnk) == 16:
                 exclude = ['Penta E', 'D2S441', 'D22S1O45', 'D6S1O43', 'D1OS1248', 'D1S1656', 'D12S391']
                 child_dnk = [(name, value) for name, value in child_dnk if name not in exclude]
 
