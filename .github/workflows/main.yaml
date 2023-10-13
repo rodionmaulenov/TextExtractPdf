@@ -8,6 +8,20 @@ on:
 env:
   APP_IMAGE: ghcr.io/${{ secrets.REPOSITORY_GITHUB }}/text_extract
   NGINX_IMAGE: ghcr.io/${{ secrets.REPOSITORY_GITHUB }}/nginx
+  DJANGO_SETTINGS_MODULE: ${{ secrets.ENV_SETTINGS }}
+  DEBUG: ${{ secrets.DEBUG }}
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+  ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+  WWW_HOST: ${{ secrets.WWW_HOST }}
+  OTHERS_HOSTS: ${{ secrets.OTHERS_HOSTS }}
+  CSRF_TRUSTED_ORIGINS: ${{ secrets.CSRF_TRUSTED_ORIGINS }}
+  SQL_NAME: ${{ secrets.SQL_NAME }}
+  SQL_USER: ${{ secrets.SQL_USER }}
+  SQL_HOST: ${{ secrets.SQL_HOST }}
+  SQL_PORT: ${{ secrets.SQL_PORT }}
+  SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
+  ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
   test:
@@ -21,21 +35,22 @@ jobs:
       DJANGO_SETTINGS_MODULE: home_api.settings.test
       SECRET_KEY: test-key-not-good-maybe-you-doing-better
       DEBUG: True
+      SQL_NAME: databasename
       SQL_USER: databaseuser
       SQL_PASSWORD: databasepassword
-      SQL_NAME: databasename
       SQL_HOST: localhost
       SQL_PORT: 5432
       ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
+
     services:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_USER: databaseuser
-          POSTGRES_PASSWORD: databasepassword
-          POSTGRES_DB: databasename
+          POSTGRES_USER: ${{ env.SQL_USER }}
+          POSTGRES_PASSWORD: ${{ env.SQL_PASSWORD }}
+          POSTGRES_DB: ${{ env.SQL_NAME }}
         ports:
           - 5432:5432
         options:
