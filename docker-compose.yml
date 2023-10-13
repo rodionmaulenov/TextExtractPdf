@@ -7,7 +7,7 @@ services:
     volumes:
       - postgres_data:/home/app/web/postgres_data
     env_file:
-      - .env.dev
+      - .env
 
   develop_extract_text:
     container_name: develop_extract_text
@@ -17,7 +17,7 @@ services:
     ports:
       - 8000:8000
     env_file:
-      - .env.dev
+      - .env
     depends_on:
       - db_postgres
     command: >
