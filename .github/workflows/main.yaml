@@ -9,7 +9,7 @@ env:
   APP_IMAGE: ghcr.io/${{ secrets.REPOSITORY_GITHUB }}/text_extract
   NGINX_IMAGE: ghcr.io/${{ secrets.REPOSITORY_GITHUB }}/nginx
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  echo AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
   test:
