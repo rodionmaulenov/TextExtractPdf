@@ -18,7 +18,7 @@ jobs:
         working-directory: ./work_dir
 
     env:
-      DJANGO_SETTINGS_MODULE: home_api.settings.base
+      DJANGO_SETTINGS_MODULE: home_api.settings.test
       SECRET_KEY: test-key-not-good-maybe-you-doing-better
       DEBUG: True
       SQL_USER: databaseuser
