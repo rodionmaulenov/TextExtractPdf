@@ -5,9 +5,16 @@ from upload_file.models import Client
 class ClientAdmin(admin.ModelAdmin):
     fields = ('name', 'locus', 'date_update', 'date_create', 'file_upload')
     readonly_fields = ('name', 'date_update', 'date_create', 'file_upload')
-    list_display = ('name', 'date_update', 'date_create', 'file_upload')
+    list_display = ('name', 'count_locus', 'date_update', 'date_create', 'file_upload')
     search_fields = ('name__icontains',)
     list_filter = ('date_update', 'date_create')
+
+    def count_locus(self, obj):
+        if obj.locus:
+            return len(obj.locus)
+        return 0
+
+    count_locus.short_description = 'Number of Locus'
 
 
 admin.site.register(Client, ClientAdmin)
