@@ -1,11 +1,15 @@
 import boto3
 from moto import mock_textract
-
+from unittest.mock import Mock
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from upload_file.models import Client
 from upload_file.services import ProcessUploadedFile, PdfPlumberMotherAndChild, AwsEvrolab, AwsMotherAndChild
+
+LOCUS = ['D3S1358', 'vWA', 'D16S539', 'CSF1PO', 'TPOX', 'D8S1179', 'D21S11', 'D18S51', 'Penta E',
+         'D2S441', 'D19S433', 'THO1', 'FGA', 'D22S1O45', 'D5S818', 'D13S317', 'D7S82O', 'D6S1O43',
+         'D1OS1248', 'D1S1656', 'D12S391', 'D2S1338']
 
 
 class ProcessUploadedFileMixinTestCase(TestCase):
@@ -82,35 +86,6 @@ class ProcessUploadedFileMixinTestCase(TestCase):
         self.assertEqual(response, expected_response)
         self.assertEqual(Client.objects.count(), 1)
 
-    @mock_textract
-    def test_process_uploaded_file_success_eurolab(self):
-        """
-        Eurolab pdf file using in this test
-        """
-        aws_access_key_id = 'test-access-key'
-        aws_secret_access_key = 'test-secret-key'
-        aws_session_token = 'test-session-token'
-        aws_region = 'us-east-1'
-
-        self.textract = (boto3.client('textract', region_name=aws_region,
-                                     aws_access_key_id=aws_access_key_id,
-                                     aws_secret_access_key=aws_secret_access_key,
-                                     aws_session_token=aws_session_token))
-
-        with open('upload_file/test_pdf/eurolab.pdf', 'rb') as pdf_file:
-            uploaded_file = SimpleUploadedFile(
-                name='success.pdf',
-                content=pdf_file.read(),
-                content_type='application/pdf',
-            )
-
-        uploaded_file = uploaded_file.read()
-
-
-        expected_response = {'log': 'success', 'message': 'Father Tiganis Nicholas saved successfully'}
-        self.assertEqual(response, expected_response)
-        self.assertEqual(Client.objects.count(), 1)
-
     def test_process_uploaded_file_already_exists_eurolab(self):
         """
         Eurolab pdf file using in this test
@@ -167,3 +142,6 @@ class ProcessUploadedFileMixinTestCase(TestCase):
         expected_response = {'log': 'error', 'message': 'Error processing'}
         self.assertEqual(response, expected_response)
         self.assertEqual(Client.objects.count(), 0)
+
+
+

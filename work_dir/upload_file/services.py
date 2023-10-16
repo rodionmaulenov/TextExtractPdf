@@ -488,13 +488,13 @@ class PdfPlumberMotherAndChild(PdfExtractText):
 
 
 class ProcessUploadedFile:
-    def __init__(self, pdf, instance):
+    def __init__(self, pdf, instance: list):
         self.file_pdf = pdf
         self.instances_get_text_from_pdf = instance
 
     def process_uploaded_file(self, uploaded_file):
         """
-        Main logic how to upload, validating logic, getting table page, and save
+        Main logic how to upload, validating logic, getting tablel page, and save
         pdf file
         """
         locus = None
