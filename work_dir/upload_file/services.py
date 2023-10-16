@@ -287,7 +287,8 @@ class PdfConvertIntoImage:
 
         file_upload = client.file_upload
         path_save_image = os.path.join(settings.BASE_DIR / 'media_jpg')
-        os.mkdir(path_save_image)
+        if not os.path.exists(path_save_image):
+            os.mkdir(path_save_image)
         pdf_converter = PdfConvertIntoImage(self.file_pdf)
         image = pdf_converter.convert_pdf_to_image(file_upload, path_save_image)
         return image, client, path_save_image
