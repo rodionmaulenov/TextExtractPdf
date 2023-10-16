@@ -9,7 +9,6 @@ class MiddleWearTestCase(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 302)
-        print(response.url)
         self.assertEqual(response.url, "/admin/")
 
     def test_none_authenticated_user_get_admin_url(self):

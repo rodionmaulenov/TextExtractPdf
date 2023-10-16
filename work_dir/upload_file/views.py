@@ -4,14 +4,16 @@ from django.utils.decorators import method_decorator
 from django.views import View
 
 from home_api.decorators import optimized_view_decorator
-from upload_file.services import ProcessUploadedFileMixin
+from upload_file.services import (ProcessUploadedFile, AwsMotherAndChild,
+                                  PdfPlumberMotherAndChild,
+                                  AwsEvrolab)
 
 
 @method_decorator(
     decorator=optimized_view_decorator(['users_input_text', 'users_upload']),
     name='dispatch'
 )
-class FileUploadView(ProcessUploadedFileMixin, View):
+class FileUploadView(View):
     """Processing the logic uploaded files"""
 
     def get(self, request, *args, **kwargs):
@@ -20,8 +22,11 @@ class FileUploadView(ProcessUploadedFileMixin, View):
     def post(self, request, *args, **kwargs):
         responses = []
 
+        list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
+
         for _, uploaded_file in request.FILES.items():
-            response = self.process_uploaded_file(uploaded_file)
+            puf = ProcessUploadedFile(uploaded_file, list_instance)
+            response = puf.process_uploaded_file(uploaded_file)
             responses.append(response)
 
         return JsonResponse(responses, status=200, safe=False)

@@ -1,12 +1,16 @@
+import boto3
+from moto import mock_textract
+
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
+
 from upload_file.models import Client
-from upload_file.views import ProcessUploadedFileMixin
+from upload_file.services import ProcessUploadedFile, PdfPlumberMotherAndChild, AwsEvrolab, AwsMotherAndChild
 
 
 class ProcessUploadedFileMixinTestCase(TestCase):
     def setUp(self):
-        self.mixin = ProcessUploadedFileMixin()
+        self.mixin = ProcessUploadedFile
         self.uploaded_files = []
 
     def tearDown(self):
@@ -24,7 +28,8 @@ class ProcessUploadedFileMixinTestCase(TestCase):
                 content_type='application/pdf',
             )
 
-        response = self.mixin.process_uploaded_file(uploaded_file)
+        list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
+        response = self.mixin(uploaded_file, list_instance).process_uploaded_file(uploaded_file)
 
         expected_response = {'log': 'success', 'message': 'Father Tasu Vasile saved successfully'}
         self.assertEqual(response, expected_response)
@@ -51,7 +56,8 @@ class ProcessUploadedFileMixinTestCase(TestCase):
                 content_type='application/pdf',
             )
 
-        response = self.mixin.process_uploaded_file(uploaded_file)
+        list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
+        response = self.mixin(uploaded_file, list_instance).process_uploaded_file(uploaded_file)
 
         expected_response = {'log': 'caution', 'message': 'Father Tasu Vasile already exists'}
         self.assertEqual(response, expected_response)
@@ -69,7 +75,37 @@ class ProcessUploadedFileMixinTestCase(TestCase):
                 content_type='application/pdf',
             )
 
-        response = self.mixin.process_uploaded_file(uploaded_file)
+        list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
+        response = self.mixin(uploaded_file, list_instance).process_uploaded_file(uploaded_file)
+
+        expected_response = {'log': 'success', 'message': 'Father Tiganis Nicholas saved successfully'}
+        self.assertEqual(response, expected_response)
+        self.assertEqual(Client.objects.count(), 1)
+
+    @mock_textract
+    def test_process_uploaded_file_success_eurolab(self):
+        """
+        Eurolab pdf file using in this test
+        """
+        aws_access_key_id = 'test-access-key'
+        aws_secret_access_key = 'test-secret-key'
+        aws_session_token = 'test-session-token'
+        aws_region = 'us-east-1'
+
+        self.textract = (boto3.client('textract', region_name=aws_region,
+                                     aws_access_key_id=aws_access_key_id,
+                                     aws_secret_access_key=aws_secret_access_key,
+                                     aws_session_token=aws_session_token))
+
+        with open('upload_file/test_pdf/eurolab.pdf', 'rb') as pdf_file:
+            uploaded_file = SimpleUploadedFile(
+                name='success.pdf',
+                content=pdf_file.read(),
+                content_type='application/pdf',
+            )
+
+        uploaded_file = uploaded_file.read()
+
 
         expected_response = {'log': 'success', 'message': 'Father Tiganis Nicholas saved successfully'}
         self.assertEqual(response, expected_response)
@@ -95,17 +131,14 @@ class ProcessUploadedFileMixinTestCase(TestCase):
 
             )
 
-        response = self.mixin.process_uploaded_file(uploaded_file)
+        list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
+        response = self.mixin(uploaded_file, list_instance).process_uploaded_file(uploaded_file)
 
         expected_response = {'log': 'caution', 'message': 'Father Tiganis Nicholas already exists'}
         self.assertEqual(response, expected_response)
         self.assertEqual(Client.objects.count(), 1)
 
     def test_process_uploaded_file_fail_1(self):
-        """
-        Mother and child pdf file using in this test
-        """
-
         with open('upload_file/test_pdf/return_none.pdf', 'rb') as pdf_file:
             uploaded_file = SimpleUploadedFile(
                 name='success.pdf',
@@ -113,17 +146,14 @@ class ProcessUploadedFileMixinTestCase(TestCase):
                 content_type='application/pdf',
             )
 
-        response = self.mixin.process_uploaded_file(uploaded_file)
+        list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
+        response = self.mixin(uploaded_file, list_instance).process_uploaded_file(uploaded_file)
 
         expected_response = {'log': 'error', 'message': 'Error processing'}
         self.assertEqual(response, expected_response)
         self.assertEqual(Client.objects.count(), 0)
 
     def test_process_uploaded_file_fail_2(self):
-        """
-        Mother and child pdf file using in this test
-        """
-
         with open('upload_file/test_pdf/brake_func_logic.pdf', 'rb') as pdf_file:
             uploaded_file = SimpleUploadedFile(
                 name='success.pdf',
@@ -131,7 +161,8 @@ class ProcessUploadedFileMixinTestCase(TestCase):
                 content_type='application/pdf',
             )
 
-        response = self.mixin.process_uploaded_file(uploaded_file)
+        list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
+        response = self.mixin(uploaded_file, list_instance).process_uploaded_file(uploaded_file)
 
         expected_response = {'log': 'error', 'message': 'Error processing'}
         self.assertEqual(response, expected_response)

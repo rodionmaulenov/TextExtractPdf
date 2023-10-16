@@ -7,3 +7,4 @@ textract-trp
 pdfplumber
 PyMuPDF
 python-decouple
+moto
