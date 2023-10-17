@@ -9,6 +9,7 @@ COPY requirements.txt .
 RUN apk --no-cache add --virtual .build-deps \
     ca-certificates \
     gcc \
+    g++ \
     postgresql-dev \
     linux-headers \
     musl-dev \
