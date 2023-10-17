@@ -493,7 +493,7 @@ class ProcessUploadedFile:
         self.file_pdf = pdf
         self.instances_get_text_from_pdf = instance
 
-    def process_uploaded_file(self, uploaded_file):
+    def process_uploaded_file(self):
         """
         Main logic how to upload, validating logic, getting tablel page, and save
         pdf file
@@ -531,7 +531,7 @@ class ProcessUploadedFile:
             if created:
                 father.name = father_name
                 father.locus = father_locus
-                father.file_upload = uploaded_file
+                father.file_upload = self.file_pdf
                 father.save()
                 return {'message': f'Father {father_name} saved successfully', 'log': 'success'}
             else:
