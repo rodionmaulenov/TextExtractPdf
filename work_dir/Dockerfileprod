@@ -7,6 +7,7 @@ COPY . .
 RUN apk add --no-cache --virtual .build-deps \
     ca-certificates gcc postgresql-dev linux-headers musl-dev \
     libffi-dev jpeg-dev zlib-dev \
+    && pip install --upgrade pip \
     && pip install -r requirements.txt \
     && find /usr/local \
         \( -type d -a -name test -o -name tests \) \
