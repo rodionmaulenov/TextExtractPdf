@@ -2,8 +2,7 @@ FROM python:3.9.18-alpine
 ENV PYTHONUNBUFFERED 1
 RUN mkdir /code
 WORKDIR /code
-COPY . ./code
-COPY requirements.txt .
+COPY . .
 
 RUN apk --no-cache add --virtual .build-deps \
     ca-certificates \
