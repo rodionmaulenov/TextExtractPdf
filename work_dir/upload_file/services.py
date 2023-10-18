@@ -222,6 +222,11 @@ class PdfPlumberMotherAndChild(PdfExtractText):
         return {'locus': locus, 'name': name}
 
 
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 class ProcessUploadedFile:
     def __init__(self, pdf: BytesIO, instances_list: list) -> None:
         self.file_pdf = pdf
@@ -237,9 +242,14 @@ class ProcessUploadedFile:
             try:
                 instance = instance(self.file_pdf)
                 father = instance.extract_text_from_pdf()
-            except botocore.exceptions.ClientError:
+            except Exception as e:
+                logger.error(f'An error occurred: {str(e)}')
                 continue
-            except (AttributeError, TypeError, IndexError):
+            except botocore.exceptions.ClientError as e:
+                logger.error(f'An error occurred: {str(e)}')
+                continue
+            except (AttributeError, TypeError, IndexError) as e:
+                logger.error(f'An error occurred: {str(e)}')
                 continue
 
             if father.get('locus') and father.get('name'):
