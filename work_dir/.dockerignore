@@ -1,5 +1,3 @@
 upload_file/tests
 upload_file/test_pdf
 input_text/test
-home_api/settings/base.py
-home_api/settings/test.py
