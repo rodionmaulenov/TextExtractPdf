@@ -21,7 +21,7 @@ class InputTextView(CompareLocusMixin, View):
     def post(self, request):
         form = LocusForm(request.POST)
         if form.is_valid():
-            list_father = self.compare_dnk(request, form)
+            list_father = self.compare_dnk(form)
             self.get_message(request, list_father)
 
         return render(request, self.template_name, {'form': form})

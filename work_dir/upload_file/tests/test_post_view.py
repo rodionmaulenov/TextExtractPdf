@@ -1,6 +1,3 @@
-# import boto3
-# from moto import mock_textract
-# from unittest.mock import Mock
 # from django.test import TestCase
 # from django.core.files.uploadedfile import SimpleUploadedFile
 #
@@ -33,7 +30,7 @@
 #             )
 #
 #         list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
-#         response = self.mixin(uploaded_file, list_instance).process_uploaded_file()
+#         response = self.mixin(uploaded_file, list_instance).get_message_response()
 #
 #         expected_response = {'log': 'success', 'message': 'Father Tasu Vasile saved successfully'}
 #         self.assertEqual(response, expected_response)
@@ -61,7 +58,7 @@
 #             )
 #
 #         list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
-#         response = self.mixin(uploaded_file, list_instance).process_uploaded_file()
+#         response = self.mixin(uploaded_file, list_instance).get_message_response()
 #
 #         expected_response = {'log': 'caution', 'message': 'Father Tasu Vasile already exists'}
 #         self.assertEqual(response, expected_response)
@@ -80,7 +77,7 @@
 #             )
 #
 #         list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
-#         response = self.mixin(uploaded_file, list_instance).process_uploaded_file()
+#         response = self.mixin(uploaded_file, list_instance).get_message_response()
 #
 #         expected_response = {'log': 'success', 'message': 'Father Tiganis Nicholas saved successfully'}
 #         self.assertEqual(response, expected_response)
@@ -107,7 +104,7 @@
 #             )
 #
 #         list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
-#         response = self.mixin(uploaded_file, list_instance).process_uploaded_file()
+#         response = self.mixin(uploaded_file, list_instance).get_message_response()
 #
 #         expected_response = {'log': 'caution', 'message': 'Father Tiganis Nicholas already exists'}
 #         self.assertEqual(response, expected_response)
@@ -122,7 +119,7 @@
 #             )
 #
 #         list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
-#         response = self.mixin(uploaded_file, list_instance).process_uploaded_file()
+#         response = self.mixin(uploaded_file, list_instance).get_message_response()
 #
 #         expected_response = {'log': 'error', 'message': 'Error processing'}
 #         self.assertEqual(response, expected_response)
@@ -137,7 +134,7 @@
 #             )
 #
 #         list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
-#         response = self.mixin(uploaded_file, list_instance).process_uploaded_file()
+#         response = self.mixin(uploaded_file, list_instance).get_message_response()
 #
 #         expected_response = {'log': 'error', 'message': 'Error processing'}
 #         self.assertEqual(response, expected_response)
@@ -157,7 +154,7 @@
 #             )
 #
 #         list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
-#         response = self.mixin(uploaded_file, list_instance).process_uploaded_file()
+#         response = self.mixin(uploaded_file, list_instance).get_message_response()
 #
 #         expected_response = {'log': 'success', 'message': 'Father Nikolic Aleksandar saved successfully'}
 #         self.assertEqual(response, expected_response)
@@ -185,7 +182,7 @@
 #             )
 #
 #         list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
-#         response = self.mixin(uploaded_file, list_instance).process_uploaded_file()
+#         response = self.mixin(uploaded_file, list_instance).get_message_response()
 #
 #         expected_response = {'log': 'caution', 'message': 'Father Nikolic Aleksandar already exists'}
 #         self.assertEqual(response, expected_response)
@@ -206,7 +203,7 @@
 #             )
 #
 #         list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
-#         response = self.mixin(uploaded_file, list_instance).process_uploaded_file()
+#         response = self.mixin(uploaded_file, list_instance).get_message_response()
 #
 #         expected_response = {'log': 'success', 'message': 'Father success saved successfully'}
 #         self.assertEqual(response, expected_response)
@@ -220,7 +217,7 @@
 #         """
 #
 #         Client.objects.create(
-#             name='success',
+#             name='Даніель Фаріаш Гомес',
 #             locus={"FGA": "23,25", "vWA": "16,18", "THO1": "6,8", "TPOX": "8,11", "CSF1PO": "10,12", "D18S51": "13,19",
 #                    "D21S11": "30,32.2", "D2S441": "11,14", "D5S818": "12,12", "D7S82O": "8,10", "D12S391": "20,21",
 #                    "D13S317": "11,12", "D16S539": "12,14", "D19S433": "15.2,16", "D1S1656": "14,14", "D2S1338": "19,24",
@@ -230,15 +227,15 @@
 #
 #         with open('upload_file/test_pdf/Даніель Фаріаш Гомес.pdf', 'rb') as pdf_file:
 #             uploaded_file = SimpleUploadedFile(
-#                 name='success.pdf',
+#                 name='Даніель Фаріаш Гомес.pdf',
 #                 content=pdf_file.read(),
 #                 content_type='application/pdf',
 #
 #             )
 #
 #         list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
-#         response = self.mixin(uploaded_file, list_instance).process_uploaded_file()
+#         response = self.mixin(uploaded_file, list_instance).get_message_response()
 #
-#         expected_response = {'log': 'caution', 'message': 'Father success already exists'}
+#         expected_response = {'log': 'caution', 'message': 'Father Даніель Фаріаш Гомес already exists'}
 #         self.assertEqual(response, expected_response)
 #         self.assertEqual(Client.objects.count(), 1)

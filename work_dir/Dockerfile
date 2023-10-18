@@ -1,12 +1,21 @@
 FROM python:3.9.18-alpine
 ENV PYTHONUNBUFFERED 1
+ENV DJANGO_SETTINGS_MODULE home_api.settings.test
 RUN mkdir /code
 WORKDIR /code
 COPY . .
 
-RUN apk add --no-cache --virtual .build-deps \
-    ca-certificates gcc postgresql-dev linux-headers musl-dev \
-    libffi-dev jpeg-dev zlib-dev \
+RUN apk --no-cache add --virtual .build-deps \
+    ca-certificates \
+    gcc \
+    g++ \
+    postgresql-dev \
+    linux-headers \
+    musl-dev \
+    libffi-dev \
+    jpeg-dev \
+    zlib-dev \
+    make \
     && pip install -r requirements.txt \
     && find /usr/local \
         \( -type d -a -name test -o -name tests \) \
@@ -21,8 +30,6 @@ RUN apk add --no-cache --virtual .build-deps \
     )" \
     && apk add --virtual .rundeps $runDeps \
     && apk del .build-deps
-
-
 
 
 

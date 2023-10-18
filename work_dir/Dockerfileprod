@@ -16,7 +16,6 @@ RUN apk --no-cache add --virtual .build-deps \
     jpeg-dev \
     zlib-dev \
     make \
-    && pip install --upgrade pip \
     && pip install -r requirements.txt \
     && find /usr/local \
         \( -type d -a -name test -o -name tests \) \

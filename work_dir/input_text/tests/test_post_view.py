@@ -3,6 +3,8 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.messages import get_messages
 
+from input_text.forms import LocusForm
+from input_text.services import CompareLocusMixin
 from upload_file.models import Client as Father
 
 
@@ -44,7 +46,7 @@ class PostInputTextViewTest(TestCase):
 
         messages = list(get_messages(response.wsgi_request))
         self.assertTrue(
-            any('father <a href="/admin/upload_file/client/2/change/">Tasu Vasile</a>'
+            any('father <a href="/admin/upload_file/client/8/change/">Tasu Vasile</a>'
                 in message.message for message in messages)
         )
 
@@ -85,7 +87,6 @@ class PostInputTextViewTest(TestCase):
                                      "D3S1358": "15,17", "D8S1179": "10,15"})
 
         data = {
-            'dnk_form_submit': '',
             "FGA": "19,24", "vWA": "16,18", "THO1": "6,9.3",
             "TPOX": "8,9",
             "CSF1PO": "12,12", "D18S51": "13,14", "D21S11": "29,31",
@@ -104,11 +105,76 @@ class PostInputTextViewTest(TestCase):
 
         messages = list(get_messages(response.wsgi_request))
         self.assertTrue(
-            any('father <a href="/admin/upload_file/client/3/change/">Tiganis Nicholas</a>'
+            any('father <a href="/admin/upload_file/client/9/change/">Tiganis Nicholas</a>'
                 in message.message for message in messages)
         )
 
-    def test_post_not_found_matching(self):
+    def test_post_found_matching_eurolab_1_locus_fail(self):
+        url = reverse('input_text')
+
+        Father.objects.create(name='Tiganis Nicholas',
+                              locus={"FGA": "19,24", "vWA": "16,18", "THO1": "6,9.3",
+                                     "TPOX": "8,9", "CSF1PO": "12,12", "D18S51": "13,14", "D21S11": "29,31",
+                                     "D5S818": "13,13", "D7S82O": "9,12", "D13S317": "11,12",
+                                     "D16S539": "10,11", "D19S433": "12,14", "D2S1338": "17,24",
+                                     "D3S1358": "15,17", "D8S1179": "10,15"})
+
+        data = {
+            # FGA
+            "FGA": "0,0", "vWA": "16,18", "THO1": "6,9.3",
+            "TPOX": "8,9", "CSF1PO": "12,12", "D18S51": "13,14", "D21S11": "29,31",
+            "D5S818": "13,13", "D7S82O": "9,12", "D13S317": "11,12",
+            "D16S539": "10,11", "D19S433": "12,14", "D2S1338": "17,24",
+            "D3S1358": "15,17", "D8S1179": "10,15",
+            # this is unnecessary locus
+            'Penta E': "15,17", 'D2S441': "15,17", 'D22S1O45': "15,17",
+            'D6S1O43': "15,17", 'D1OS1248': "15,17", 'D1S1656': "15,17",
+            'D12S391': "15,17"
+        }
+
+        response = self.client.post(url, data)
+
+        self.assertEqual(response.status_code, 200)
+
+        messages = list(get_messages(response.wsgi_request))
+
+        self.assertTrue(
+            any('father <a href="/admin/upload_file/client/10/change/">Tiganis Nicholas</a>'
+                in message.message for message in messages)
+        )
+
+    def test_post_found_matching_eurolab_2_locus_fail(self):
+        url = reverse('input_text')
+
+        Father.objects.create(name='Tiganis Nicholas',
+                              locus={"FGA": "19,24", "vWA": "16,18", "THO1": "6,9.3",
+                                     "TPOX": "8,9", "CSF1PO": "12,12", "D18S51": "13,14", "D21S11": "29,31",
+                                     "D5S818": "13,13", "D7S82O": "9,12", "D13S317": "11,12",
+                                     "D16S539": "10,11", "D19S433": "12,14", "D2S1338": "17,24",
+                                     "D3S1358": "15,17", "D8S1179": "10,15"})
+
+        data = {
+            # FGA
+            "FGA": "0,0", "vWA": "0,0", "THO1": "6,9.3",
+            "TPOX": "8,9",
+            "CSF1PO": "12,12", "D18S51": "13,14", "D21S11": "29,31",
+            "D5S818": "13,13", "D7S82O": "9,12", "D13S317": "11,12",
+            "D16S539": "10,11", "D19S433": "12,14", "D2S1338": "17,24",
+            "D3S1358": "15,17", "D8S1179": "10,15",
+            # this is unnecessary locus
+            'Penta E': "15,17", 'D2S441': "15,17", 'D22S1O45': "15,17",
+            'D6S1O43': "15,17", 'D1OS1248': "15,17", 'D1S1656': "15,17",
+            'D12S391': "15,17"
+        }
+
+        response = self.client.post(url, data)
+
+        self.assertEqual(response.status_code, 200)
+
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(any('not matching' in message.message for message in messages))
+
+    def test_post_not_found_matching_22_locus_2_locus_fail(self):
         url = reverse('input_text')
 
         Father.objects.create(name='Tasu Vasile',
@@ -120,7 +186,7 @@ class PostInputTextViewTest(TestCase):
                                      "D3S1358": "15,16", "D6S1O43": "11,12", "D8S1179": "14,14",
                                      "Penta E": "12,13", "D1OS1248": "15,15", "D22S1O45": "15,15"})
         # change FGA, vWA
-        data = {"FGA": "1,1", "vWA": "10,10", "THO1": "8,9", "TPOX": "8,8",
+        data = {"FGA": "0,0", "vWA": "10,10", "THO1": "8,9", "TPOX": "8,8",
                 "CSF1PO": "11,14", "D18S51": "13,16", "D21S11": "29,30.2",
                 "D2S441": "11,14", "D5S818": "13,13", "D7S82O": "12,12",
                 "D12S391": "19,20", "D13S317": "8,11", "D16S539": "10,11",
@@ -134,3 +200,99 @@ class PostInputTextViewTest(TestCase):
 
         messages = list(get_messages(response.wsgi_request))
         self.assertTrue(any('not matching' in message.message for message in messages))
+
+    def test_post_found_few_matching_22_locus_1_locus_fail_mother_and_child(self):
+
+        Father.objects.create(name='Tasu Vasile',
+                              # change FGA
+                              locus={"FGA": "21,22", "vWA": "10,10", "THO1": "8,9", "TPOX": "8,8",
+                                     "CSF1PO": "11,14", "D18S51": "13,16", "D21S11": "29,30.2",
+                                     "D2S441": "11,14", "D5S818": "13,13", "D7S82O": "12,12",
+                                     "D12S391": "19,20", "D13S317": "8,11", "D16S539": "10,11",
+                                     "D19S433": "13,13", "D1S1656": "14,16.3", "D2S1338": "19,20",
+                                     "D3S1358": "15,16", "D6S1O43": "11,12", "D8S1179": "14,14",
+                                     "Penta E": "12,13", "D1OS1248": "15,15", "D22S1O45": "15,15"})
+
+        Father.objects.create(name='Papa Karlo',
+                              # vWa
+                              locus={"FGA": "10,10", "vWA": "16,19", "THO1": "8,9", "TPOX": "8,8",
+                                     "CSF1PO": "11,14", "D18S51": "13,16", "D21S11": "29,30.2",
+                                     "D2S441": "11,14", "D5S818": "13,13", "D7S82O": "12,12",
+                                     "D12S391": "19,20", "D13S317": "8,11", "D16S539": "10,11",
+                                     "D19S433": "13,13", "D1S1656": "14,16.3", "D2S1338": "19,20",
+                                     "D3S1358": "15,16", "D6S1O43": "11,12", "D8S1179": "14,14",
+                                     "Penta E": "12,13", "D1OS1248": "15,15", "D22S1O45": "15,15"})
+
+        data = {"FGA": "10,10", "vWA": "10,10", "THO1": "8,9", "TPOX": "8,8",
+                "CSF1PO": "11,14", "D18S51": "13,16", "D21S11": "29,30.2",
+                "D2S441": "11,14", "D5S818": "13,13", "D7S82O": "12,12",
+                "D12S391": "19,20", "D13S317": "8,11", "D16S539": "10,11",
+                "D19S433": "13,13", "D1S1656": "14,16.3", "D2S1338": "19,20",
+                "D3S1358": "15,16", "D6S1O43": "11,12", "D8S1179": "14,14",
+                "Penta E": "12,13", "D1OS1248": "15,15", "D22S1O45": "15,15"}
+
+        form = LocusForm(data)
+        if form.is_valid():
+            obj = CompareLocusMixin().compare_dnk(form)
+            self.assertEqual(len(obj), 2)
+
+    def test_post_found_few_matching_15_locus_1_locus_fail_evrolab(self):
+
+        Father.objects.create(name='Tiganis Nicholas',
+                              # FGA
+                              locus={"FGA": "19,24", "vWA": "16,18", "THO1": "6,9.3",
+                                     "TPOX": "8,9", "CSF1PO": "12,12", "D18S51": "13,14", "D21S11": "29,31",
+                                     "D5S818": "13,13", "D7S82O": "9,12", "D13S317": "11,12",
+                                     "D16S539": "10,11", "D19S433": "12,14", "D2S1338": "17,24",
+                                     "D3S1358": "15,17", "D8S1179": "10,15"})
+
+        Father.objects.create(name='Tiganis Nicholas2',
+                              # vWA
+                              locus={"FGA": "0,0", "vWA": "5,5", "THO1": "6,9.3",
+                                     "TPOX": "8,9", "CSF1PO": "12,12", "D18S51": "13,14", "D21S11": "29,31",
+                                     "D5S818": "13,13", "D7S82O": "9,12", "D13S317": "11,12",
+                                     "D16S539": "10,11", "D19S433": "12,14", "D2S1338": "17,24",
+                                     "D3S1358": "15,17", "D8S1179": "10,15"})
+
+        data = {
+            "FGA": "0,0", "vWA": "16,18", "THO1": "6,9.3",
+            "TPOX": "8,9", "CSF1PO": "12,12", "D18S51": "13,14", "D21S11": "29,31",
+            "D5S818": "13,13", "D7S82O": "9,12", "D13S317": "11,12",
+            "D16S539": "10,11", "D19S433": "12,14", "D2S1338": "17,24",
+            "D3S1358": "15,17", "D8S1179": "10,15",
+            # this is unnecessary locus
+            'Penta E': "15,17", 'D2S441': "15,17", 'D22S1O45': "15,17",
+            'D6S1O43': "15,17", 'D1OS1248': "15,17", 'D1S1656': "15,17",
+            'D12S391': "15,17"
+        }
+
+        form = LocusForm(data)
+        if form.is_valid():
+            obj = CompareLocusMixin().compare_dnk(form)
+            self.assertEqual(len(obj), 2)
+
+    def test_post_found_few_matching_15_locus_1_locus_fail_mother_and_child(self):
+
+        Father.objects.create(name='Nikolic Aleksandar',
+                              # FGA
+                              locus={"FGA": "1,1", "vWA": "17,18", "THO1": "6,10", "TPOX": "9.10", "CSF1PO": "11.12",
+                                     "D18S51": "15,15", "D21S11": "30,31", "D5S818": "11,11", "D7S82O": "9,11",
+                                     "D13S317": "11,11", "D16S539": "8,11", "D19S433": "12,13", "D2S1338": "17,17",
+                                     "D3S1358": "16,17", "D8S1179": "12,14"})
+
+        Father.objects.create(name='Nikolic Aleksandar2',
+                              # vWA
+                              locus={"FGA": "0,0", "vWA": "1,1", "THO1": "6,10", "TPOX": "9.10", "CSF1PO": "11.12",
+                                     "D18S51": "15,15", "D21S11": "30,31", "D5S818": "11,11", "D7S82O": "9,11",
+                                     "D13S317": "11,11", "D16S539": "8,11", "D19S433": "12,13", "D2S1338": "17,17",
+                                     "D3S1358": "16,17", "D8S1179": "12,14"})
+
+        data = {"FGA": "0,0", "vWA": "17,18", "THO1": "6,10", "TPOX": "9.10", "CSF1PO": "11.12",
+                "D18S51": "15,15", "D21S11": "30,31", "D5S818": "11,11", "D7S82O": "9,11",
+                "D13S317": "11,11", "D16S539": "8,11", "D19S433": "12,13", "D2S1338": "17,17",
+                "D3S1358": "16,17", "D8S1179": "12,14"}
+
+        form = LocusForm(data)
+        if form.is_valid():
+            obj = CompareLocusMixin().compare_dnk(form)
+            self.assertEqual(len(obj), 2)

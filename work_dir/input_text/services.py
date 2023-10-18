@@ -17,28 +17,26 @@ class CompareLocusMixin:
             args=[father.pk])
         return change_url_admin
 
-    def compare_dnk(self, request, form):
+    def compare_dnk(self, form):
         """Find father by locus child"""
 
         list_father = []
         for father_instance in Client.objects.all():
             father_dnk = father_instance.locus
-            if 'Penta D' in father_dnk:
-                del father_dnk['Penta D']
 
             child_dnk = [(name, form.cleaned_data.get(name)) for name in locus]
-            if len(father_dnk) == 16:
+            if len(father_dnk) == 15:
                 exclude = ['Penta E', 'D2S441', 'D22S1O45', 'D6S1O43', 'D1OS1248', 'D1S1656', 'D12S391']
                 child_dnk = [(name, value) for name, value in child_dnk if name not in exclude]
 
             list_matching = []
             for key, value in child_dnk:
                 if key in father_dnk:
-                    child_value = value.split(',')
-                    father_value = father_dnk[key]
+                    child_value = value.replace(' ', '').split(',')
+                    father_value = father_dnk[key].split(',')
 
-                    father_locus = [num.strip() for num in father_value.split(',')]
-                    list_matching.append([num.strip() for num in child_value if num in father_locus])
+                    father_locus = [num for num in father_value]
+                    list_matching.append([num for num in child_value if num in father_locus])
 
             list_matching = [num for num in list_matching if len(num) != 0]
             if len(father_dnk) == 15 and (len(list_matching) == 15 or len(list_matching) == 14):

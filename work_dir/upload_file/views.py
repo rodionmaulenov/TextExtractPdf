@@ -26,7 +26,7 @@ class FileUploadView(View):
 
         for _, uploaded_file in request.FILES.items():
             puf = ProcessUploadedFile(uploaded_file, list_instance)
-            response = puf.process_uploaded_file(uploaded_file)
+            response = puf.get_message_response()
             responses.append(response)
 
         return JsonResponse(responses, status=200, safe=False)
