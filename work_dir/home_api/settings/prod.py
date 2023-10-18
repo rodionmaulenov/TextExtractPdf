@@ -5,9 +5,8 @@ SECRET_KEY = config('SECRET_KEY')
 
 DEBUG = config('DEBUG')
 
-ALLOWED_HOSTS = [config('ALLOWED_HOSTS'), config('SQL_HOST'), config("WWW_HOST"),
+ALLOWED_HOSTS = [config('ALLOWED_HOSTS'), config('ALLOWED_HOSTS1'), config('SQL_HOST'), config("WWW_HOST"),
                  config('OTHERS_HOSTS')]
-
 
 DATABASES = {
     'default': {

@@ -122,6 +122,7 @@ jobs:
           echo DEBUG=${{ secrets.DEBUG }} >> .env
           echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
           echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
+          echo ALLOWED_HOSTS1=${{ secrets.ALLOWED_HOSTS1 }} >> .env
           echo WWW_HOST=${{ secrets.WWW_HOST }} >> .env
           echo OTHERS_HOSTS=${{ secrets.OTHERS_HOSTS }} >> .env
           echo CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }} >> .env

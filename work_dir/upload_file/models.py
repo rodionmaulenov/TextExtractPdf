@@ -9,7 +9,7 @@ def user_directory_path(instance, filename):
 
 
 class Client(models.Model):
-    name = models.CharField(max_length=50, blank=True, null=True, unique=True)
+    name = models.CharField(max_length=150, blank=True, null=True)
     locus = models.JSONField(blank=True, null=True)
     file_upload = models.FileField(upload_to=user_directory_path)
     date_create = models.DateField(auto_now_add=True)
