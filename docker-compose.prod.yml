@@ -10,7 +10,6 @@ services:
       - '8000'
     volumes:
       - ./persistentdata/static:/code/static
-      - ./persistentdata/media:/code/media
     env_file:
       - .env
     command: >
@@ -32,7 +31,6 @@ services:
       - ./persistentdata/certbot/conf:/etc/letsencrypt
       - ./persistentdata/certbot/www:/var/www/certbot
       - ./persistentdata/static:/code/static
-      - ./persistentdata/media:/code/media
     depends_on:
       - extract_text
 

@@ -1,25 +1,14 @@
 #!/bin/bash
 
-# Get a list of all stopped container IDs
+# Remove stopped containers and their associated images and volumes
 stopped_containers=$(docker ps -aq --filter "status=exited")
-
-# Loop through the stopped container IDs
 for container_id in $stopped_containers; do
-  # Get the image ID associated with the stopped container
   image_id=$(docker inspect -f '{{.Image}}' $container_id)
-
-  # Get a list of volumes associated with the container
   volumes=$(docker inspect -f '{{range .Mounts}}{{.Name}} {{end}}' $container_id)
-
-  # Remove the stopped container
   docker rm $container_id
   echo "Deleted container $container_id"
-
-  # Remove the associated image
   docker rmi $image_id
   echo "Deleted image $image_id"
-
-  # Remove the associated volumes
   for volume in $volumes; do
     if [ -n "$volume" ]; then
       docker volume rm $volume
@@ -27,6 +16,14 @@ for container_id in $stopped_containers; do
     fi
   done
 done
+
+# Remove images not related to any container
+unused_images=$(docker images -q --filter "dangling=true")
+for image_id in $unused_images; do
+  docker rmi $image_id
+  echo "Deleted unused image $image_id"
+done
+
 
 ##!/bin/bash
 #

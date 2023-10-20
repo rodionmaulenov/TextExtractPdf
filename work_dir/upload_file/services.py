@@ -8,6 +8,8 @@ import shutil
 from abc import ABC, abstractmethod
 from decouple import config
 from io import BytesIO
+
+import requests
 from trp import Document
 
 from django.conf import settings
@@ -51,21 +53,25 @@ class PdfConvertIntoImage:
 
     def get_image(self):
         instance = self.instance()
-        file_upload = instance.file_upload
         if not os.path.exists(self.path_save_image):
             os.mkdir(self.path_save_image)
 
-        image = self.pdf_to_image(file_upload, self.path_save_image)
+        image = self.pdf_to_image(instance, self.path_save_image)
         instance.delete()
         return image
 
-    def pdf_to_image(self, file_upload, output_folder, dpi=300):
+    def pdf_to_image(self, instance, output_folder, dpi=300):
         """Convert upload PDF file into image and save in 'media_jpg' dir"""
 
-        pdf_document = fitz.open(file_upload.path)
+        pdf_url = instance.get_file_url()
+        response = requests.get(pdf_url)
+        if response.status_code == 200:
+            with open(f'{output_folder}/test.pdf', 'wb') as f:
+                f.write(response.content)
+        pdf_document = fitz.open(f'{output_folder}/test.pdf')
         for i, page in enumerate(pdf_document):
             if i == 0:
-                image_path = f"{output_folder}/{file_upload.name}_{1}.jpg"
+                image_path = f"{output_folder}/{instance.name}_{1}.jpg"
                 image = page.get_pixmap(dpi=dpi)
                 image.save(image_path)
 
@@ -253,6 +259,7 @@ class ProcessUploadedFile:
     in different ways and at the end return a final
     response message about the status of the PDF extraction.
     """
+
     def __init__(self, pdf: BytesIO, instances_list: list) -> None:
         self.file_pdf = pdf
         self.instances_extract_text = instances_list
@@ -263,9 +270,9 @@ class ProcessUploadedFile:
             try:
                 instance = instance(self.file_pdf)
                 father = instance.extract_text_from_pdf()
-            # except Exception as e:
-            #     logger.error(f'An error occurred: {str(e)}')
-            #     continue
+            except Exception as e:
+                logger.error(f'An error occurred: {str(e)}')
+                continue
             except botocore.exceptions.ClientError:
                 continue
             except (AttributeError, TypeError, IndexError) as e:

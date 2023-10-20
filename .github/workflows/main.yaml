@@ -8,10 +8,6 @@ on:
 env:
   APP_IMAGE: ghcr.io/${{ secrets.REPOSITORY_GITHUB }}/text_extract
   NGINX_IMAGE: ghcr.io/${{ secrets.REPOSITORY_GITHUB }}/nginx
-  SQL_NAME: ${{ secrets.SQL_NAME }}
-  SQL_USER: ${{ secrets.SQL_USER }}
-  SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
-
 
 jobs:
   test:
@@ -36,9 +32,9 @@ jobs:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_USER: ${{ env.SQL_USER }}
-          POSTGRES_PASSWORD: ${{ env.SQL_PASSWORD }}
-          POSTGRES_DB: ${{ env.SQL_NAME }}
+          POSTGRES_USER: databaseuser
+          POSTGRES_PASSWORD: databasepassword
+          POSTGRES_DB: databasename
         ports:
           - 5432:5432
         options:
@@ -95,6 +91,8 @@ jobs:
           echo NGINX_IMAGE=${{ env.NGINX_IMAGE }} >> .env
           echo ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} >> .env
           echo SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} >> .env
+          echo DO_SPACES_ACCESS_KEY_ID=${{ secrets.DO_SPACES_ACCESS_KEY_ID}} >> .env
+          echo DO_SPACES_AWS_SECRET_ACCESS_KEY=${{ secrets.DO_SPACES_AWS_SECRET_ACCESS_KEY }} >> .env
 
       - name: Build images
         run: |
@@ -136,6 +134,8 @@ jobs:
           echo NGINX_IMAGE=${{ env.NGINX_IMAGE }} >> .env
           echo ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID}} >> .env
           echo SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} >> .env
+          echo DO_SPACES_ACCESS_KEY_ID=${{ secrets.DO_SPACES_ACCESS_KEY_ID}} >> .env
+          echo DO_SPACES_AWS_SECRET_ACCESS_KEY=${{ secrets.DO_SPACES_AWS_SECRET_ACCESS_KEY }} >> .env
           
 
       - name: Configure ssh connection
