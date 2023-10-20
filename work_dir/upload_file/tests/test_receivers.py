@@ -18,7 +18,7 @@ class ClientFileDeleteTest(TestCase):
 
     def test_delete_client_deletes_pdf_file(self):
         # Get the path to the PDF file before deleting the client
-        pdf_file_path = self.client_instance.file_upload.path
+        pdf_file_path = self.client_instance.get_file_url()
 
         # Delete the client instance
         self.client_instance.delete()
