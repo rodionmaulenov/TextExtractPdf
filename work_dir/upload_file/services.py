@@ -245,11 +245,9 @@ class ProcessUploadedFile:
             except Exception as e:
                 logger.error(f'An error occurred: {str(e)}')
                 continue
-            except botocore.exceptions.ClientError as e:
-                logger.error(f'An error occurred: {str(e)}')
+            except botocore.exceptions.ClientError:
                 continue
             except (AttributeError, TypeError, IndexError) as e:
-                logger.error(f'An error occurred: {str(e)}')
                 continue
 
             if father.get('locus') and father.get('name'):
