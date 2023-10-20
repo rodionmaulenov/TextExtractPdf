@@ -7,6 +7,9 @@ services:
     build:
       context: ./work_dir
       dockerfile: Dockerfileprod
+      args:
+        - NO_CACHE=1
+
     image: "${APP_IMAGE}"
     environment:
       - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
