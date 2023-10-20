@@ -20,6 +20,12 @@ LOCUS = ['D3S1358', 'vWA', 'D16S539', 'CSF1PO', 'TPOX', 'D8S1179', 'D21S11', 'D1
 
 
 class PdfExtractText(ABC):
+    """
+    Abstract class that specified method abstractmethod.
+    All daughter classes which inheriting this base class
+    must override 'extract_text_from_pdf' func
+    """
+
     def __init__(self, pdf: BytesIO) -> None:
         self.file_pdf = pdf
 
@@ -67,6 +73,10 @@ class PdfConvertIntoImage:
 
 
 class AwsEvrolab(PdfExtractText):
+    """
+    Extract text from Evrolab pdf with aws microservice
+    """
+
     def plug_to_aws(self):
 
         connected_aws = boto3.client(
@@ -89,7 +99,9 @@ class AwsEvrolab(PdfExtractText):
         return doc
 
     def extract_text_from_pdf(self):
-
+        """
+        Getting father locus and his name from table
+        """
         connected = self.plug_to_aws()
         file_binary = self.file_pdf.read()
         doc = self.analyze_document(file_binary, connected, formatting='TABLES')
@@ -127,6 +139,9 @@ class AwsEvrolab(PdfExtractText):
 
 
 class AwsMotherAndChild(PdfExtractText):
+    """
+    Extract text from MotherAndChild pdf with aws microservice
+    """
 
     def plug_to_aws(self):
         connected_aws = boto3.client(
@@ -154,8 +169,9 @@ class AwsMotherAndChild(PdfExtractText):
         return doc
 
     def extract_text_from_pdf(self):
-        """Get specified page from PDF file"""
-
+        """
+        Getting father locus and his name from table
+        """
         connected_aws = self.plug_to_aws()
         doc = self.analyze_document(connected_aws, formatting='TABLES')
 
@@ -190,6 +206,11 @@ class AwsMotherAndChild(PdfExtractText):
 
 
 class PdfPlumberMotherAndChild(PdfExtractText):
+    """
+    Extract text from MotherAndChild pdf where
+    not requiring to use aws service
+    """
+
     def get_table_page(self):
         """Get specified page from PDF file"""
         with pdfplumber.open(self.file_pdf) as pdf:
@@ -200,7 +221,6 @@ class PdfPlumberMotherAndChild(PdfExtractText):
     def extract_text_from_pdf(self):
         """
         Getting father locus and his name from table
-        in other case return None
         """
         page = self.get_table_page()
         table = page.extract_table()
@@ -228,15 +248,16 @@ logger = logging.getLogger(__name__)
 
 
 class ProcessUploadedFile:
+    """
+    In for loop using instances that extract text from the PDF
+    in different ways and at the end return a final
+    response message about the status of the PDF extraction.
+    """
     def __init__(self, pdf: BytesIO, instances_list: list) -> None:
         self.file_pdf = pdf
         self.instances_extract_text = instances_list
 
     def process_uploaded_file(self) -> dict:
-        """
-        Main logic how to upload, validating logic, getting table page,
-        extract text
-        """
         father = {}
         for instance in self.instances_extract_text:
             try:
