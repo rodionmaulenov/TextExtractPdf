@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     # my applications
     'upload_file',
     'input_text',
-    
+
     # third party packages
     'django_cleanup.apps.CleanupConfig',
 ]
@@ -128,16 +128,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
-# MEDIA_URL = '/media/'
-MEDIA_URL = 'https://fra1.digitaloceanspaces.com/textract-space/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -149,6 +139,28 @@ LOGIN_URL = '/admin/login/'
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]
 
+# Connect to Space Digital Ocean
+AWS_ACCESS_KEY_ID = config('DO_SPACES_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = config('DO_SPACES_AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = 'textract-space'
+AWS_S3_ENDPOINT_URL = 'https://fra1.digitaloceanspaces.com'
+AWS_S3_OBJECT_PARAMETERS = {
+    "CacheControl": 'max-age=86400',
+    'ACL': 'public-read'
+}
+AWS_LOCATION = 'https://textract-space.fra1.digitaloceanspaces.com'
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/4.2/howto/static-files/
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'static'
+
+MEDIA_URL = 'https://fra1.digitaloceanspaces.com/textract-space/media/'
+
+DEFAULT_FILE_STORAGE = "home_api.storages.MediaSpaceStorage"
+
+
+# Plug logging
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -171,19 +183,5 @@ LOGGING = {
             'level': 'ERROR',  # Adjust the log level as needed
             'propagate': True,
         },
-        # Add other loggers if necessary
     },
 }
-
-# Connect to Space Digital Ocean
-AWS_ACCESS_KEY_ID = config('DO_SPACES_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = config('DO_SPACES_AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = 'textract-space'
-AWS_S3_ENDPOINT_URL = 'https://fra1.digitaloceanspaces.com'
-AWS_S3_OBJECT_PARAMETERS = {
-    "CacheControl": 'max-age=86400',
-    'ACL': 'public-read'
-}
-
-AWS_LOCATION = 'https://textract-space.fra1.digitaloceanspaces.com'
-DEFAULT_FILE_STORAGE = "home_api.storages.MediaSpaceStorage"

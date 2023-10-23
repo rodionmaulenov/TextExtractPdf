@@ -4,6 +4,7 @@ import os
 import fitz
 import pdfplumber
 import shutil
+import logging
 
 from abc import ABC, abstractmethod
 from decouple import config
@@ -248,8 +249,6 @@ class PdfPlumberMotherAndChild(PdfExtractText):
         return {'locus': locus, 'name': name}
 
 
-import logging
-
 logger = logging.getLogger(__name__)
 
 
@@ -270,12 +269,12 @@ class ProcessUploadedFile:
             try:
                 instance = instance(self.file_pdf)
                 father = instance.extract_text_from_pdf()
-            except Exception as e:
-                logger.error(f'An error occurred: {str(e)}')
-                continue
             except botocore.exceptions.ClientError:
                 continue
-            except (AttributeError, TypeError, IndexError) as e:
+            except (AttributeError, TypeError, IndexError):
+                continue
+            except Exception as e:
+                logger.error(f'An error occurred: {str(e)}')
                 continue
 
             if father.get('locus') and father.get('name'):
