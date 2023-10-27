@@ -1,15 +1,20 @@
-# from django.test import TestCase
-# from django.core.files.uploadedfile import SimpleUploadedFile
-#
-# from upload_file.models import Client
-# from upload_file.services import ProcessUploadedFile, PdfPlumberMotherAndChild, AwsEvrolab, AwsMotherAndChild
-#
-# LOCUS = ['D3S1358', 'vWA', 'D16S539', 'CSF1PO', 'TPOX', 'D8S1179', 'D21S11', 'D18S51', 'Penta E',
-#          'D2S441', 'D19S433', 'THO1', 'FGA', 'D22S1O45', 'D5S818', 'D13S317', 'D7S82O', 'D6S1O43',
-#          'D1OS1248', 'D1S1656', 'D12S391', 'D2S1338']
-#
-#
-# class ProcessUploadedFileMixinTestCase(TestCase):
+from django.contrib.auth.models import User
+from django.core.files.base import ContentFile
+from django.test import TransactionTestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.urls import reverse
+
+from upload_file.models import Client
+from upload_file.services import ProcessUploadedFile, PdfPlumberMotherAndChild, AwsEvrolab, AwsMotherAndChild, \
+    AwsMotherAndChildV2
+
+LOCUS = ['D3S1358', 'vWA', 'D16S539', 'CSF1PO', 'TPOX', 'D8S1179', 'D21S11', 'D18S51', 'Penta E',
+         'D2S441', 'D19S433', 'THO1', 'FGA', 'D22S1O45', 'D5S818', 'D13S317', 'D7S82O', 'D6S1O43',
+         'D1OS1248', 'D1S1656', 'D12S391', 'D2S1338']
+
+
+# class ProcessUploadedFileMixinTestCase(TransactionTestCase):
 #     def setUp(self):
 #         self.mixin = ProcessUploadedFile
 #         self.uploaded_files = []
@@ -19,7 +24,9 @@
 #
 #     def test_process_uploaded_file_success(self):
 #         """
-#         Mother and child pdf file using in this test
+#         MotherAndChild pdf file on 3 page
+#         22 locus
+#         :return: message Response
 #         """
 #
 #         with open('upload_file/test_pdf/mother_and_child.pdf', 'rb') as pdf_file:
@@ -29,16 +36,23 @@
 #                 content_type='application/pdf',
 #             )
 #
-#         list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
-#         response = self.mixin(uploaded_file, list_instance).get_message_response()
+#         list_instance = [
+#             PdfPlumberMotherAndChild, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
+#         ]
+#         instance = self.mixin(uploaded_file, list_instance)
+#         father_dict = instance.process_uploaded_file()
+#         response = instance.message_response(father_dict)
+#         instance.clean_up_files()
 #
-#         expected_response = {'log': 'success', 'message': 'Father Tasu Vasile saved successfully'}
+#         expected_response = {'log': 'success', 'message': 'Tasu Vasile saved successfully'}
 #         self.assertEqual(response, expected_response)
 #         self.assertEqual(Client.objects.count(), 1)
 #
 #     def test_process_uploaded_file_already_exists(self):
 #         """
-#         Mother and child pdf file using in this test
+#         MotherAndChild pdf file on 3 page
+#         22 locus
+#         :return: message Response
 #         """
 #
 #         Client.objects.create(
@@ -57,16 +71,23 @@
 #                 content_type='application/pdf',
 #             )
 #
-#         list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
-#         response = self.mixin(uploaded_file, list_instance).get_message_response()
+#         list_instance = [
+#             PdfPlumberMotherAndChild, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
+#         ]
+#         instance = self.mixin(uploaded_file, list_instance)
+#         father_dict = instance.process_uploaded_file()
+#         response = instance.message_response(father_dict)
+#         instance.clean_up_files()
 #
-#         expected_response = {'log': 'caution', 'message': 'Father Tasu Vasile already exists'}
+#         expected_response = {'log': 'caution', 'message': 'Tasu Vasile already exists'}
 #         self.assertEqual(response, expected_response)
 #         self.assertEqual(Client.objects.count(), 1)
 #
 #     def test_process_uploaded_file_success_eurolab(self):
 #         """
 #         Eurolab pdf file using in this test
+#         15 locus
+#         only 1 page
 #         """
 #
 #         with open('upload_file/test_pdf/eurolab.pdf', 'rb') as pdf_file:
@@ -76,16 +97,23 @@
 #                 content_type='application/pdf',
 #             )
 #
-#         list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
-#         response = self.mixin(uploaded_file, list_instance).get_message_response()
+#         list_instance = [
+#             PdfPlumberMotherAndChild, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
+#         ]
+#         instance = self.mixin(uploaded_file, list_instance)
+#         father_dict = instance.process_uploaded_file()
+#         response = instance.message_response(father_dict)
+#         instance.clean_up_files()
 #
-#         expected_response = {'log': 'success', 'message': 'Father Tiganis Nicholas saved successfully'}
+#         expected_response = {'log': 'success', 'message': 'Tiganis Nicholas saved successfully'}
 #         self.assertEqual(response, expected_response)
 #         self.assertEqual(Client.objects.count(), 1)
 #
 #     def test_process_uploaded_file_already_exists_eurolab(self):
 #         """
 #         Eurolab pdf file using in this test
+#         15 locus
+#         only 1 page
 #         """
 #
 #         Client.objects.create(
@@ -103,14 +131,23 @@
 #
 #             )
 #
-#         list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
-#         response = self.mixin(uploaded_file, list_instance).get_message_response()
+#         list_instance = [
+#             PdfPlumberMotherAndChild, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
+#         ]
+#         instance = self.mixin(uploaded_file, list_instance)
+#         father_dict = instance.process_uploaded_file()
+#         response = instance.message_response(father_dict)
+#         instance.clean_up_files()
 #
-#         expected_response = {'log': 'caution', 'message': 'Father Tiganis Nicholas already exists'}
+#         expected_response = {'log': 'caution', 'message': 'Tiganis Nicholas already exists'}
 #         self.assertEqual(response, expected_response)
 #         self.assertEqual(Client.objects.count(), 1)
 #
 #     def test_process_uploaded_file_fail_1(self):
+#         """
+#         It`s file does not have table with locus
+#         :return: message Response
+#         """
 #         with open('upload_file/test_pdf/return_none.pdf', 'rb') as pdf_file:
 #             uploaded_file = SimpleUploadedFile(
 #                 name='success.pdf',
@@ -118,14 +155,24 @@
 #                 content_type='application/pdf',
 #             )
 #
-#         list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
-#         response = self.mixin(uploaded_file, list_instance).get_message_response()
+#         list_instance = [
+#             PdfPlumberMotherAndChild, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
+#         ]
+#         instance = self.mixin(uploaded_file, list_instance)
+#         father_dict = instance.process_uploaded_file()
+#         response = instance.message_response(father_dict)
+#         instance.clean_up_files()
 #
 #         expected_response = {'log': 'error', 'message': 'Error processing'}
 #         self.assertEqual(response, expected_response)
 #         self.assertEqual(Client.objects.count(), 0)
 #
 #     def test_process_uploaded_file_fail_2(self):
+#         """
+#         It`s file does not have table with locus
+#         :return: message Response
+#         """
+#
 #         with open('upload_file/test_pdf/brake_func_logic.pdf', 'rb') as pdf_file:
 #             uploaded_file = SimpleUploadedFile(
 #                 name='success.pdf',
@@ -133,8 +180,13 @@
 #                 content_type='application/pdf',
 #             )
 #
-#         list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
-#         response = self.mixin(uploaded_file, list_instance).get_message_response()
+#         list_instance = [
+#             PdfPlumberMotherAndChild, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
+#         ]
+#         instance = self.mixin(uploaded_file, list_instance)
+#         father_dict = instance.process_uploaded_file()
+#         response = instance.message_response(father_dict)
+#         instance.clean_up_files()
 #
 #         expected_response = {'log': 'error', 'message': 'Error processing'}
 #         self.assertEqual(response, expected_response)
@@ -142,8 +194,9 @@
 #
 #     def test_process_uploaded_file_success_aws_MAC_15(self):
 #         """
-#         MotherAndChild pdf file
-#         15 locus
+#         MotherAndChild pdf file on 1 page
+#         only 15 locus
+#         :return: message Response
 #         """
 #
 #         with open('upload_file/test_pdf/Nikolic Aleksandar.pdf', 'rb') as pdf_file:
@@ -153,17 +206,23 @@
 #                 content_type='application/pdf',
 #             )
 #
-#         list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
-#         response = self.mixin(uploaded_file, list_instance).get_message_response()
+#         list_instance = [
+#             PdfPlumberMotherAndChild, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
+#         ]
+#         instance = self.mixin(uploaded_file, list_instance)
+#         father_dict = instance.process_uploaded_file()
+#         response = instance.message_response(father_dict)
+#         instance.clean_up_files()
 #
-#         expected_response = {'log': 'success', 'message': 'Father Nikolic Aleksandar saved successfully'}
+#         expected_response = {'log': 'success', 'message': 'Nikolic Aleksandar saved successfully'}
 #         self.assertEqual(response, expected_response)
 #         self.assertEqual(Client.objects.count(), 1)
 #
 #     def test_process_uploaded_file_already_exists_aws_MAC_15(self):
 #         """
-#         MotherAndChild pdf file
-#         15 locus
+#         MotherAndChild pdf file on 1 page
+#         only 15 locus
+#         :return: message Response
 #         """
 #
 #         Client.objects.create(
@@ -181,39 +240,51 @@
 #
 #             )
 #
-#         list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
-#         response = self.mixin(uploaded_file, list_instance).get_message_response()
+#         list_instance = [
+#             PdfPlumberMotherAndChild, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
+#         ]
+#         instance = self.mixin(uploaded_file, list_instance)
+#         father_dict = instance.process_uploaded_file()
+#         response = instance.message_response(father_dict)
+#         instance.clean_up_files()
 #
-#         expected_response = {'log': 'caution', 'message': 'Father Nikolic Aleksandar already exists'}
+#         expected_response = {'log': 'caution', 'message': 'Nikolic Aleksandar already exists'}
 #         self.assertEqual(response, expected_response)
 #         self.assertEqual(Client.objects.count(), 1)
 #
 #     def test_process_uploaded_file_success_aws_MAC_22_name_rus(self):
 #         """
-#         MotherAndChild pdf file
+#         MotherAndChild pdf file 1 page
 #         22 locus
 #         name file on rus
+#         :return: message Response
 #         """
 #
 #         with open('upload_file/test_pdf/Даніель Фаріаш Гомес.pdf', 'rb') as pdf_file:
 #             uploaded_file = SimpleUploadedFile(
-#                 name='success.pdf',
+#                 name='Даніель Фаріаш Гомес.pdf',
 #                 content=pdf_file.read(),
 #                 content_type='application/pdf',
 #             )
 #
-#         list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
-#         response = self.mixin(uploaded_file, list_instance).get_message_response()
+#         list_instance = [
+#             PdfPlumberMotherAndChild, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
+#         ]
+#         instance = self.mixin(uploaded_file, list_instance)
+#         father_dict = instance.process_uploaded_file()
+#         response = instance.message_response(father_dict)
+#         instance.clean_up_files()
 #
-#         expected_response = {'log': 'success', 'message': 'Father success saved successfully'}
+#         expected_response = {'log': 'success', 'message': 'Даніель Фаріаш Гомес saved successfully'}
 #         self.assertEqual(response, expected_response)
 #         self.assertEqual(Client.objects.count(), 1)
 #
 #     def test_process_uploaded_file_already_exists_aws_MAC_22_name_rus(self):
 #         """
-#         MotherAndChild pdf file
+#         MotherAndChild pdf file 1 page
 #         22 locus
 #         name file on rus
+#         :return: message Response
 #         """
 #
 #         Client.objects.create(
@@ -226,16 +297,50 @@
 #         )
 #
 #         with open('upload_file/test_pdf/Даніель Фаріаш Гомес.pdf', 'rb') as pdf_file:
+#             file_content = pdf_file.read()
+#             uploaded_file = InMemoryUploadedFile(file=ContentFile(file_content), field_name=None,
+#                                                  name='Даніель Фаріаш Гомес.pdf',
+#                                                  content_type='application/pdf', size=len(file_content),
+#                                                  content_type_extra=None, charset=None
+#                                                  )
+#
+#         list_instance = [
+#             PdfPlumberMotherAndChild, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
+#         ]
+#         instance = self.mixin(uploaded_file, list_instance)
+#         father_dict = instance.process_uploaded_file()
+#         response = instance.message_response(father_dict)
+#         instance.clean_up_files()
+#
+#         expected_response = {'log': 'caution', 'message': 'Даніель Фаріаш Гомес already exists'}
+#         self.assertEqual(response, expected_response)
+#         self.assertEqual(Client.objects.count(), 1)
+
+# class FileUploadViewTestCase(TransactionTestCase):
+#     def setUp(self):
+#         User.objects.create_user(username='superuser', password='password', is_superuser=True)
+#         self.client.login(username='superuser', password='password')
+#
+#     def tearDown(self):
+#         Client.objects.all().delete()
+#
+#     def test_upload_file_view(self):
+#         with open('upload_file/test_pdf/Даніель Фаріаш Гомес.pdf', 'rb') as pdf_file:
 #             uploaded_file = SimpleUploadedFile(
 #                 name='Даніель Фаріаш Гомес.pdf',
 #                 content=pdf_file.read(),
 #                 content_type='application/pdf',
-#
 #             )
 #
-#         list_instance = [AwsEvrolab, PdfPlumberMotherAndChild, AwsMotherAndChild]
-#         response = self.mixin(uploaded_file, list_instance).get_message_response()
+#         url = reverse("upload_file")
+#         response = self.client.get(url)
+#         self.assertEqual(response.status_code, 200)
 #
-#         expected_response = {'log': 'caution', 'message': 'Father Даніель Фаріаш Гомес already exists'}
-#         self.assertEqual(response, expected_response)
-#         self.assertEqual(Client.objects.count(), 1)
+#         response = self.client.post(url, data={"file": uploaded_file})
+#         self.assertEqual(response.status_code, 200)
+#
+#         client = Client.objects.first()
+#         self.assertTrue(client.locus)
+
+
+

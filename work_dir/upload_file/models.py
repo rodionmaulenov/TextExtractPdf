@@ -7,9 +7,9 @@ def user_directory_path(instance, filename):
 
 
 class Client(models.Model):
-    name = models.CharField(max_length=150, blank=True, null=True, unique=True)
+    name = models.CharField(max_length=150, blank=True, null=True)
     locus = models.JSONField(blank=True, null=True)
-    file_upload = models.FileField(upload_to=user_directory_path)
+    file = models.FileField(upload_to=user_directory_path)
     date_create = models.DateField(auto_now_add=True)
     date_update = models.DateTimeField(auto_now=True)
 
@@ -17,6 +17,6 @@ class Client(models.Model):
         return self.name
 
     def get_file_url(self):
-        if self.file_upload:
-            return settings.MEDIA_URL + str(self.file_upload)
+        if self.file:
+            return settings.MEDIA_URL + str(self.file)
         return None

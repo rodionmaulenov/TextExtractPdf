@@ -148,19 +148,18 @@ AWS_S3_OBJECT_PARAMETERS = {
     "CacheControl": 'max-age=86400',
     'ACL': 'public-read'
 }
+
 AWS_LOCATION = 'https://textract-space.fra1.digitaloceanspaces.com'
+MEDIA_URL = 'https://textract-space.fra1.digitaloceanspaces.com/media/'
+DEFAULT_FILE_STORAGE = "home_api.storages.MediaSpaceStorage"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'static'
 
-MEDIA_URL = 'https://fra1.digitaloceanspaces.com/textract-space/media/'
+# settings.py
 
-DEFAULT_FILE_STORAGE = "home_api.storages.MediaSpaceStorage"
-
-
-# Plug logging
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -172,7 +171,7 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'ERROR',  # Adjust the log level as needed
+            'level': 'DEBUG',  # Set the level to a desired level that includes database queries
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
         },
@@ -180,8 +179,15 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'ERROR',  # Adjust the log level as needed
+            'level': 'ERROR',  # Set the level to a desired level that includes database queries
             'propagate': True,
+        },
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'DEBUG',  # Set the level to DEBUG to capture database queries
+            'propagate': False,  # Prevent database queries from being logged by the root logger
         },
     },
 }
+
+
