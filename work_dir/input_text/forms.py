@@ -10,14 +10,24 @@ class LocusForm(forms.Form):
         locals()[locus_name] = forms.CharField(max_length=100, required=False)
 
     def clean(self):
-        cleaned_data = super().clean()  # Call the parent class's clean method
+        cleaned_data = super().clean()
 
         for locus_name in locus:
-            value = cleaned_data.get(locus_name)
+            value = cleaned_data.get(locus_name, '')
+
+            if not value:
+                return cleaned_data
 
             integer_and_dot = '0123456789.'
             while ' ' in value:
                 value = value.replace(' ', '')
+
+            try:
+                _, __ = value.split(',')
+                if not _ or not __:
+                    self.add_error(locus_name, forms.ValidationError("two numbers"))
+            except ValueError:
+                self.add_error(locus_name, forms.ValidationError("two numbers"))
 
             share_value = value.split(',')
             if len(share_value) != 2:

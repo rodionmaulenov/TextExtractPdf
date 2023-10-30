@@ -27,7 +27,7 @@
                         {% for field in form %}
                         {% if not forloop.counter|divisibleby:2 %}
                         <div class="input-data">
-                            <input type="text" required name="{{ field.name }}" class="smaller-input"
+                            <input type="text" name="{{ field.name }}" class="smaller-input"
                                 value="{{ field.value|default:'' }}">
                             <div class="underline"></div>
                             <label class="smaller-label">{{ field.label_tag|upper|safe }}</label>
@@ -42,7 +42,7 @@
                         {% for field in form %}
                         {% if forloop.counter|divisibleby:2 %}
                         <div class="input-data">
-                            <input type="text" required name="{{ field.name }}" class="smaller-input"
+                            <input type="text" name="{{ field.name }}" class="smaller-input"
                                 value="{{ field.value|default:'' }}">
                             <div class="underline"></div>
                             <label class="smaller-label">{{ field.label_tag|upper|safe }}</label>

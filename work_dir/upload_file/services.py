@@ -1,15 +1,14 @@
 import os
 import shutil
 import fitz
-import pdfplumber
 import requests
 import boto3
 import botocore
-import logging
 
 from abc import ABC, abstractmethod
 from decouple import config
 from trp import Document
+from typing import Type
 
 from django.db import transaction
 from django.db import models
@@ -34,7 +33,28 @@ class PdfExtractText(ABC):
         self.instance_id = instance_id
 
     @abstractmethod
-    def extract_text_from_pdf(self) -> dict: pass
+    def extract_text_from_pdf(self) -> dict:
+        pass
+
+    def process_string(self, input_str):
+        input_str = input_str.replace(' ', '')
+
+        comma_count = input_str.count(',')
+        dot_count = input_str.count('.')
+
+        if comma_count == 1:
+            return input_str
+        elif dot_count == 1 and comma_count == 0:
+            return input_str.replace('.', ',')
+        elif dot_count == 2:
+            parts = input_str.split('.')
+            variant1 = parts[0] + ',' + parts[1] + '.' + '.'.join(parts[2:])
+            variant2 = parts[0] + '.' + parts[1] + ',' + parts[2]
+            return f"{variant1},{variant2}"
+        elif dot_count == 3:
+            second_dot_index = input_str.find('.', input_str.find('.') + 1)
+            return input_str[:second_dot_index] + ',' + input_str[second_dot_index + 1:]
+        return input_str
 
 
 class PdfConvertIntoImage:
@@ -123,7 +143,7 @@ class AwsEvrolab(PdfExtractText):
                 if table_contains_locus:
                     locus = {
                         str(cell[0]).strip().replace('0', 'O'):
-                            str(cell[1]).strip().replace(' ', '')
+                            self.process_string(str(cell[1]))
                         for row in table.rows
                         if len(row.cells) >= 2
                         for cell in [row.cells[0:2]]
@@ -202,7 +222,7 @@ class AwsMotherAndChild(PdfExtractText):
                 if key == 'Locus':
                     name += value
                 if key in LOCUS and value:
-                    value = value.replace(' ', '')
+                    value = self.process_string(value)
                     locus[key] = value
 
         return {'locus': locus, 'name': name}
@@ -245,7 +265,7 @@ class AwsMotherAndChildV2(PdfExtractText):
         """
         connected_aws = self.plug_to_aws()
         instance = self.father_instance(Client)
-        image = PdfConvertIntoImage(instance, 3).get_image()
+        image = PdfConvertIntoImage(instance, 2).get_image()
         doc = self.analyze_document(image, connected_aws, formatting='TABLES')
 
         locus = {}
@@ -264,25 +284,38 @@ class AwsMotherAndChildV2(PdfExtractText):
                 if key == 'Locus':
                     name += value
                 if key in LOCUS and value:
-                    value = value.replace(' ', '')
+                    value = self.process_string(value)
+
                     locus[key] = value
 
         return {'locus': locus, 'name': name}
 
 
-class PdfPlumberMotherAndChild(PdfExtractText):
+class AwsMotherAndChildV3(PdfExtractText):
     """
-    Extract text from MotherAndChild pdf where
-    not requiring to use aws service
+    Extract text from MotherAndChild pdf page 3 with aws microservice
     """
 
-    def get_table_page(self):
-        """Get specified page from PDF file"""
-        instance = self.father_instance(Client)
-        with pdfplumber.open(instance.file) as pdf:
-            page = pdf.pages[2]
+    def plug_to_aws(self):
+        connected_aws = boto3.client(
+            'textract', region_name='eu-west-2',
+            aws_access_key_id=config("ACCESS_KEY_ID"),
+            aws_secret_access_key=config('SECRET_ACCESS_KEY')
+        )
+        return connected_aws
 
-        return page
+    def analyze_document(self, image, connected_aws, formatting=None):
+
+        with open(image, 'rb') as image_photo:
+            binary = image_photo.read()
+
+        response = connected_aws.analyze_document(
+            Document={'Bytes': binary},
+            FeatureTypes=[formatting]
+        )
+        doc = Document(response)
+
+        return doc
 
     def father_instance(self, Model: models):
         with transaction.atomic():
@@ -293,36 +326,40 @@ class PdfPlumberMotherAndChild(PdfExtractText):
         """
         Getting father locus and his name from table
         """
-        page = self.get_table_page()
-        table = page.extract_table()
+        connected_aws = self.plug_to_aws()
+        instance = self.father_instance(Client)
+        image = PdfConvertIntoImage(instance, 1).get_image()
+        doc = self.analyze_document(image, connected_aws, formatting='TABLES')
 
-        name = ''
         locus = {}
-        if 'Locus' in table[0]:
-            name += table[0][1]
-            for row in table:
-                key, value = row
+        name = ''
 
-                key = key.replace('0', 'O')
-                value = value.replace(' ', '')
+        page = doc.pages[0]
+        if page.tables[0]:
+            table = page.tables[0]
 
-                if key in LOCUS:
-                    if value:
-                        locus[key] = value
+            for row in table.rows:
+                first, second = row.cells[0:2]
+
+                key = str(first).strip().replace('0', 'O')
+                value = str(second).strip()
+
+                if key == 'Locus':
+                    name += value
+                if key in LOCUS and value:
+                    value = self.process_string(value)
+                    locus[key] = value
 
         return {'locus': locus, 'name': name}
 
 
-logger = logging.getLogger(__name__)
-
-
 class FatherInstance:
 
-    def __set_name__(self, owner, name):
+    def __set_name__(self, owner: Type, name: str):
         self.father = '_' + name
 
-    def __get__(self, obj, objtype=None) -> Client:
-        return obj.father
+    def __get__(self, obj: Client, objtype=None) -> Client:
+        return getattr(obj, self.father)
 
 
 class ProcessUploadedFile:
@@ -350,8 +387,10 @@ class ProcessUploadedFile:
                         name = self.__file.name.strip('.pdf')
                     break
             except (Exception, botocore.exceptions.ClientError, AttributeError, TypeError, IndexError) as e:
-                logger.error(f'An error occurred: {str(e)}')
                 continue
+
+        if not locus and not name:
+            self.father.delete()
 
         return {'locus': locus, 'name': name}
 

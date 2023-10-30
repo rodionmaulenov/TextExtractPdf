@@ -8,6 +8,7 @@ class ClientAdmin(admin.ModelAdmin):
     list_display = ('name', 'count_locus', 'date_update', 'date_create', 'file')
     search_fields = ('name__icontains',)
     list_filter = ('date_update', 'date_create')
+    list_per_page = 20
 
     def count_locus(self, obj):
         if obj.locus:

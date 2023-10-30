@@ -36,4 +36,4 @@ class LocusFormTest(TestCase):
 
         form = LocusForm(data={})
 
-        self.assertFalse(form.is_valid())
+        self.assertTrue(form.is_valid())

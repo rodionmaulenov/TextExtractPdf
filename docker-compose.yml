@@ -26,38 +26,6 @@ services:
         python manage.py runserver 0.0.0.0:8000
         "
 
-  redis:
-    image: redis:7.0.5-alpine
-    hostname: redis
-
-  worker:
-    build:
-      context: ./work_dir
-    hostname: worker
-    entrypoint: celery
-    command: -A celery_app.app worker --loglevel=info
-    links:
-      - redis
-    depends_on:
-      - redis
-    env_file:
-      - .env
-
-  flower:
-    build:
-      context: ./work_dir
-    hostname: flower
-    entrypoint: celery
-    command: -A celery_app.app flower
-    links:
-      - redis
-    depends_on:
-      - redis
-    ports:
-      - "5555:5555"
-    env_file:
-      - .env
-
 volumes:
   postgres_data:
 
