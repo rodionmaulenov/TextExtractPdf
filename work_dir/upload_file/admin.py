@@ -3,9 +3,9 @@ from upload_file.models import Client
 
 
 class ClientAdmin(admin.ModelAdmin):
-    fields = ('name', 'locus', 'date_update', 'date_create', 'file')
-    readonly_fields = ('name', 'date_update', 'date_create', 'file')
-    list_display = ('name', 'count_locus', 'date_update', 'date_create', 'file')
+    fields = ('name', 'locus', 'date_update', 'date_create')
+    readonly_fields = ('name', 'date_update', 'date_create')
+    list_display = ('name', 'count_locus', 'date_update', 'date_create')
     search_fields = ('name__icontains',)
     list_filter = ('date_update', 'date_create')
     list_per_page = 20
