@@ -219,7 +219,7 @@ function uploadFile(file) {
         if (filesToUpload.length > 0) {
             setTimeout(() => {
                 uploadFile(filesToUpload.shift());
-            }, 1500);
+            }, 500);
         }
     };
 
