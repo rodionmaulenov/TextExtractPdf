@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 import fitz
@@ -21,6 +22,8 @@ LOCUS = {'D3S1358', 'vWA', 'D16S539', 'CSF1PO', 'TPOX', 'D8S1179', 'D21S11', 'D1
          'D2S441', 'D19S433', 'THO1', 'FGA', 'D22S1O45', 'D5S818', 'D13S317', 'D7S82O', 'D6S1O43',
          'D1OS1248', 'D1S1656', 'D12S391', 'D2S1338'}
 
+logger = logging.getLogger(__name__)
+
 
 class PdfExtractText(ABC):
     """
@@ -36,7 +39,8 @@ class PdfExtractText(ABC):
     def extract_text_from_pdf(self) -> dict:
         pass
 
-    def process_string(self, input_str):
+    @staticmethod
+    def process_string(input_str):
         input_str = input_str.replace(' ', '')
 
         comma_count = input_str.count(',')
@@ -164,6 +168,79 @@ class AwsEvrolab(PdfExtractText):
             '')
 
         return name
+
+
+class AwsEvrolabV2(PdfExtractText):
+    """
+    Extract text from Evrolab pdf page 1 with aws microservice
+    """
+
+    def plug_to_aws(self):
+        connected_aws = boto3.client(
+            'textract', region_name='eu-west-2',
+            aws_access_key_id=config("ACCESS_KEY_ID"),
+            aws_secret_access_key=config('SECRET_ACCESS_KEY')
+        )
+        return connected_aws
+
+    def analyze_document(self, image, connected_aws, formatting=None):
+
+        with open(image, 'rb') as image_photo:
+            binary = image_photo.read()
+
+        response = connected_aws.analyze_document(
+            Document={'Bytes': binary},
+            FeatureTypes=[formatting]
+        )
+        doc = Document(response)
+
+        return doc
+
+    def father_instance(self, Model: models):
+        with transaction.atomic():
+            instance = Model.objects.select_for_update().get(id=self.instance_id)
+        return instance
+
+    def extract_text_from_pdf(self):
+        """
+        Getting father locus and his name from table
+        """
+        connected_aws = self.plug_to_aws()
+        instance = self.father_instance(Client)
+        image = PdfConvertIntoImage(instance, 0).get_image()
+        doc = self.analyze_document(image, connected_aws, formatting='TABLES')
+
+        locus = {}
+
+        page = doc.pages[0]
+        if page.tables[2]:
+            table = page.tables[2]
+
+            for row in table.rows:
+                first, second = row.cells[0:2]
+
+                key = str(first).strip().replace('0', 'O')
+                value = str(second).strip()
+
+                if key in LOCUS and value:
+                    value = self.process_string(value)
+                    locus[key] = value
+
+        name = ''
+
+        if page.tables[1]:
+            table = page.tables[1]
+
+            for row in table.rows:
+                first, second = row.cells[0:2]
+                key = str(first).strip()
+                if key == 'Name':
+                    continue
+                name += key
+                if name:
+                    break
+
+        return {'locus': locus, 'name': name}
 
 
 class AwsMotherAndChild(PdfExtractText):
@@ -387,6 +464,7 @@ class ProcessUploadedFile:
                         name = self.__file.name.strip('.pdf')
                     break
             except (Exception, botocore.exceptions.ClientError, AttributeError, TypeError, IndexError) as e:
+                logger.error(f'An error occurred: {str(e)}')
                 continue
 
         if not locus and not name:

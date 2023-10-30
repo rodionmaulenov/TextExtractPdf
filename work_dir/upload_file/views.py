@@ -4,7 +4,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 
 from home_api.decorators import optimized_view_decorator
-from upload_file.services import (AwsMotherAndChild, ProcessUploadedFile,
+from upload_file.services import (AwsMotherAndChild, ProcessUploadedFile, AwsEvrolabV2,
                                   AwsEvrolab, AwsMotherAndChildV2, AwsMotherAndChildV3)
 
 
@@ -24,7 +24,7 @@ class FileUploadView(View):
         responses = []
 
         instance_list = [
-            AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2, AwsMotherAndChildV3
+            AwsEvrolab, AwsEvrolabV2, AwsMotherAndChild, AwsMotherAndChildV2, AwsMotherAndChildV3
         ]
 
         for _, uploaded_file in request.FILES.items():
