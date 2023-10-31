@@ -9,10 +9,7 @@ import botocore
 from abc import ABC, abstractmethod
 from decouple import config
 from trp import Document
-from typing import Type
 
-from django.db import transaction
-from django.db import models
 from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
@@ -25,19 +22,35 @@ LOCUS = {'D3S1358', 'vWA', 'D16S539', 'CSF1PO', 'TPOX', 'D8S1179', 'D21S11', 'D1
 logger = logging.getLogger(__name__)
 
 
+class PlugToAWSMixin:
+    def plug_to_aws(self):
+        connected_aws = boto3.client(
+            'textract', region_name='eu-west-2',
+            aws_access_key_id=config("ACCESS_KEY_ID"),
+            aws_secret_access_key=config('SECRET_ACCESS_KEY')
+        )
+        return connected_aws
+
+    def analyze_document(self, binary, connected_aws, formatting=None):
+        response = connected_aws.analyze_document(
+            Document={'Bytes': binary},
+            FeatureTypes=[formatting]
+        )
+        return response
+
+
 class PdfExtractText(ABC):
     """
     Abstract class that specified method abstractmethod.
     All daughter classes which inheriting this base class
     must override 'extract_text_from_pdf' func
     """
-
-    def __init__(self, instance_id: int) -> None:
-        self.instance_id = instance_id
+    def __init__(self, client_instance: Client, image_folder: str) -> None:
+        self.client_instance = client_instance
+        self.image_folder = image_folder
 
     @abstractmethod
-    def extract_text_from_pdf(self) -> dict:
-        pass
+    def extract_text_from_pdf(self) -> dict: pass
 
     @staticmethod
     def process_string(input_str):
@@ -61,78 +74,43 @@ class PdfExtractText(ABC):
         return input_str
 
 
-class PdfConvertIntoImage:
-    def __init__(self, instance: Client, page: int) -> None:
-        self.instance = instance
-        self.page = page
-
-    @property
-    def path_save_image(self):
-        path_save_image = os.path.join(settings.BASE_DIR / 'media_jpg')
-        return path_save_image
-
-    def get_image(self):
-        if not os.path.exists(self.path_save_image):
-            os.mkdir(self.path_save_image)
-
-        image = self.pdf_to_image(self.path_save_image)
-        return image
-
-    def pdf_to_image(self, output_folder, dpi=300):
-        """Convert upload PDF file into image and save in 'media_jpg' dir"""
-
-        response = requests.get(self.instance.get_file_url())
+class PdfConvertIntoImageMixin:
+    def pull_file(self, instance, output_folder):
+        """Get file from remote storage"""
+        response = requests.get(instance.get_file_url())
+        local_file_path = f'{output_folder}/test.pdf'
         if response.status_code == 200:
-            with open(f'{output_folder}/test.pdf', 'wb') as f:
+            with open(local_file_path, 'wb') as f:
                 f.write(response.content)
-        pdf_document = fitz.open(f'{output_folder}/test.pdf')
+        return local_file_path
+
+    def pdf_to_image(self, instance, index, output_folder, dpi=300):
+        """Convert upload PDF file into image and save in 'media_jpg' dir"""
+        local_file_path = self.pull_file(instance, output_folder)
+
+        pdf_document = fitz.open(local_file_path)
         for i, page in enumerate(pdf_document):
-            if i == self.page:
-                image_path = f"{output_folder}/{self.instance.name}_{1}.jpg"
+            if i == index:
+                image_path = f"{output_folder}/{instance.name}_{1}.jpg"
                 image = page.get_pixmap(dpi=dpi)
                 image.save(image_path)
 
                 return image_path
 
 
-class AwsEvrolab(PdfExtractText):
+class AwsEvrolab(PdfExtractText, PlugToAWSMixin):
     """
     Extract text from Evrolab pdf with aws microservice
     """
-
-    def plug_to_aws(self):
-        connected_aws = boto3.client(
-            'textract',
-            region_name='eu-west-2',
-            aws_access_key_id=config("ACCESS_KEY_ID"),
-            aws_secret_access_key=config('SECRET_ACCESS_KEY')
-        )
-
-        return connected_aws
-
-    def analyze_document(self, file_binary, connected_aws, formatting=None):
-        response = connected_aws.analyze_document(
-            Document={'Bytes': file_binary},
-            FeatureTypes=[formatting]
-        )
-        doc = Document(response)
-
-        return doc
-
-    def instance(self, Model: models):
-        father = Model.objects.get(id=self.instance_id)
-        file_binary = father.file.read()
-
-        return file_binary
 
     def extract_text_from_pdf(self):
         """
         Getting father locus and his name from table
         """
-
         connected = self.plug_to_aws()
-        file_binary = self.instance(Client)
-        doc = self.analyze_document(file_binary, connected, formatting='TABLES')
+        file_binary = self.client_instance.file.read()
+        response = self.analyze_document(file_binary, connected, formatting='TABLES')
+        doc = Document(response)
 
         locus = {}
 
@@ -155,12 +133,13 @@ class AwsEvrolab(PdfExtractText):
                     }
                     break
 
-        doc = self.analyze_document(file_binary, connected, formatting='FORMS')
-        name = self.name(doc)
+        response = self.analyze_document(file_binary, connected, formatting='FORMS')
+        name = self.name(response)
 
         return {'locus': locus, 'name': name}
 
-    def name(self, doc):
+    def name(self, response):
+        doc = Document(response)
         name = next(
             (str(field.value).strip()
              for field in doc.pages[0].form.fields
@@ -170,45 +149,27 @@ class AwsEvrolab(PdfExtractText):
         return name
 
 
-class AwsEvrolabV2(PdfExtractText):
+class AwsEvrolabV2(PdfExtractText, PlugToAWSMixin, PdfConvertIntoImageMixin):
     """
     Extract text from Evrolab pdf page 1 with aws microservice
     """
-
-    def plug_to_aws(self):
-        connected_aws = boto3.client(
-            'textract', region_name='eu-west-2',
-            aws_access_key_id=config("ACCESS_KEY_ID"),
-            aws_secret_access_key=config('SECRET_ACCESS_KEY')
-        )
-        return connected_aws
 
     def analyze_document(self, image, connected_aws, formatting=None):
 
         with open(image, 'rb') as image_photo:
             binary = image_photo.read()
 
-        response = connected_aws.analyze_document(
-            Document={'Bytes': binary},
-            FeatureTypes=[formatting]
-        )
-        doc = Document(response)
-
-        return doc
-
-    def father_instance(self, Model: models):
-        with transaction.atomic():
-            instance = Model.objects.select_for_update().get(id=self.instance_id)
-        return instance
+        return super().analyze_document(binary, connected_aws, formatting)
 
     def extract_text_from_pdf(self):
         """
         Getting father locus and his name from table
         """
+
         connected_aws = self.plug_to_aws()
-        instance = self.father_instance(Client)
-        image = PdfConvertIntoImage(instance, 0).get_image()
-        doc = self.analyze_document(image, connected_aws, formatting='TABLES')
+        image = self.pdf_to_image(self.client_instance, 0, self.image_folder)
+        response = self.analyze_document(image, connected_aws, formatting='TABLES')
+        doc = Document(response)
 
         locus = {}
 
@@ -228,60 +189,41 @@ class AwsEvrolabV2(PdfExtractText):
 
         name = ''
 
-        if page.tables[1]:
-            table = page.tables[1]
-
-            for row in table.rows:
-                first, second = row.cells[0:2]
-                key = str(first).strip()
-                if key == 'Name':
-                    continue
-                name += key
-                if name:
-                    break
+        # if page.tables[1]:
+        #     table = page.tables[1]
+        #
+        #     for row in table.rows:
+        #         first, second = row.cells[0:2]
+        #         key = str(first).strip()
+        #         if key == 'Name':
+        #             continue
+        #         name += key
+        #         if name:
+        #             break
 
         return {'locus': locus, 'name': name}
 
 
-class AwsMotherAndChild(PdfExtractText):
+class AwsMotherAndChild(PdfExtractText, PlugToAWSMixin, PdfConvertIntoImageMixin):
     """
     Extract text from MotherAndChild pdf page 1 with aws microservice
     """
 
-    def plug_to_aws(self):
-        connected_aws = boto3.client(
-            'textract', region_name='eu-west-2',
-            aws_access_key_id=config("ACCESS_KEY_ID"),
-            aws_secret_access_key=config('SECRET_ACCESS_KEY')
-        )
-        return connected_aws
-
     def analyze_document(self, image, connected_aws, formatting=None):
 
         with open(image, 'rb') as image_photo:
             binary = image_photo.read()
 
-        response = connected_aws.analyze_document(
-            Document={'Bytes': binary},
-            FeatureTypes=[formatting]
-        )
-        doc = Document(response)
-
-        return doc
-
-    def father_instance(self, Model: models):
-        with transaction.atomic():
-            instance = Model.objects.select_for_update().get(id=self.instance_id)
-        return instance
+        return super().analyze_document(binary, connected_aws, formatting)
 
     def extract_text_from_pdf(self):
         """
         Getting father locus and his name from table
         """
         connected_aws = self.plug_to_aws()
-        instance = self.father_instance(Client)
-        image = PdfConvertIntoImage(instance, 0).get_image()
-        doc = self.analyze_document(image, connected_aws, formatting='TABLES')
+        image = self.pdf_to_image(self.client_instance, 0, self.image_folder)
+        response = self.analyze_document(image, connected_aws, formatting='TABLES')
+        doc = Document(response)
 
         locus = {}
         name = ''
@@ -305,45 +247,26 @@ class AwsMotherAndChild(PdfExtractText):
         return {'locus': locus, 'name': name}
 
 
-class AwsMotherAndChildV2(PdfExtractText):
+class AwsMotherAndChildV2(PdfExtractText, PlugToAWSMixin, PdfConvertIntoImageMixin):
     """
     Extract text from MotherAndChild pdf page 3 with aws microservice
     """
 
-    def plug_to_aws(self):
-        connected_aws = boto3.client(
-            'textract', region_name='eu-west-2',
-            aws_access_key_id=config("ACCESS_KEY_ID"),
-            aws_secret_access_key=config('SECRET_ACCESS_KEY')
-        )
-        return connected_aws
-
     def analyze_document(self, image, connected_aws, formatting=None):
 
         with open(image, 'rb') as image_photo:
             binary = image_photo.read()
 
-        response = connected_aws.analyze_document(
-            Document={'Bytes': binary},
-            FeatureTypes=[formatting]
-        )
-        doc = Document(response)
-
-        return doc
-
-    def father_instance(self, Model: models):
-        with transaction.atomic():
-            instance = Model.objects.select_for_update().get(id=self.instance_id)
-        return instance
+        return super().analyze_document(binary, connected_aws, formatting)
 
     def extract_text_from_pdf(self):
         """
         Getting father locus and his name from table
         """
         connected_aws = self.plug_to_aws()
-        instance = self.father_instance(Client)
-        image = PdfConvertIntoImage(instance, 2).get_image()
-        doc = self.analyze_document(image, connected_aws, formatting='TABLES')
+        image = self.pdf_to_image(self.client_instance, 2, self.image_folder)
+        response = self.analyze_document(image, connected_aws, formatting='TABLES')
+        doc = Document(response)
 
         locus = {}
         name = ''
@@ -368,45 +291,26 @@ class AwsMotherAndChildV2(PdfExtractText):
         return {'locus': locus, 'name': name}
 
 
-class AwsMotherAndChildV3(PdfExtractText):
+class AwsMotherAndChildV3(PdfExtractText, PlugToAWSMixin, PdfConvertIntoImageMixin):
     """
-    Extract text from MotherAndChild pdf page 3 with aws microservice
+    Extract text from MotherAndChild pdf page 2 with aws microservice
     """
-
-    def plug_to_aws(self):
-        connected_aws = boto3.client(
-            'textract', region_name='eu-west-2',
-            aws_access_key_id=config("ACCESS_KEY_ID"),
-            aws_secret_access_key=config('SECRET_ACCESS_KEY')
-        )
-        return connected_aws
 
     def analyze_document(self, image, connected_aws, formatting=None):
 
         with open(image, 'rb') as image_photo:
             binary = image_photo.read()
 
-        response = connected_aws.analyze_document(
-            Document={'Bytes': binary},
-            FeatureTypes=[formatting]
-        )
-        doc = Document(response)
-
-        return doc
-
-    def father_instance(self, Model: models):
-        with transaction.atomic():
-            instance = Model.objects.select_for_update().get(id=self.instance_id)
-        return instance
+        return super().analyze_document(binary, connected_aws, formatting)
 
     def extract_text_from_pdf(self):
         """
         Getting father locus and his name from table
         """
         connected_aws = self.plug_to_aws()
-        instance = self.father_instance(Client)
-        image = PdfConvertIntoImage(instance, 1).get_image()
-        doc = self.analyze_document(image, connected_aws, formatting='TABLES')
+        image = self.pdf_to_image(self.client_instance, 1, self.image_folder)
+        response = self.analyze_document(image, connected_aws, formatting='TABLES')
+        doc = Document(response)
 
         locus = {}
         name = ''
@@ -428,42 +332,44 @@ class AwsMotherAndChildV3(PdfExtractText):
                     locus[key] = value
 
         return {'locus': locus, 'name': name}
-
-
-class FatherInstance:
-
-    def __set_name__(self, owner: Type, name: str):
-        self.father = '_' + name
-
-    def __get__(self, obj: Client, objtype=None) -> Client:
-        return getattr(obj, self.father)
 
 
 class ProcessUploadedFile:
-    father = FatherInstance()
 
-    def __init__(self, file: InMemoryUploadedFile, instance_list: list) -> None:
+    def __init__(self, file: InMemoryUploadedFile, instance_list: list, folder: str) -> None:
         self.__file = file
         self.__instance_list = instance_list
         self.father = self.create_father(self.__file.name)
+        self.path_folder = self.create_folder(folder)
+
+    def create_folder(self, folder) -> str:
+        path_to_folder = os.path.join(settings.BASE_DIR / folder)
+        if not os.path.exists(path_to_folder):
+            os.mkdir(path_to_folder)
+        return path_to_folder
+
+    def clean_folder(self) -> None:
+        if os.path.exists(self.path_folder):
+            shutil.rmtree(self.path_folder)
 
     def create_father(self, name: str) -> Client:
         father = Client.objects.create(name=name, file=self.__file)
         return father
 
-    def process_uploaded_file(self) -> dict:
+    def process_file(self) -> dict:
         locus = ''
         name = ''
         for instance_class in iter(self.__instance_list):
             try:
-                instance = instance_class(self.father.id)
+                instance = instance_class(self.father, self.path_folder)
                 father = instance.extract_text_from_pdf()
                 locus, name = father.get('locus'), father.get('name')
                 if locus:
                     if not name:
                         name = self.__file.name.strip('.pdf')
                     break
-            except (Exception, botocore.exceptions.ClientError, AttributeError, TypeError, IndexError) as e:
+            except (Exception, botocore.exceptions.ClientError,
+                    AttributeError, TypeError, IndexError) as e:
                 logger.error(f'An error occurred: {str(e)}')
                 continue
 
@@ -471,11 +377,6 @@ class ProcessUploadedFile:
             self.father.delete()
 
         return {'locus': locus, 'name': name}
-
-    def clean_up_files(self) -> None:
-        path_save_image = os.path.join(settings.BASE_DIR, 'media_jpg')
-        if os.path.exists(path_save_image):
-            shutil.rmtree(path_save_image)
 
     def message_response(self, father: dict) -> dict:
         locus, name = father['locus'], father['name']

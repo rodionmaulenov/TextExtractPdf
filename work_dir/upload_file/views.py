@@ -28,10 +28,10 @@ class FileUploadView(View):
         ]
 
         for _, uploaded_file in request.FILES.items():
-            process_file = self.handler(uploaded_file, instance_list)
-            obtaining_dict = process_file.process_uploaded_file()
-            message = process_file.message_response(obtaining_dict)
-            process_file.clean_up_files()
+            instance = self.handler(uploaded_file, instance_list, 'image_jpg')
+            obtaining_dict = instance.process_file()
+            message = instance.message_response(obtaining_dict)
+            instance.clean_folder()
             responses.append(message)
 
         return JsonResponse(responses, status=200, safe=False)

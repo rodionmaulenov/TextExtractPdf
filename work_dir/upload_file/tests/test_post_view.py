@@ -40,9 +40,9 @@
 #             AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2, AwsMotherAndChildV3
 #         ]
 #         instance = self.mixin(uploaded_file, list_instance)
-#         father_dict = instance.process_uploaded_file()
+#         father_dict = instance.process_file()
 #         response = instance.message_response(father_dict)
-#         instance.clean_up_files()
+#         instance.clean_folder()
 #
 #         expected_response = {'log': 'success', 'message': 'Tasu Vasile saved successfully'}
 #         self.assertEqual(response, expected_response)
@@ -75,9 +75,9 @@
 #             AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2, AwsMotherAndChildV3
 #         ]
 #         instance = self.mixin(uploaded_file, list_instance)
-#         father_dict = instance.process_uploaded_file()
+#         father_dict = instance.process_file()
 #         response = instance.message_response(father_dict)
-#         instance.clean_up_files()
+#         instance.clean_folder()
 #
 #         expected_response = {'log': 'caution', 'message': 'Tasu Vasile already exists'}
 #         self.assertEqual(response, expected_response)
@@ -101,9 +101,9 @@
 #             AwsMotherAndChildV3, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
 #         ]
 #         instance = self.mixin(uploaded_file, list_instance)
-#         father_dict = instance.process_uploaded_file()
+#         father_dict = instance.process_file()
 #         response = instance.message_response(father_dict)
-#         instance.clean_up_files()
+#         instance.clean_folder()
 #
 #         expected_response = {'log': 'success', 'message': 'Tiganis Nicholas saved successfully'}
 #         self.assertEqual(response, expected_response)
@@ -135,9 +135,9 @@
 #             AwsMotherAndChildV3, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
 #         ]
 #         instance = self.mixin(uploaded_file, list_instance)
-#         father_dict = instance.process_uploaded_file()
+#         father_dict = instance.process_file()
 #         response = instance.message_response(father_dict)
-#         instance.clean_up_files()
+#         instance.clean_folder()
 #
 #         expected_response = {'log': 'caution', 'message': 'Tiganis Nicholas already exists'}
 #         self.assertEqual(response, expected_response)
@@ -159,9 +159,9 @@
 #             AwsMotherAndChildV3, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
 #         ]
 #         instance = self.mixin(uploaded_file, list_instance)
-#         father_dict = instance.process_uploaded_file()
+#         father_dict = instance.process_file()
 #         response = instance.message_response(father_dict)
-#         instance.clean_up_files()
+#         instance.clean_folder()
 #
 #         expected_response = {'log': 'error', 'message': 'Error processing file'}
 #         self.assertEqual(response, expected_response)
@@ -184,9 +184,9 @@
 #             AwsMotherAndChildV3, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
 #         ]
 #         instance = self.mixin(uploaded_file, list_instance)
-#         father_dict = instance.process_uploaded_file()
+#         father_dict = instance.process_file()
 #         response = instance.message_response(father_dict)
-#         instance.clean_up_files()
+#         instance.clean_folder()
 #
 #         expected_response = {'log': 'error', 'message': 'Error processing file'}
 #         self.assertEqual(response, expected_response)
@@ -210,9 +210,9 @@
 #             AwsMotherAndChildV3, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
 #         ]
 #         instance = self.mixin(uploaded_file, list_instance)
-#         father_dict = instance.process_uploaded_file()
+#         father_dict = instance.process_file()
 #         response = instance.message_response(father_dict)
-#         instance.clean_up_files()
+#         instance.clean_folder()
 #
 #         expected_response = {'log': 'success', 'message': 'Nikolic Aleksandar saved successfully'}
 #         self.assertEqual(response, expected_response)
@@ -244,10 +244,9 @@
 #             AwsMotherAndChildV3, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
 #         ]
 #         instance = self.mixin(uploaded_file, list_instance)
-#         father_dict = instance.process_uploaded_file()
+#         father_dict = instance.process_file()
 #         response = instance.message_response(father_dict)
-#         instance.clean_up_files()
-#
+#         instance.clean_folder()
 #         expected_response = {'log': 'caution', 'message': 'Nikolic Aleksandar already exists'}
 #         self.assertEqual(response, expected_response)
 #         self.assertEqual(Client.objects.count(), 1)
@@ -271,9 +270,9 @@
 #             AwsMotherAndChildV3, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
 #         ]
 #         instance = self.mixin(uploaded_file, list_instance)
-#         father_dict = instance.process_uploaded_file()
+#         father_dict = instance.process_file()
 #         response = instance.message_response(father_dict)
-#         instance.clean_up_files()
+#         instance.clean_folder()
 #
 #         expected_response = {'log': 'success', 'message': 'Даніель Фаріаш Гомес saved successfully'}
 #         self.assertEqual(response, expected_response)
@@ -308,9 +307,9 @@
 #             AwsMotherAndChildV3, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
 #         ]
 #         instance = self.mixin(uploaded_file, list_instance)
-#         father_dict = instance.process_uploaded_file()
+#         father_dict = instance.process_file()
 #         response = instance.message_response(father_dict)
-#         instance.clean_up_files()
+#         instance.clean_folder()
 #
 #         expected_response = {'log': 'caution', 'message': 'Даніель Фаріаш Гомес already exists'}
 #         self.assertEqual(response, expected_response)
