@@ -84,7 +84,7 @@ class PdfConvertIntoImageMixin:
                 f.write(response.content)
         return local_file_path
 
-    def pdf_to_image(self, instance, index, output_folder, dpi=300):
+    def pdf_to_image(self, instance, index, output_folder, dpi=600):
         """Convert upload PDF file into image and save in 'media_jpg' dir"""
         local_file_path = self.pull_file(instance, output_folder)
 
@@ -118,7 +118,7 @@ class AwsEvrolab(PdfExtractText, PlugToAWSMixin):
             for table in page.tables:
                 table_contains_locus = any(
                     len(row.cells) > 0 and
-                    str(row.cells[0]).strip().replace('0', 'O') in LOCUS
+                    str(row.cells[0]).strip().replace('0', 'O').replace('I', '1') in LOCUS
                     for row in table.rows
                 )
 
@@ -172,6 +172,7 @@ class AwsEvrolabV2(PdfExtractText, PlugToAWSMixin, PdfConvertIntoImageMixin):
         doc = Document(response)
 
         locus = {}
+        name = ''
 
         page = doc.pages[0]
         if page.tables[2]:
@@ -180,28 +181,36 @@ class AwsEvrolabV2(PdfExtractText, PlugToAWSMixin, PdfConvertIntoImageMixin):
             for row in table.rows:
                 first, second = row.cells[0:2]
 
-                key = str(first).strip().replace('0', 'O')
+                key = str(first).strip().replace('0', 'O').replace('I', '1')
                 value = str(second).strip()
 
                 if key in LOCUS and value:
                     value = self.process_string(value)
                     locus[key] = value
 
-        name = ''
+        if page.tables[1]:
+            table = page.tables[1]
 
-        # if page.tables[1]:
-        #     table = page.tables[1]
-        #
-        #     for row in table.rows:
-        #         first, second = row.cells[0:2]
-        #         key = str(first).strip()
-        #         if key == 'Name':
-        #             continue
-        #         name += key
-        #         if name:
-        #             break
+            for row in table.rows:
+                first, second = row.cells[0:2]
+                key = str(first).strip()
+                if key == 'Name':
+                    continue
+                name += key
+                if name:
+                    break
 
         return {'locus': locus, 'name': name}
+
+    def name(self, response):
+        doc = Document(response)
+        name = next(
+            (str(field.value).strip()
+             for field in doc.pages[0].form.fields
+             if str(field.key).strip() == 'Name:'),
+            '')
+
+        return name
 
 
 class AwsMotherAndChild(PdfExtractText, PlugToAWSMixin, PdfConvertIntoImageMixin):
@@ -235,7 +244,7 @@ class AwsMotherAndChild(PdfExtractText, PlugToAWSMixin, PdfConvertIntoImageMixin
             for row in table.rows:
                 first, second = row.cells[0:2]
 
-                key = str(first).strip().replace('0', 'O')
+                key = str(first).strip().replace('0', 'O').replace('I', '1')
                 value = str(second).strip()
 
                 if key == 'Locus':
@@ -278,7 +287,7 @@ class AwsMotherAndChildV2(PdfExtractText, PlugToAWSMixin, PdfConvertIntoImageMix
             for row in table.rows:
                 first, second = row.cells[0:2]
 
-                key = str(first).strip().replace('0', 'O')
+                key = str(first).strip().replace('0', 'O').replace('I', '1')
                 value = str(second).strip()
 
                 if key == 'Locus':
@@ -322,7 +331,7 @@ class AwsMotherAndChildV3(PdfExtractText, PlugToAWSMixin, PdfConvertIntoImageMix
             for row in table.rows:
                 first, second = row.cells[0:2]
 
-                key = str(first).strip().replace('0', 'O')
+                key = str(first).strip().replace('0', 'O').replace('I', '1')
                 value = str(second).strip()
 
                 if key == 'Locus':

@@ -68,26 +68,33 @@ class CompareLocusMixin:
 
 # from django.db.models import Q
 #
+#
 # class CompareLocusMixinV1:
 #     def get_link(self, father):
-#         change_url_admin = reverse('admin:%s_%s_chanin message.messagege' % (father._meta.app_label, father._meta.model_name), args=[father.pk])
+#         change_url_admin = reverse(
+#             'admin:%s_%s_chanin message.messagege' % (father._meta.app_label, father._meta.model_name),
+#             args=[father.pk])
 #         return change_url_admin
 #
 #     def compare_dnk(self, form):
 #         """Find fathers by locus child"""
 #
-#         # Create a dictionary to store child's DNK
-#         child_dnk = {name: form.cleaned_data.get(name, '') for name in locus}
+#         child_dnk = {name: (form.cleaned_data.get(name, '')).replace(' ', '') for name in locus}
 #
-#         # Create a Q object for filtering fathers
 #         filter_q = Q()
-#         for key, value in child_dnk.items():
-#             filter_q |= Q(locus__contains={key: value})
 #
-#         # Filter fathers based on the child's DNK
+#         for key, value in child_dnk.items():
+#             if value:
+#                 # Split the 'value' string into two numbers
+#                 numbers = value.split(',')
+#                 if len(numbers) == 2:
+#                     # Add conditions for exact key match and at least one number match
+#                     condition = Q(locus__in={key: numbers[0]}) | Q(locus__in={key: numbers[1]})
+#                     filter_q |= condition
+#
+#         # Filter fathers based on the child's DNK with matching key and one or both numbers
 #         matching_fathers = Client.objects.filter(filter_q)
 #
-#         # Create a dictionary to store matching fathers and their match counts
 #         total = {}
 #         for father_instance in matching_fathers:
 #             father_dnk = father_instance.locus

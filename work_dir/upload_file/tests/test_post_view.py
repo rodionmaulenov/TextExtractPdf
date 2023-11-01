@@ -39,7 +39,7 @@
 #         list_instance = [
 #             AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2, AwsMotherAndChildV3
 #         ]
-#         instance = self.mixin(uploaded_file, list_instance)
+#         instance = self.mixin(uploaded_file, list_instance, 'media_jpg')
 #         father_dict = instance.process_file()
 #         response = instance.message_response(father_dict)
 #         instance.clean_folder()
@@ -74,7 +74,7 @@
 #         list_instance = [
 #             AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2, AwsMotherAndChildV3
 #         ]
-#         instance = self.mixin(uploaded_file, list_instance)
+#         instance = self.mixin(uploaded_file, list_instance, 'media_jpg')
 #         father_dict = instance.process_file()
 #         response = instance.message_response(father_dict)
 #         instance.clean_folder()
@@ -100,7 +100,7 @@
 #         list_instance = [
 #             AwsMotherAndChildV3, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
 #         ]
-#         instance = self.mixin(uploaded_file, list_instance)
+#         instance = self.mixin(uploaded_file, list_instance, 'media_jpg')
 #         father_dict = instance.process_file()
 #         response = instance.message_response(father_dict)
 #         instance.clean_folder()
@@ -134,7 +134,7 @@
 #         list_instance = [
 #             AwsMotherAndChildV3, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
 #         ]
-#         instance = self.mixin(uploaded_file, list_instance)
+#         instance = self.mixin(uploaded_file, list_instance, 'media_jpg')
 #         father_dict = instance.process_file()
 #         response = instance.message_response(father_dict)
 #         instance.clean_folder()
@@ -158,7 +158,7 @@
 #         list_instance = [
 #             AwsMotherAndChildV3, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
 #         ]
-#         instance = self.mixin(uploaded_file, list_instance)
+#         instance = self.mixin(uploaded_file, list_instance,'media_jpg')
 #         father_dict = instance.process_file()
 #         response = instance.message_response(father_dict)
 #         instance.clean_folder()
@@ -183,7 +183,7 @@
 #         list_instance = [
 #             AwsMotherAndChildV3, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
 #         ]
-#         instance = self.mixin(uploaded_file, list_instance)
+#         instance = self.mixin(uploaded_file, list_instance, 'media_jpg')
 #         father_dict = instance.process_file()
 #         response = instance.message_response(father_dict)
 #         instance.clean_folder()
@@ -209,7 +209,7 @@
 #         list_instance = [
 #             AwsMotherAndChildV3, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
 #         ]
-#         instance = self.mixin(uploaded_file, list_instance)
+#         instance = self.mixin(uploaded_file, list_instance, 'media_jpg')
 #         father_dict = instance.process_file()
 #         response = instance.message_response(father_dict)
 #         instance.clean_folder()
@@ -243,7 +243,7 @@
 #         list_instance = [
 #             AwsMotherAndChildV3, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
 #         ]
-#         instance = self.mixin(uploaded_file, list_instance)
+#         instance = self.mixin(uploaded_file, list_instance, 'media_jpg')
 #         father_dict = instance.process_file()
 #         response = instance.message_response(father_dict)
 #         instance.clean_folder()
@@ -269,7 +269,7 @@
 #         list_instance = [
 #             AwsMotherAndChildV3, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
 #         ]
-#         instance = self.mixin(uploaded_file, list_instance)
+#         instance = self.mixin(uploaded_file, list_instance, 'media_jpg')
 #         father_dict = instance.process_file()
 #         response = instance.message_response(father_dict)
 #         instance.clean_folder()
@@ -306,7 +306,7 @@
 #         list_instance = [
 #             AwsMotherAndChildV3, AwsEvrolab, AwsMotherAndChild, AwsMotherAndChildV2
 #         ]
-#         instance = self.mixin(uploaded_file, list_instance)
+#         instance = self.mixin(uploaded_file, list_instance, 'media_jpg')
 #         father_dict = instance.process_file()
 #         response = instance.message_response(father_dict)
 #         instance.clean_folder()

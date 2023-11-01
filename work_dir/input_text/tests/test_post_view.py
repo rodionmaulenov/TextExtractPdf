@@ -437,7 +437,6 @@ class PostInputTextViewTest(TestCase):
             obj = CompareLocusMixin().compare_dnk(form)
             self.assertEqual(len(obj), 3)
 
-
     def test_post_found_few_not_matching_2_or_more_locus_failed(self):
         """
            13 father locus
