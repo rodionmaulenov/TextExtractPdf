@@ -45,12 +45,14 @@ class PdfExtractText(ABC):
     All daughter classes which inheriting this base class
     must override 'extract_text_from_pdf' func
     """
+
     def __init__(self, client_instance: Client, image_folder: str) -> None:
         self.client_instance = client_instance
         self.image_folder = image_folder
 
     @abstractmethod
-    def extract_text_from_pdf(self) -> dict: pass
+    def extract_text_from_pdf(self) -> dict:
+        pass
 
     @staticmethod
     def process_string(input_str):
@@ -118,14 +120,16 @@ class AwsEvrolab(PdfExtractText, PlugToAWSMixin):
             for table in page.tables:
                 table_contains_locus = any(
                     len(row.cells) > 0 and
-                    str(row.cells[0]).strip().replace('0', 'O').replace('I', '1') in LOCUS
+                    (str(row.cells[0]).strip().replace('0', 'O').replace('I', '1')
+                     .replace('Pental E', 'Penta E')) in LOCUS
                     for row in table.rows
                 )
 
                 if table_contains_locus:
                     locus = {
-                        str(cell[0]).strip().replace('0', 'O'):
-                            self.process_string(str(cell[1]))
+                        'Penta E' if 'Penta' in str(row.cells[0]).strip() and 'Penta D' not in str(row.cells[0]).strip() \
+                        else str(row.cells[0]).strip().replace('0', 'O').replace('I', '1'):
+                        self.process_string(str(cell[1]))
                         for row in table.rows
                         if len(row.cells) >= 2
                         for cell in [row.cells[0:2]]
@@ -181,7 +185,8 @@ class AwsEvrolabV2(PdfExtractText, PlugToAWSMixin, PdfConvertIntoImageMixin):
             for row in table.rows:
                 first, second = row.cells[0:2]
 
-                key = str(first).strip().replace('0', 'O').replace('I', '1')
+                key = 'Penta E' if 'Penta' in str(first).strip() and 'Penta D' not in str(first).strip() \
+                    else str(first).strip().replace('0', 'O').replace('I', '1')
                 value = str(second).strip()
 
                 if key in LOCUS and value:
@@ -244,7 +249,8 @@ class AwsMotherAndChild(PdfExtractText, PlugToAWSMixin, PdfConvertIntoImageMixin
             for row in table.rows:
                 first, second = row.cells[0:2]
 
-                key = str(first).strip().replace('0', 'O').replace('I', '1')
+                key = 'Penta E' if 'Penta' in str(first).strip() and 'Penta D' not in str(first).strip() \
+                    else str(first).strip().replace('0', 'O').replace('I', '1')
                 value = str(second).strip()
 
                 if key == 'Locus':
@@ -287,7 +293,8 @@ class AwsMotherAndChildV2(PdfExtractText, PlugToAWSMixin, PdfConvertIntoImageMix
             for row in table.rows:
                 first, second = row.cells[0:2]
 
-                key = str(first).strip().replace('0', 'O').replace('I', '1')
+                key = 'Penta E' if 'Penta' in str(first).strip() and 'Penta D' not in str(first).strip()\
+                    else str(first).strip().replace('0', 'O').replace('I', '1')
                 value = str(second).strip()
 
                 if key == 'Locus':
@@ -331,7 +338,8 @@ class AwsMotherAndChildV3(PdfExtractText, PlugToAWSMixin, PdfConvertIntoImageMix
             for row in table.rows:
                 first, second = row.cells[0:2]
 
-                key = str(first).strip().replace('0', 'O').replace('I', '1')
+                key = 'Penta E' if 'Penta' in str(first).strip() and 'Penta D' not in str(first).strip() \
+                    else str(first).strip().replace('0', 'O').replace('I', '1')
                 value = str(second).strip()
 
                 if key == 'Locus':

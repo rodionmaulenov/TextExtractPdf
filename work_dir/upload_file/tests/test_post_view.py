@@ -277,7 +277,7 @@
 #         expected_response = {'log': 'success', 'message': 'Даніель Фаріаш Гомес saved successfully'}
 #         self.assertEqual(response, expected_response)
 #         self.assertEqual(Client.objects.count(), 1)
-#
+# #
 #     def test_process_uploaded_file_already_exists_aws_MAC_22_name_rus(self):
 #         """
 #         MotherAndChild pdf file 1 page

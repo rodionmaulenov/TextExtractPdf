@@ -24,7 +24,8 @@ class FileUploadView(View):
         responses = []
 
         instance_list = [
-             AwsMotherAndChild, AwsMotherAndChildV2, AwsMotherAndChildV3, AwsEvrolabV2, AwsEvrolab,
+             AwsMotherAndChild, AwsMotherAndChildV2, AwsMotherAndChildV3,
+            # AwsEvrolab, AwsEvrolabV2,
         ]
 
         for _, uploaded_file in request.FILES.items():
