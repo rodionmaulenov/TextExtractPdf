@@ -35,6 +35,8 @@ To overcome this hurdle, the project leverages the AWS Textract microservice. AW
 <img src="https://github.com/rodionmaulenov/TextExtractPdf/assets/109179333/06a697fe-2766-4547-b8d5-3510d7fb6b96" width="300" alt="form to find father">
 
 <br>
+<br>
+<br>
 
 ## On Production stage
 
@@ -48,4 +50,6 @@ To overcome this hurdle, the project leverages the AWS Textract microservice. AW
 ### Database and Storage
 - **Digital Ocean Postgres**: Employs Digital Ocean's Postgres service for efficient database management.
 - **DO Spaces**: Uses Digital Ocean Spaces for secure and accessible storage of PDF files.
+<img src="https://github.com/rodionmaulenov/TextExtractPdf/assets/109179333/13a02527-1279-488b-8652-8959e3093507" width="300" alt="form to find father">
+
 
