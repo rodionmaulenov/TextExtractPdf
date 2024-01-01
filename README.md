@@ -83,6 +83,7 @@ source myenv/bin/activate
 Copy the project from GitHub:
 ```python
 git clone git@github.com:rodionmaulenov/TextExtractPdf.git
+cd TextExtractPdf
 ```
 ### Step 5: Create a requirements.txt File
 
