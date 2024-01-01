@@ -1,4 +1,5 @@
 # Extract loci from PDF Files - "Mother and Child" and "Evrolab" Laboratories
+![PyPI - Version](https://img.shields.io/pypi/v/django?style=for-the-badge&logo=Django&logoColor=green&label=Django&color=hex)
 
 <br>
 
@@ -51,5 +52,68 @@ To overcome this hurdle, the project leverages the AWS Textract microservice. AW
 - **Digital Ocean Postgres**: Employs Digital Ocean's Postgres service for efficient database management.
 - **DO Spaces**: Uses Digital Ocean Spaces for secure and accessible storage of PDF files.
 <img src="https://github.com/rodionmaulenov/TextExtractPdf/assets/109179333/13a02527-1279-488b-8652-8959e3093507" width="300" alt="form to find father">
+
+<br>
+<br>
+<br>
+
+## How launch project on Linux local server 
+
+### Step 1: Create a Directory
+
+Open your terminal and create a new directory for your project:
+  ```python
+mkdir project-name
+cd project-name
+```
+### Step 2: Create a Virtual Environment
+
+Set up a virtual environment to manage your Python dependencies:
+```python
+virtualenv myenv
+```
+### Step 3: Activate the Virtual Environment
+
+Activate the virtual environment:
+```python
+source myenv/bin/activate
+``` 
+### Step 4: Clone the Project from GitHub
+
+Copy the project from GitHub:
+```python
+git clone git@github.com:rodionmaulenov/TextExtractPdf.git
+```
+### Step 5: Create a requirements.txt File
+
+Create a requirements.txt file with the following dependencies:
+```python
+django>=3.2,<4.0
+psycopg2-binary==2.9.9
+gunicorn==21.2.0
+django-admin-interface==0.26.1
+boto3==1.28.64
+textract-trp==0.1.3
+python-decouple==3.8
+django-storages==1.14.2
+django-cleanup==8.0.0
+PyMuPDF==1.23.5
+requests==2.31.0
+```
+
+### Step 6: Install Dependencies
+
+Install the required dependencies:
+```python
+pip isntall -r requirements.txt
+```
+### Step 7: Launching the Project with Docker
+
+Launch your Django project using Docker:
+```python
+docker-compose up --build
+```
+
+
 
 
