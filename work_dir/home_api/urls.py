@@ -14,6 +14,8 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from decouple import config
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -30,3 +32,5 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+if config('DJANGO_SETTINGS_MODULE') == 'home_api.settings.base':
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

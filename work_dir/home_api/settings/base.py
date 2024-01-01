@@ -87,15 +87,16 @@ WSGI_APPLICATION = 'home_api.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# fot simple runserver
 
 DATABASES = {
     'default': {
         'ENGINE': "django.db.backends.postgresql_psycopg2",
-        'NAME': 'popanegra2',
-        'USER': 'popanegra3',
-        'PASSWORD': 'popanegra4',
-        'HOST': '0.0.0.0',
-        'PORT': 5432,
+        'NAME': config('SQL_NAME'),
+        'USER': config('SQL_USER'),
+        'PASSWORD': config('SQL_PASSWORD'),
+        'HOST': 'localhost',
+        'PORT': config('SQL_PORT'),
     }
 }
 
@@ -139,19 +140,11 @@ LOGIN_URL = '/admin/login/'
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]
 
-# Connect to Space Digital Ocean
-AWS_ACCESS_KEY_ID = config('DO_SPACES_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = config('DO_SPACES_AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = 'textract-space'
-AWS_S3_ENDPOINT_URL = 'https://fra1.digitaloceanspaces.com'
-AWS_S3_OBJECT_PARAMETERS = {
-    "CacheControl": 'max-age=86400',
-    'ACL': 'public-read'
-}
+# settings for development stage
+if config('DJANGO_SETTINGS_MODULE') == 'home_api.settings.base':
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
 
-AWS_LOCATION = 'https://textract-space.fra1.digitaloceanspaces.com'
-MEDIA_URL = 'https://textract-space.fra1.digitaloceanspaces.com/media/'
-DEFAULT_FILE_STORAGE = "home_api.storages.MediaSpaceStorage"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -182,5 +175,3 @@ LOGGING = {
         },
     },
 }
-
-

@@ -36,6 +36,7 @@ class PlugToAWSMixin:
             Document={'Bytes': binary},
             FeatureTypes=[formatting]
         )
+
         return response
 
 
@@ -78,12 +79,22 @@ class PdfExtractText(ABC):
 
 class PdfConvertIntoImageMixin:
     def pull_file(self, instance, output_folder):
-        """Get file from remote storage"""
-        response = requests.get(instance.get_file_url())
-        local_file_path = f'{output_folder}/test.pdf'
-        if response.status_code == 200:
+
+        try:
+            """Get file from remote storage"""
+            response = requests.get(instance.get_file_url())
+            local_file_path = f'{output_folder}/test.pdf'
+            if response.status_code == 200:
+                with open(local_file_path, 'wb') as f:
+                    f.write(response.content)
+        except:
+            """Get file from local storage"""
+            with open(settings.BASE_DIR / 'media' / instance.file.name, 'rb') as file:
+                pdf_binary_content = file.read()
+            local_file_path = f'{output_folder}/test.pdf'
             with open(local_file_path, 'wb') as f:
-                f.write(response.content)
+                f.write(pdf_binary_content)
+
         return local_file_path
 
     def pdf_to_image(self, instance, index, output_folder, dpi=600):
@@ -118,24 +129,36 @@ class AwsEvrolab(PdfExtractText, PlugToAWSMixin):
 
         for page in doc.pages:
             for table in page.tables:
-                table_contains_locus = any(
-                    len(row.cells) > 0 and
-                    (str(row.cells[0]).strip().replace('0', 'O').replace('I', '1')
-                     .replace('Pental E', 'Penta E')) in LOCUS
-                    for row in table.rows
-                )
+                table_contains_locus = False
+
+                # Check if table contains locus
+                for row in table.rows:
+                    if len(row.cells) > 0:
+                        cell_value = (str(row.cells[0]).strip()
+                                      .replace('0', 'O')
+                                      .replace('I', '1')
+                                      .replace('Pental E', 'Penta E'))
+
+                        if cell_value in LOCUS:
+                            table_contains_locus = True
+                            break
 
                 if table_contains_locus:
-                    locus = {
-                        'Penta E' if 'Penta' in str(row.cells[0]).strip() and 'Penta D' not in str(row.cells[0]).strip() \
-                        else str(row.cells[0]).strip().replace('0', 'O').replace('I', '1'):
-                        self.process_string(str(cell[1]))
-                        for row in table.rows
-                        if len(row.cells) >= 2
-                        for cell in [row.cells[0:2]]
-                        if str(cell[0]).strip().replace('0', 'O') in LOCUS and cell[1]
-                    }
-                    break
+                    locus = {}
+
+                    for row in table.rows:
+                        if len(row.cells) >= 2:
+                            key_cell = row.cells[0]
+                            value_cell = row.cells[1]
+
+                            key = str(key_cell).strip().replace('0', 'O').replace('I', '1')
+                            if 'Penta' in key and 'Penta D' not in key:
+                                key = 'Penta E'
+
+                            if key in LOCUS and value_cell:
+                                locus[key] = self.process_string(str(value_cell))
+
+                    break  # Break from table loop if locus is found
 
         response = self.analyze_document(file_binary, connected, formatting='FORMS')
         name = self.name(response)
@@ -144,11 +167,11 @@ class AwsEvrolab(PdfExtractText, PlugToAWSMixin):
 
     def name(self, response):
         doc = Document(response)
-        name = next(
-            (str(field.value).strip()
-             for field in doc.pages[0].form.fields
-             if str(field.key).strip() == 'Name:'),
-            '')
+        name = ''
+        for field in doc.pages[0].form.fields:
+            if str(field.key).strip() == 'Name:':
+                name = str(field.value).strip()
+                break
 
         return name
 
@@ -237,6 +260,7 @@ class AwsMotherAndChild(PdfExtractText, PlugToAWSMixin, PdfConvertIntoImageMixin
         connected_aws = self.plug_to_aws()
         image = self.pdf_to_image(self.client_instance, 0, self.image_folder)
         response = self.analyze_document(image, connected_aws, formatting='TABLES')
+
         doc = Document(response)
 
         locus = {}
@@ -293,7 +317,7 @@ class AwsMotherAndChildV2(PdfExtractText, PlugToAWSMixin, PdfConvertIntoImageMix
             for row in table.rows:
                 first, second = row.cells[0:2]
 
-                key = 'Penta E' if 'Penta' in str(first).strip() and 'Penta D' not in str(first).strip()\
+                key = 'Penta E' if 'Penta' in str(first).strip() and 'Penta D' not in str(first).strip() \
                     else str(first).strip().replace('0', 'O').replace('I', '1')
                 value = str(second).strip()
 
@@ -387,7 +411,7 @@ class ProcessUploadedFile:
                     break
             except (Exception, botocore.exceptions.ClientError,
                     AttributeError, TypeError, IndexError) as e:
-                logger.error(f'An error occurred: {str(e)}')
+                # logger.error(f'An error occurred: {str(e)}')
                 continue
 
         if not locus and not name:

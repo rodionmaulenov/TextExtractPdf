@@ -11,3 +11,4 @@ DATABASES = {
         'PORT': config('SQL_PORT'),
     }
 }
+

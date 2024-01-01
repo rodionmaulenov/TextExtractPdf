@@ -26,7 +26,7 @@ class FileUploadViewTestCase(TestCase):
         # You can also check for the presence of specific content in the response HTML if needed
         self.assertContains(response, 'Upload Files')
 
-    def test_get_authenticated_without_groups(self):
+    def test_get_is_staff_access_without_groups(self):
 
         url = reverse('upload_file')  # Replace with the actual view name
 
