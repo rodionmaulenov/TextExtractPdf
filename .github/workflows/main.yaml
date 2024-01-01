@@ -18,12 +18,17 @@ jobs:
         working-directory: ./work_dir
 
     env:
-      DJANGO_SETTINGS_MODULE: home_api.settings.test
+      DJANGO_SETTINGS_MODULE: home_api.settings.base
       SQL_NAME: databasename
       SQL_USER: databaseuser
       SQL_PASSWORD: databasepassword
       SQL_HOST: localhost
       SQL_PORT: 5432
+      ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      DO_SPACES_ACCESS_KEY_ID: ${{ secrets.DO_SPACES_ACCESS_KEY_ID }}
+      DO_SPACES_AWS_SECRET_ACCESS_KEY: ${{ secrets.DO_SPACES_AWS_SECRET_ACCESS_KEY }}
+
 
     services:
       postgres:
