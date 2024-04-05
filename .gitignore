@@ -1,5 +1,6 @@
 .idea/
 .env
+myenv/
 textextractenv
 persistentdata
 work_dir/media
