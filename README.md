@@ -90,7 +90,7 @@ cd TextExtractPdf
 Create a requirements.txt file with the following dependencies:
 ```python
 django>=3.2,<4.0
-psycopg2-binary==2.9.9
+psycopg2-binary==2.9.9 
 gunicorn==21.2.0
 django-admin-interface==0.26.1
 boto3==1.28.64
