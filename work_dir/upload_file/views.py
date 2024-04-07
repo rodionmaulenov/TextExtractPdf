@@ -17,14 +17,14 @@ class FileUploadView(View):
 
     handler = ProcessUploadedFile
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request):
         return render(request, 'upload_file/upload_form.html')
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         responses = []
 
         instance_list = [
-             AwsMotherAndChild, AwsMotherAndChildV2, AwsMotherAndChildV3,
+            AwsMotherAndChild, AwsMotherAndChildV2, AwsMotherAndChildV3,
             AwsEvrolab, AwsEvrolabV2,
         ]
 
